@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_search_source">
+    <sp_search_source action="INSERT_OR_UPDATE">
+        <advanced_typeahead_config>false</advanced_typeahead_config>
+        <condition/>
+        <data_fetch_script><![CDATA[(function(query) {
+	var results = [];
+	//Here goes the logic. Compute results however you want!
+	var kb = new GlideRecord('kb_knowledge');
+	kb.addQuery('workflow_state', 'published');
+	kb.addQuery('valid_to', '>=', (new GlideDate()).getLocalDate().getValue());
+	kb.addQuery('kb_knowledge_base', $sp.getValue('kb_knowledge_base'));
+	kb.addQuery('123TEXTQUERY321', query);
+	kb.setLimit(data.limit);
+	kb.query();
+	data.article_count = kb.getRowCount();
+
+	var kbCount = 0;
+	while (kb.next() && kbCount < data.limit) {
+		// Does user have permission to see this item?
+		if (!$sp.canReadRecord("kb_knowledge", kb.getUniqueValue()))
+			continue;
+
+		var article = {};
+		$sp.getRecordDisplayValues(article, kb, 'sys_id,number,short_description,published,text');
+		article.publishedUTC = kb.getValue('published');
+		article.type = "kb";
+		if (!article.text)
+			article.text = "";
+		article.text = $sp.stripHTML(article.text) + "";
+		article.text = article.text.substring(0, 200);
+		article.score = parseInt(kb.ir_query_score.getDisplayValue());
+		article.label = article.short_description;
+		article.primary = article.short_description;
+		results.push(article);
+		kbCount++;
+	}
+	$sp.logSearch('kb_knowledge', data.q, kb.getRowCount());
+
+	return results;
+})(query);]]></data_fetch_script>
+        <display_fields/>
+        <enable_typeahead>true</enable_typeahead>
+        <id>ssc_itsm_kb</id>
+        <is_scripted_source>true</is_scripted_source>
+        <name>Knowledge Base</name>
+        <page/>
+        <primary_display_field/>
+        <roles/>
+        <search_page_template><![CDATA[<div>
+  <a href="?id=form&sys_id={{item.sys_id}}&table={{item.table}}" class="h4 text-primary m-b-sm block">
+    <span ng-bind-html="highlight(item.primary, data.q)"></span>
+  </a>
+  <span class="text-muted" ng-repeat="f in item.fields | limitTo: 4">
+    <span class="m-l-xs m-r-xs" ng-if="!$first"> &middot; </span>
+    {{f.label}}: <span ng-bind-html="highlight(f.display_value, data.q)"></span>
+  </span>
+</div>]]></search_page_template>
+        <source_table/>
+        <sys_class_name>sp_search_source</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 05:42:36</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>59fbe67bdb471740544fdd0b5e9619ba</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Knowledge Base</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_search_source_59fbe67bdb471740544fdd0b5e9619ba</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-09 05:42:36</sys_updated_on>
+        <typeahead_glyph/>
+        <typeahead_template/>
+    </sp_search_source>
+</record_update>

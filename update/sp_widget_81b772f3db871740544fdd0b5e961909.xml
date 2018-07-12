@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {&#13;
+position: relative;&#13;
+}&#13;
+&#13;
+.panel-heading i {&#13;
+  cursor: pointer;&#13;
+  position: absolute;&#13;
+  padding: 10px;&#13;
+  top: 0px;&#13;
+  right: 0px;&#13;
+}&#13;
+&#13;
+.jumbotron {&#13;
+ background: #0A2F5D;&#13;
+  color: white;&#13;
+  padding-top: 10px;&#13;
+  padding-left: 20px;&#13;
+  font-family: 'Raleway', sans-serif; !important&#13;
+  font-weight: 200;&#13;
+}&#13;
+/* Moved this to specific instance CSS&#13;
+.b {&#13;
+ background-color:transparent; &#13;
+  border: none;&#13;
+} &#13;
+*/</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>This is a Bootstrap Jumbotron widget that can be configured with a title (h2 style), and then two underlying sections. The entrie jumbotron can be configured to loink to a URL.</description>
+        <docs/>
+        <field_list>glyph,color,size,url</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-jumbotron</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Jumbotron</name>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"},{"name":"title","label":"Title","type":"string"},{"name":"content_heading","label":"Content Heading","type":"string"},{"name":"content_body","label":"Content Body","type":"string"},{"name":"content_body2","label":"Content Body2","type":"string"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+ 
+var link
+
+/*
+	if (options.url) {
+		data.link = options.url
+	}
+	else {
+		data.link = "#"
+	}  
+*/
+	
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 06:33:11</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>81b772f3db871740544fdd0b5e961909</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>SSC Jumbotron</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_81b772f3db871740544fdd0b5e961909</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-09 06:33:27</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-body"> <!-- Main Panel Body-->
+    <a ng-if="c.options.url" href="{{::c.options.url}}" > 
+      <!-- target="_blank" -->
+      <div class="jumbotron">
+        <h2> <span ng-if="c.options.glyph && c.options.content_heading">
+        <fa name="{{::c.options.glyph}}" />
+      </span>
+          
+          {{::c.options.content_heading}}
+          
+        </h2> 
+        <p >
+          <span ng-if="c.options.glyph && !c.options.content_heading">
+        <fa name="{{::c.options.glyph}}" />
+      </span>
+           {{::c.options.content_body}}
+           
+        </p>
+        <p>
+          {{::c.options.content_body2}}
+          
+        </p>
+      </div>
+    </a>
+    <div ng-if="!c.options.url">
+      <div class="jumbotron">
+        <h2 >
+          {{::c.options.content_heading}}
+          
+        </h2> 
+        <p>
+          {{::c.options.content_body}}
+           
+        </p>
+        <p>
+          {{::c.options.content_body2}}
+          
+        </p>
+      </div>
+    </div>
+  </div> <!-- Main Panel Body -->
+</div>]]></template>
+    </sp_widget>
+</record_update>

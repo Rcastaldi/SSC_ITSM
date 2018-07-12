@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $sce, $http, spModal) {
+	/* widget controller */
+	var c = this;
+	// var shared = c.widget.options.shared; //Get the shared object from the "My Pet" widget
+	var shared = {}; //This is an empty array we can add to and share with the modal and embedded widget.
+
+	$scope.orderField = "number";
+	$scope.showMoreDetailsRecord = null;
+	$scope.showRCADetailsRecord = null;
+	$scope.showTaskDetailsRecord = null;
+	$scope.data.activefilters.startdate = undefined;
+	$scope.data.activefilters.enddate = undefined;
+
+	// Functions for Active Filters
+	$scope.CurrentActiveFilter = "current_month";
+	c.data.CurrentActiveFilter = "current_month";
+	$scope.UpdateActiveFilter = function(i) {
+		$scope.CurrentActiveFilter = i;
+		c.data.CurrentActiveFilter = i;
+		c.server.update();
+	};
+
+	$scope.CallActiveFilter = function(instance) {
+		/* $scope.CurrentActiveFilter = angular.copy(instance);	*/
+		$scope.CurrentActiveFilter = "current_year";	
+	};
+
+	$scope.CallCustomFilter = function(instance) {
+		/* $scope.CurrentActiveFilter = angular.copy(instance);	*/
+		$scope.CurrentActiveFilter = "custom";	
+	};
+	
+	// Custom Search
+	c.OpenCustomSearch = function(size){
+		// shared.problems = c.data.problems;
+		// Modal for custom filters
+		spModal.open({
+			//spModal.open will open a modal, and we'll pass it the following parameters
+			size: size,
+			title: 'Select Custom Search Parameters',
+			widget: 'ssc-pbm-widget-activefilter', //Insert sys_id of the embedded widget
+			buttons: [ {label:'${Finished}', primary: true} ],
+			shared: shared //We make the 'shared' array available to modal's embedded widget
+		}).then(function() {
+			//This function is triggered by submitting/closing the modal.
+			$scope.data.returned_search = shared.problems_search;
+			$scope.CurrentActiveFilter = "custom";
+			c.server.update();
+		});
+	};
+/*	$rootScope.$on('problems_searched', function (event, data) {
+		c.data.returned_search = data;
+		$scope.CurrentActiveFilter = "custom";
+			c.server.update();
+   // console.log(data); // 'Data to send'
+
+}); */
+
+	
+	
+	// Functions to apply search parameters on proble query
+	$scope.applyCurrentMonthQueryFilter = function(){
+		$scope.CurrentActiveFilter = "current_month";
+		c.data.CurrentActiveFilter = "current_month";
+		$scope.server.update();
+	};
+	$scope.applyCurrentYearQueryFilter = function(){
+		$scope.CurrentActiveFilter = "current_year";
+		c.data.CurrentActiveFilter = "current_year";
+		$scope.server.update();
+	};
+	$scope.applyCustomFilter = function(){
+		$scope.CurrentActiveFilter = "current_year";
+		c.data.CurrentActiveFilter = "current_year";
+		$scope.server.update();
+	};
+
+	// this makes the UI wadtch the data tables and update on changes
+/*	spUtil.recordWatch($scope, "problem", "", function(name, data) {
+		spUtil.update($scope);
+	}); */
+
+	// Functions used to hide or unhide certain elements per row based on current sys_id
+	$scope.showMoreDetails = function(instance) {
+		$scope.showMoreDetailsRecord = angular.copy(instance);	
+	};
+	$scope.hideMoreDetails = function(instance) {
+		$scope.showMoreDetailsRecord = null;	
+	};
+	$scope.showRCAdetails = function(instance) {
+		$scope.showRCADetailsRecord = angular.copy(instance);	
+	};
+	$scope.hideRCAdetails = function(instance) {
+		$scope.showRCADetailsRecord = null;	
+	};
+	$scope.showTaskdetails = function(instance) {
+		$scope.showTaskDetailsRecord = angular.copy(instance);	
+	};
+	$scope.hideTaskdetails = function(instance) {
+		$scope.showTaskDetailsRecord = null;	
+	};
+
+	//Edit, Save and Reset function code
+	$scope.edit = function(instance) {
+		$scope.editingRecord = angular.copy(instance);	
+	};
+	$scope.reset = function() {
+		$scope.editingRecord = null;	
+	};
+	$scope.save = function() {
+		console.log("in save with "+$scope.editingRecord.sys_id);
+		$scope.writeproblem($scope.editingRecord.sys_id,
+												{'short_description': $scope.editingRecord.short_description});
+		$scope.reset();
+	};
+
+	//User the Table API to put for a record of sys_id. Whatever JSON is passed
+	//in as data, tht will be the update
+	$scope.writeproblem = function(sys_id, data) {
+		console.log("in write with "+sys_id);
+		console.log(data);
+		$http({
+			method: 'PUT',
+			url: '/api/now/table/problem/'+ sys_id,
+			headers: {'Content-Type' : 'application/json'},
+			data : data
+		});
+	};
+
+	// Change sort order function
+	$scope.changeSort = function(field) {
+		if ($scope.orderField == field) {
+			$scope.orderReverse = !$scope.orderReverse;
+		} else {
+			$scope.orderField = field;
+		}
+	};
+
+	// Assign class based on value of field
+	$scope.getPriorityClass = function(problem) {
+		return "Priority" + problem.priority;
+	};
+	$scope.getMItypeClass = function(problem) {
+		return problem.parent_inc_mi_type;
+	};
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Table,th,tr,td Elements ------------------- */&#13;
+table {&#13;
+  width: 100%;&#13;
+  border-radius: 10px;&#13;
+  border-collapse: collapse;&#13;
+  background-color: white;&#13;
+  font-family: Arial, sans-serif;&#13;
+  word-wrap: break-word;&#13;
+  text-overflow: ellipsis;&#13;
+}&#13;
+th, td { padding: 10px; }&#13;
+td { color: black; }&#13;
+&#13;
+/* Change default bootstrap behaviors -------------*/&#13;
+//	Change Table Row Hover state collor to SSC Color &#13;
+.table-hover tbody tr:hover td {&#13;
+  background-color: #86BBD1; // SSC Hover Color GEO&#13;
+}&#13;
+&#13;
+/* Table,th,tr,td Classes ------------------------ */&#13;
+.problem_title {&#13;
+  background-color:  #0A2F5D; /* SSC Blue */&#13;
+  color: white;&#13;
+  border: thick solid #0A2F5D; &#13;
+  font-size: 20px;&#13;
+}&#13;
+.problem_title span {&#13;
+	font-size: 16px; &#13;
+  font-style: italic;&#13;
+}&#13;
+.moreDetailsRow, .problem_task_cat_header {&#13;
+  background-color:  #007298; /* SSC Light Blue */&#13;
+  color: white;&#13;
+}&#13;
+.problem_task_cat_header {font-weight: bold; font-size: 16px;}&#13;
+.problem_task_list, .problem_task_list_item {&#13;
+  text-align: left;&#13;
+  vertical-align: top;&#13;
+}&#13;
+.problem_task_list {padding: 0px;}&#13;
+.itals {font-style: italic;}&#13;
+.addBotmBrdr { border-bottom: thin solid gray; }&#13;
+.addThickBlueBotmBrdr { border-bottom: thick solid #0A2F5D; }&#13;
+.addThickBlueRightBrdr { border-right: thick solid #0A2F5D; }&#13;
+.addThickBlueLeftBrdr { border-left: thick solid #0A2F5D; }&#13;
+&#13;
+/* Table,th,tr,td Named Elements --------- */&#13;
+.problem_task_list_item, #incidentDetailTable td, #incidentDetailTable th, #incidentDetailTable tr {&#13;
+  padding: 2px 4px 2px 4px;&#13;
+}&#13;
+/* ng-class section --------- */&#13;
+.Major {&#13;
+  color:white;&#13;
+  padding: 10px 10px;&#13;
+  font-weight: bold;&#13;
+}&#13;
+.Reportable { background: red }&#13;
+.Qualified { background: #f56e00 }&#13;
+.Process { background: #0A2F5D }&#13;
+/* Style for layout of large multi-line text used for --------- */&#13;
+/* showing worklog description i.e. MI chronology */&#13;
+.timeline-body &gt; p {&#13;
+  white-space: pre-wrap;&#13;
+  overflow-y:scroll;overflow-x:hidden;&#13;
+  max-height: 300px;&#13;
+}&#13;
+/* Button style section --------- */&#13;
+button {&#13;
+  // background-color:  #007298; /* SSC Light Blue */&#13;
+  background-color:  #2F749A; /* SSC Primary Button CAL */&#13;
+  border: 1px;&#13;
+  color: white;&#13;
+  padding: 10px 10px;&#13;
+  text-align: center;&#13;
+  text-decoration: none;&#13;
+  display: inline-block;&#13;
+  font-size: 16px;&#13;
+  // border-radius: 15px;&#13;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);&#13;
+}&#13;
+button:hover {&#13;
+  background-color: #86BBD1; // SSC Hover Color GEO&#13;
+  color: #FFFFFF;&#13;
+}&#13;
+button#pressed { &#13;
+  // background-color: #e4ecf0; color: #0A2F5D;&#13;
+  background-color:  #092E5D; /* SSC Selected Button BEN */&#13;
+  color: white;&#13;
+}&#13;
+/* ICON styles */&#13;
+.fa-check-circle, .fa-calendar-check-o-active, .fa-calendar-check-o-warn, .fa-calendar-times-o, .fa-exclamation-circle {&#13;
+  padding-left: 10px;&#13;
+}&#13;
+.fa-plus-square, .fa-minus-square { padding-right: 10px; }&#13;
+.fa-calendar-times-o, .fa-exclamation-circle { color: red; }&#13;
+.fa-calendar-check-o-active { color: #0A2F5D;}&#13;
+.fa-calendar-check-o-warn { color: #f56e00;}&#13;
+.fa-print { color: #007298;font-size:36px; padding-left: 15px; padding-right: 15px; }&#13;
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>Widget for displaying executive summary information for a problem record</description>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-pbm-exec-summ-repeat</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC PBM Executive Summary Repeating Form</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	data.activefilters = [];
+	data.problems = [];
+	// data.returned_search = [];
+	var startdate = "2018-01-01 00:00:00";
+	var enddate = "2018-03-31 00:00:00";
+
+	// Update search parameter variables with user input
+	//	if (input) {
+	// Need to create logic to determine current month
+	//	if (input.CurrentActiveFilter == "current_month") {
+	//		startdate = "2018-02-01 00:00:00";	
+	//		enddate = "2018-02-31 00:00:00";
+	//		
+	//	}
+	// Need to create logic to determine current year
+	//	if (input.CurrentActiveFilter == "current_year") {
+	//		startdate = "2018-01-01 00:00:00";	
+	//		enddate = "2018-12-31 00:00:00";
+	//		
+	//	}
+	// Need to resolve passing date parameters for custom range
+	/*	if (input.CurrentActiveFilter == "custom") {
+
+		} */
+	//	if (input.CurrentActiveFilter == "custom_date") {
+	//		startdate = input.selstartdate;	
+	//		enddate = input.selenddate;
+	//	}	
+	//} else {
+	//	
+	//}
+	//var afs = {};
+	//afs.startdate = startdate;
+	//afs.enddate = enddate;
+	//data.activefilters.push(afs);
+
+	// Call main problem query
+	var gr = new GlideRecord('problem');
+	gr.addActiveQuery();
+	// Add filter for opened by group = IBM-SSM-PROBLEM-MGT by group sys_id
+	gr.addQuery('u_opened_by_group', 'IN','5408d3a8db200b40047dd7795e9619b5');
+	//if (input) {
+	//if (input.CurrentActiveFilter == "custom") {
+	//		gr.addQuery('sys_id', 'IN', input.returned_search.syslog);
+	//	} } else {
+	gr.addQuery('sys_created_on', ">=", startdate);
+	gr.addQuery('sys_created_on', "<=", enddate);			
+	//}
+	gr.setLimit(10);
+	gr.orderByDesc('sys_created_on');
+	gr.query();
+
+
+	// Perform loop through each record returned by main problem query
+	while(gr.next()) {
+		// Create multi-dimensional array variable local to function
+		// for storing fields for each record		
+		var problem = {'problem_tasks':[], 'incident_worklogs':[]};
+		problem.number = gr.getDisplayValue('number');		
+		problem.short_description = gr.getDisplayValue('short_description');
+		problem.sys_id = gr.getUniqueValue();
+		problem.sys_updated_on = gr.getValue('sys_updated_on');
+		problem.priority = gr.getDisplayValue('priority');
+		problem.assignment_group = gr.getDisplayValue('assignment_group');
+		problem.description = gr.getValue('description');
+		problem.parent = gr.getDisplayValue('parent');
+		problem.state = gr.getDisplayValue('state');
+		problem.u_root_cause_category = gr.getDisplayValue('u_root_cause_category');
+		problem.u_root_cause_owner = gr.getDisplayValue('u_root_cause_owner');
+		problem.cmdb_ci = gr.getDisplayValue('cmdb_ci');
+		problem.symptom = gr.getDisplayValue('u_symptom');
+		problem.cause = gr.getDisplayValue('u_root_cause');
+		problem.resolution = gr.getDisplayValue('u_permanent_resolution');
+		problem.u_why_1 = gr.getDisplayValue('u_why_1');
+		problem.u_why_2 = gr.getDisplayValue('u_why_2');
+		problem.u_why_3 = gr.getDisplayValue('u_why_3');
+		problem.u_why_4 = gr.getDisplayValue('u_why_4');
+		problem.u_why_5 = gr.getDisplayValue('u_why_5');
+		problem.u_response_1 = gr.getDisplayValue('u_response_1');
+		problem.u_response_2 = gr.getDisplayValue('u_response_2');
+		problem.u_response_3 = gr.getDisplayValue('u_response_3');
+		problem.u_response_4 = gr.getDisplayValue('u_response_4');
+		problem.u_response_5 = gr.getDisplayValue('u_response_5');
+		// New query joining problem_task on problem field to problem sys_id		
+		var gr2 = new GlideRecord('problem_task');
+		gr2.addQuery('problem', gr.getUniqueValue());
+		gr2.setLimit(25);
+		gr2.orderByDesc('sys_updated_on');
+		gr2.query();
+		// Perform loop through each record returned by problem task query
+		while(gr2.next()) {
+			// local function array variable for storing each problem task fields
+			var problem_task = {};
+			// local function date variable for formatting date
+			//var task_due_date = new GlideDateTime(gr2.getValue('due_date'));
+			var task_due_date = gr2.getValue('due_date');
+			var task_work_end_date = new GlideDateTime(gr2.getValue('work_end'));			
+			problem_task.number = gr2.getDisplayValue('number');
+			problem_task.short_description = gr2.getDisplayValue('short_description');
+			problem_task.sys_id = gr2.getUniqueValue();
+			problem_task.sys_updated_on = gr2.getValue('sys_updated_on');
+			problem_task.assignment_group = gr2.getDisplayValue('assignment_group');
+			problem_task.description = gr2.getValue('description');
+			problem_task.parent = gr2.getDisplayValue('problem');
+			problem_task.state = gr2.getDisplayValue('state');
+			// Logic for calculating current state of task and provide due or end date			
+			
+			if (gr2.getDisplayValue('state') == "Closed" ||  gr2.getDisplayValue('state') == "Not Required") {				
+				problem_task.state_calc = "Completed";				
+				problem_task.date_calc = task_work_end_date.getNumericValue();				
+			} 
+			else if (!task_due_date) {
+				//console.log("am I here");
+				problem_task.state_calc = "NoDate";
+					problem_task.date_calc = "Due date not set";
+			}
+			else {	
+				task_due_date = new GlideDateTime(task_due_date);
+				//console.log("Working");
+				//var gdt1 = new GlideDateTime().getLocalDate().getDisplayValueInternal();
+				var gdt1 = new GlideDateTime().getDate();
+				
+				gdt1 = new GlideDateTime(gdt1 + " 00:00:00");
+				console.log(task_due_date);
+				//var gdt2 = task_due_date.getDate();
+				var gdt2 = task_due_date;
+				//console.log(gdt1);
+				gdt2 = new GlideDateTime(gdt2 + " 00:00:00");
+				var dur = GlideDateTime.subtract(gdt1, gdt2);
+				//console.log("Still Working");
+				var when_to_warn = new GlideDateTime();
+
+				when_to_warn.addDaysUTC(7);
+				//console.log(gdt2);
+				// logic to replace null value if target date is empty
+				if (task_due_date.getNumericValue() == 0) {
+					problem_task.state_calc = "NoDate";
+					problem_task.date_calc = "Due date not set";
+				} 
+				else if (gdt2.before(gdt1)){
+					problem_task.state_calc = "PastDue";
+					problem_task.date_calc = task_due_date.getNumericValue();
+				}
+				else if (gdt2.before(when_to_warn)){
+					problem_task.state_calc = "Warn";
+					problem_task.date_calc = task_due_date.getNumericValue();
+				}
+				else {
+					problem_task.state_calc = "Active";
+					problem_task.date_calc = task_due_date.getNumericValue();
+					problem_task.date_test = when_to_warn.getDisplayValue();
+				}
+			}
+			
+			problem_task.u_problem_task_category = gr2.getDisplayValue('u_problem_task_category');
+			// Push each problem task to local function array
+			problem.problem_tasks.push(problem_task);			
+		}
+		// New query joining incident on parent to problem sys_id
+		var gr3 = new GlideRecord('incident');
+		gr3.addQuery('problem_id', gr.getUniqueValue());
+		gr3.setLimit(1);
+		gr3.orderByDesc('sys_updated_on');
+		gr3.query();
+		// Perform loop through incident or incidents returned by query
+		while(gr3.next()) {
+			problem.parent_inc_number = gr3.getDisplayValue('number');
+			problem.parent_inc_short_description = gr3.getDisplayValue('short_description');
+			problem.parent_inc_description = gr3.getValue('description');
+			problem.parent_inc_mi_type = gr3.getDisplayValue('u_mi_type');
+			problem.parent_inc_symptom = gr3.getDisplayValue('u_symptom');
+			problem.parent_inc_cause = gr3.getDisplayValue('u_cause');
+			problem.parent_inc_resolution = gr3.getDisplayValue('close_notes');
+			problem.parent_inc_owner_group = gr3.getDisplayValue('u_owner_group');
+			problem.parent_inc_created = gr3.getDisplayValue('sys_created_on');
+			problem.parent_inc_duration = gr3.getDisplayValue('calendar_duration');
+			problem.parent_inc_region = gr3.getDisplayValue('u_region');
+			problem.parent_inc_business_unit = gr3.getDisplayValue('u_business_unit');
+			problem.parent_inc_resolved = gr3.getDisplayValue('resolved_at');
+			problem.parent_inc_state = gr3.getDisplayValue('state');
+			// New query joining incident worklog on parent to incident sys_id
+			// and contains CHRONOLOGY to return MI Timeline
+			var gr4 = new GlideRecord('u_incident_worklog');
+			gr4.addQuery('parent', gr3.getUniqueValue());
+			gr4.addQuery('u_choice_1','CONTAINS', 'CHRONOLOGY');
+			gr4.setLimit(10);
+			gr4.orderByDesc('sys_updated_on');
+			gr4.query();
+			// Perform loop through worklog or worklogs returned by query
+			while(gr4.next()) {
+				// // local function array variable for storing each incident worklog record
+				var incident_worklog = {};
+				incident_worklog.parent_inc_wklg_number = gr4.getDisplayValue('number');
+				incident_worklog.parent_inc_wklg_short_description = gr4.getDisplayValue('short_description');
+				incident_worklog.parent_inc_wklg_description = gr4.getValue('description');
+				incident_worklog.parent_inc_wklg_type = gr4.getDisplayValue('u_choice_1');
+				incident_worklog.parent_inc_wklg_updated_on = gr4.getDisplayValue('sys_updated_on');
+				incident_worklog.parent_inc_wklg_updated_by = gr4.getDisplayValue('sys_updated_by');
+				//Push each incident worklog to local function array
+				problem.incident_worklogs.push(incident_worklog);
+			}
+		}
+		// Push local function array to data array
+		data.problems.push(problem);		
+	}
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 05:53:22</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>f59eaefbdb471740544fdd0b5e96191e</sys_id>
+        <sys_mod_count>41</sys_mod_count>
+        <sys_name>SSC PBM Executive Summary Repeating Form</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_f59eaefbdb471740544fdd0b5e96191e</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-09 11:22:25</sys_updated_on>
+        <template><![CDATA[<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<div  class="filter-header"> 
+  <!-- Filter Options Section --> 
+  <!-- Used for debugging to show current filter ----- <span style="font-weight: bold; font-size: 18px; ">Showing Problem Records Created between:</span><table>
+<tr ng-repeat="afs in data.activefilters"><td>{{afs.startdate}} and {{afs.enddate}}</td><td>{{afs.returned_search.label}}</td></tr></table><br/> 
+-->  
+  <button ng-if="CurrentActiveFilter != 'current_month'" ng-click="UpdateActiveFilter('current_month')">Current Month</button> 
+  <button ng-if="CurrentActiveFilter == 'current_month'" id="pressed" ng-click="UpdateActiveFilter('current_month')">Current Month</button>
+  <button ng-if="CurrentActiveFilter != 'current_year'" ng-click="UpdateActiveFilter('current_year')">Current Year</button>  
+  <button ng-if="CurrentActiveFilter == 'current_year'" id="pressed" ng-click="UpdateActiveFilter('current_year')">Current Year</button>
+  <button ng-if="CurrentActiveFilter != 'custom'" ng-click="c.OpenCustomSearch(lg)">Advanced Filter</button> 
+  <button ng-if="CurrentActiveFilter == 'custom'" id="pressed" ng-click="UpdateActiveFilter('custom')">Advanced Filter</button><br/><br/>
+</div>  <!-- Filter Options Section -->
+<div class="main-form">
+  <!-- MainRepeatTable -->
+  <table id="MainRepeatTable" ng-repeat="problem in data.problems | orderBy:orderField:orderReverse | filter:problem.short_description.indexOf(searchText)">
+    <col width="10%"> <col width="40%"> <col width="10%"> <col width="40%">
+    <tr>
+      <th class="problem_title" colspan="4">
+        <span class="ticket_numbers">
+          ({{problem.parent}} / <a ng-href="https://sscorpdev.service-now.com/problem.do?sys_id={{::problem.sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{problem.number}}" target="_blank">{{problem.number}}</a>)
+        </span>
+        {{problem.short_description}}
+      </th>
+    </tr> <!-- Problem Title Row -->
+    <tr>
+      <td class="addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr" colspan="2"> 
+        <table> <!-- Summary Table -->
+          <tr>
+            <th>Major Incident Type:</th>
+            <td><span ng-class="getMItypeClass(problem)">{{problem.parent_inc_mi_type}}</span></td>
+          </tr>
+          <tr>
+            <th>Problem State:</th>
+            <td>{{problem.state}}</td>
+          </tr>
+          <tr>
+            <th>Problem CI:</th>
+            <td>{{problem.cmdb_ci}}</td>
+          </tr>
+          <tr>
+            <th>Problem Owner:</th>
+            <td>{{problem.assignment_group}}</td>
+          </tr>
+          <tr>
+            <th>Root Cause Owner, Category:</th>
+            <td>{{problem.u_root_cause_owner}}, {{problem.u_root_cause_category}}</td>
+          </tr>
+          <tr>
+            <th class="addBotmBrdr" colspan="2">Executive Summary:</th>
+          </tr>
+          <td colspan="2"> {{problem.description}}
+          </td>
+        </table> <!-- end of summary table  -->
+      </td> <!-- Problem Summary Fields -->
+      <td class="problem_task_list addThickBlueRightBrdr addThickBlueBotmBrdr" colspan="2" width="50%"> 
+        <table class=" table-hover"> <!-- tasks_table -->
+          <tr>
+            <th class="problem_task_cat_header">Causal Determination Tasks</th>
+          </tr><tbody>
+          <tr ng-repeat="problem_task in problem.problem_tasks | filter: {'u_problem_task_category' : 'CDT - Causal Determination Task'} | limitTo: 10">
+            <td class="problem_task_list_item addBotmBrdr" ng-if="problem_task.sys_id != showTaskDetailsRecord.sys_id" ng-click="showTaskdetails(problem_task)">
+              <i class="fa fa-chevron-right"></i> <!-- <i class="fa fa-plus-square"></i> -->
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}})
+              <!-- {{problem_task.state_calc}} {{problem_task.date_test}} -->
+              <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle"></i>
+              <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="problem_task.state_calc == 'Active'" class="fa fa-calendar-check-o-active"></i>
+              <i ng-if="problem_task.state_calc == 'Warn'" class="fa fa-calendar-check-o-warn"></i>
+              <i ng-if="problem_task.state_calc == 'NoDate'" class="fa fa-calendar-times-o"></i>
+            </td>
+            <td class="problem_task_list_item addBotmBrdr" ng-if="problem_task.sys_id == showTaskDetailsRecord.sys_id" ng-click="hideTaskdetails(problem_task)">
+              <i class="fa fa-chevron-down"></i> <!-- <i class="fa fa-plus-square"></i> -->
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}}) 
+              <!-- {{problem_task.state_calc}} {{problem_task.date_test}} -->
+              <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle"></i>
+              <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="problem_task.state_calc == 'Active'" class="fa fa-calendar-check-o-active"></i>
+              <i ng-if="problem_task.state_calc == 'Warn'" class="fa fa-calendar-check-o-warn"></i>
+              <i ng-if="problem_task.state_calc == 'NoDate'" class="fa fa-calendar-times-o"></i>
+              <table ng-if="problem_task.sys_id == showTaskDetailsRecord.sys_id"> <!-- summary table of CDT task -->
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th">Task Number:</td>
+                  <td class="problem_task_list_item">{{problem_task.number}}</td>
+                </tr>
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th" colspan="2">Task Description:</td>
+                </tr>
+                <td class="problem_task_list_item" colspan="2"> {{problem_task.description}}
+                </td>
+              </table> <!-- end of summary table of CDT task -->
+            </td>
+          </tr></tbody>
+          <tr>
+            <th class="problem_task_cat_header">Risk Remediation Tasks</th>
+          </tr><tbody>
+          <tr ng-repeat="problem_task in problem.problem_tasks | filter: {'u_problem_task_category' : 'RRT - Risk Remediation Task'} | limitTo: 10">
+            <td class="problem_task_list_item addBotmBrdr" ng-if="problem_task.sys_id != showTaskDetailsRecord.sys_id" id="task_list_td" ng-click="showTaskdetails(problem_task)">
+              <i class="fa fa-chevron-right"></i> <!-- <i class="fa fa-plus-square"></i> -->              
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}})
+              <!-- {{problem_task.state_calc}} {{problem_task.date_test}} -->
+              <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle"></i>
+              <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="problem_task.state_calc == 'Active'" class="fa fa-calendar-check-o-active"></i>
+              <i ng-if="problem_task.state_calc == 'Warn'" class="fa fa-calendar-check-o-warn"></i>
+              <i ng-if="problem_task.state_calc == 'NoDate'" class="fa fa-calendar-times-o"></i>
+            </td>
+            <td class="problem_task_list_item addBotmBrdr" ng-if="problem_task.sys_id == showTaskDetailsRecord.sys_id" ng-click="hideTaskdetails(problem_task)">
+              <i class="fa fa-chevron-down"></i> <!-- <i class="fa fa-plus-square"></i> --> 
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}})
+              <!-- {{problem_task.state_calc}} {{problem_task.date_test}} -->
+              <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle"></i>
+              <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="problem_task.state_calc == 'Active'" class="fa fa-calendar-check-o-active"></i>
+              <i ng-if="problem_task.state_calc == 'Warn'" class="fa fa-calendar-check-o-warn"></i>
+              <i ng-if="problem_task.state_calc == 'NoDate'" class="fa fa-calendar-times-o"></i>
+              <table ng-if="problem_task.sys_id == showTaskDetailsRecord.sys_id"> <!-- summary table of RRT task -->
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th">Task Number:</td>
+                  <td class="problem_task_list_item">{{problem_task.number}}</td>
+                </tr>
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th" colspan="2">Task Description:</td>
+                </tr>
+                <td class="problem_task_list_item" colspan="2"> {{problem_task.description}}
+                </td>
+              </table> <!-- end of summary table of CDT task -->
+            </td>             
+          </tr></tbody>
+        </table> <!-- end of tasks_table -->
+      </td> <!-- Problem Tasks -->
+    </tr> <!-- Problem Summary Fields and Tasks Row -->
+    <tr> 
+      <td colspan="4" class="addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr">
+        <button ng-if="problem.sys_id != showMoreDetailsRecord.sys_id" ng-click="showMoreDetails(problem)">
+          <i class="fa fa-plus-square"></i>Show More Incident Details</button>
+        <button id="pressed" ng-if="problem.sys_id == showMoreDetailsRecord.sys_id" ng-click="hideMoreDetails(problem)">
+          <i class="fa fa-minus-square"></i>Hide More Incident Details</button>
+        <button ng-if="problem.sys_id != showRCADetailsRecord.sys_id" ng-click="showRCAdetails(problem)">
+          <i class="fa fa-plus-square"></i>Show RCA Details</button>
+        <button id="pressed" ng-if="problem.sys_id == showRCADetailsRecord.sys_id" ng-click="hideRCAdetails(problem)">
+          <i class="fa fa-minus-square"></i>Hide RCA Details</button>
+        <button ng-click="ConnectFollowWidget.follow(problem)">Follow Problem Record</button>
+        <i class="fa fa-print"></i>
+      </td>
+    </tr> <!-- Button Row -->
+    <tr ng-if="problem.sys_id == showMoreDetailsRecord.sys_id">
+      <th class="problem_task_cat_header addThickBlueLeftBrdr addThickBlueRightBrdr" colspan="4">More Incident Details</th>
+    </tr> <!-- More Incident Details Title Row -->
+    <tr ng-if="problem.sys_id == showMoreDetailsRecord.sys_id" class="moreDetailsRow addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr"> 
+      <td colspan="4">
+        <table id="incidentDetailTable"> <!-- Incident Detail Table -->
+          <col width="20%">
+          <col width="30%">
+          <col width="20%">
+          <col width="30%">
+          <tr>
+            <th>Incident Number:</th>
+            <td>{{problem.parent}}</td>
+            <th>Incident Created:</th>
+            <td>{{problem.parent_inc_created}}</td>
+          </tr>
+          <tr>
+            <th>Incident State:</th>
+            <td>{{problem.parent_inc_state}}</td>
+            <th>Incident Resolved:</th>
+            <td>{{problem.parent_inc_resolved}}</td>
+          </tr>
+          <tr>
+            <th>Region, Business Unit:</th>
+            <td>{{problem.parent_inc_region}}, {{parent_inc_business_unit}}</td>
+            <th>Incident Duration:</th>
+            <td>{{problem.parent_inc_duration}}</td>                      
+          </tr>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Description:</th>
+          </tr>
+          <td colspan="4">{{problem.parent_inc_description}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Symptom:</th>
+          </tr>
+          <td colspan="4" >{{problem.parent_inc_symptom}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Cause:</th>
+          </tr>
+          <td colspan="4">{{problem.parent_inc_cause}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Resolution:</th>
+          </tr>
+          <td colspan="4">{{problem.parent_inc_resolution}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Major Incident Chronology:</th>
+          </tr>
+          <td colspan="4">
+            <tr ng-repeat="incident_worklog in problem.incident_worklogs |  limitTo: 5"> 
+              <td  id="summary_header_td" colspan="4">
+                <div class="timeline-body">
+                  <p>
+                    {{incident_worklog.parent_inc_wklg_description}}
+                  </p> 
+                </div>
+                <p></p><p>
+                <span class="itals">
+                  {{incident_worklog.parent_inc_wklg_type}} updated on {{incident_worklog.parent_inc_wklg_updated_on}}
+                  by {{incident_worklog.parent_inc_wklg_updated_by}}
+                </span>
+                </p>
+              </td>
+            </tr>
+          </td>
+        </table> <!-- end of Incident Detail Table -->
+      </td>
+    </tr> <!-- More Incident Details Row -->
+    <tr ng-if="problem.sys_id == showRCADetailsRecord.sys_id" class="addThickBlueLeftBrdr"> 
+      <th colspan="4" class="problem_task_cat_header addThickBlueRightBrdr">RCA Details</th>
+    </tr> <!-- RCA Details Title Row -->
+    <tr ng-if="problem.sys_id == showRCADetailsRecord.sys_id" class="moreDetailsRow addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr">
+      <td colspan="4">
+        <table> <!-- rca_table -->
+          <th width="10%">Symptom</th>
+          <td colspan="3">{{problem.symptom}}</td>
+          <tr> 
+            <th width="10%"></th>
+            <th>Why</th>
+            <th>Response</th>
+          </tr>
+          <tr class="addBotmBrdr">
+            <th width="10%" rowspan="5">5 Why's</th>
+            <td>{{problem.u_why_1}}</td><td>{{problem.u_response_1}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{problem.u_why_2}}</td><td>{{problem.u_response_2}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{problem.u_why_3}}</td><td>{{problem.u_response_3}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{problem.u_why_4}}</td><td>{{problem.u_response_4}}</td>
+          </tr>
+          <tr>
+            <td class="addBotmBrdr">{{problem.u_why_5}}</td><td class="addBotmBrdr">{{problem.u_response_5}}</td>
+          </tr>
+          <tr>
+            <th>Cause</th>
+            <td colspan="3">{{problem.cause}}</td>
+          </tr>
+          <tr>
+            <th>Resolution</th>
+            <td colspan="3">{{problem.resolution}}</td>
+          </tr>
+        </table> <!-- end of rca_table -->
+      </td>
+    </tr> <!-- RCA Details Row -->
+    <tr id="spacerow">
+    <td colspan="4"> </td>
+    </tr> <!-- Space Row -->
+      </table> <!-- end of MainRepeatTable-->
+    </div>   <!-- Main Form -->]]></template>
+    </sp_widget>
+</record_update>

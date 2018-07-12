@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css>.b {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;  
+}
+.panel-body{
+  margin: 0px;
+  padding: 0px;
+}
+.jumbotron {
+  border: none;
+  display: fluid;
+  margin: 0px;
+  border-radius: 0px !important;
+  text-align: center;  
+  /* ms ( IE 10.0+ ) */
+  background:-ms-linear-gradient(180deg, rgba(9,46,93,1) 13.58%, rgba(240,240,240,1) 99.99% );
+  /* WebKit (Chrome 10.0+, safari 5.1+ )*/
+  background:-webkit-linear-gradient(180deg, rgba(9,46,93,1) 13.58%, rgba(240,240,240,1) 99.99% );
+  /* Moz ( Moz 3.6+ )*/
+  background:-moz-linear-gradient(180deg, rgba(9,46,93,1) 13.58%, rgba(240,240,240,1) 99.99% );
+  /* Opera ( opera 11.6+ )*/
+  background:-o-linear-gradient(180deg, rgba(9,46,93,1) 13.58%, rgba(240,240,240,1) 99.99% );
+  /* W3C Markup */
+  background:linear-gradient(180deg, rgba(9,46,93,1) 13.58%, rgba(240,240,240,1) 99.99% );
+}
+p {
+ font-style: italic;
+}</css>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">5e50fd4cdb535740544fdd0b5e9619fe</sp_column>
+        <sp_widget display_value="SSC Jumbotron">81b772f3db871740544fdd0b5e961909</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 20:00:53</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>6c90758cdb535740544fdd0b5e961997</sys_id>
+        <sys_mod_count>19</sys_mod_count>
+        <sys_name>Welcome to the State Street IT Service Management Service Portal</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_6c90758cdb535740544fdd0b5e961997</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-11 00:57:33</sys_updated_on>
+        <title>Welcome to the State Street IT Service Management Service Portal</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"hide_header": {
+		"value": "true",
+		"displayValue": "true"
+	},
+	"title": {
+		"value": "Welcome to the State Street IT Service Management Service Portal",
+		"displayValue": "Welcome to the State Street IT Service Management Service Portal"
+	},
+	"content_heading": {
+		"value": "Welcome to the State Street IT Service Management Service Portal",
+		"displayValue": "Welcome to the State Street IT Service Management Service Portal"
+	},
+	"content_body": {
+		"value": "Optimizing the Availability of our Systems, Applications & Infrastructure",
+		"displayValue": "Optimizing the Availability of our Systems, Applications & Infrastructure"
+	},
+	"content_body2": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=6c90758cdb535740544fdd0b5e961997"/>
+</record_update>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function ($scope, $http, $interval, $timeout, $window, $log, $uibModal, spUtil, $element) {
+	var c = this;
+	
+	$scope.data.mi_worklog = c.data.mi_worklog; //custom
+	$scope.showNotification = false;
+	
+	var unwatchWorkingCopy //unmount for the working copy watcher
+	var autosaveHttpPromise;
+	var autosaveTimer, notificationTimer;
+	
+	function canEditMeetingNotes() {
+		return false;
+	}
+
+	function debounceNotification() {
+		// if the animation is already in Queue, it means auto save triggered again
+		// so we need to show the notification some more time
+
+		if(notificationTimer)
+			$timeout.cancel(notificationTimer);
+
+		notificationTimer = $timeout(function() {
+			$scope.showNotification = false;
+			notificationTimer = undefined;
+		}, 2000);
+	}
+
+	function onFinalizeSaveNotes(args,isErrorCall) {
+		autosaveHttpPromise = null;
+		if(autosaveTimer) {
+			$timeout.cancel(autosaveTimer);
+			autosaveTimer = null;
+		}
+
+		if(!isErrorCall) {
+			if(!notificationTimer) {
+				$scope.showNotification = true;
+				debounceNotification();
+			}
+			else
+				debounceNotification();
+		}
+		/*
+		case #1. before http call returns , user has typed more data.
+		case #2. Due to network errors , we may not updated the notes content at backend.
+
+		So if we call the "saveMeetingNotes" again, the above 2 cases get solved.
+		we are giving some time . so that we don't hamper the browser.
+		*/
+		autosaveTimer = $timeout(function() {
+			saveMeetingNotes();
+		}, 1000, false);
+	}
+
+	function saveMeetingNotes() {
+		// Concurrent update.  Don't save.
+		if ($scope.editor.concurrentUpdate)
+			return;
+		// already saving is in-progress, go back.
+		if(autosaveHttpPromise)
+			return;
+
+		// No changes, don't save.
+		if ($scope.editor.savedCopy == $scope.editor.workingCopy)
+			return;
+
+		var prevSaved = $scope.editor.savedCopy;
+		$scope.editor.savedCopy = $scope.editor.workingCopy;
+		// Push the saved copy to the server.
+		var post = {'description': $scope.editor.savedCopy};
+		$scope.data.worklogID = c.data.worklogID;
+		autosaveHttpPromise = $http.patch("/api/now/table/" + "u_incident_worklog/" + $scope.data.worklogID, post).then(
+			onFinalizeSaveNotes,
+			function(data) {
+				$log.info("Failed save request, resetting savedCopy state");
+				$scope.editor.savedCopy = prevSaved;
+				$scope.data.mi_worklog = c.data.mi_worklog;
+				onFinalizeSaveNotes(data, true);
+			}
+		);
+	}
+
+	function resetMeetingNotes() {
+		$scope.editor = {			
+			'workingCopy': c.data.mi_chronology,
+			'savedCopy':  c.data.mi_chronology,
+			'concurrentUpdate': false,
+			'autosave': true
+		};
+	}
+
+	function setupNotesMgmt() {
+		// If it's changed to a state where we can now edit the notes.
+		if (canEditMeetingNotes()) {
+		$scope.editor.savedCopy = $scope.editor.workingCopy = c.data.mi_chronology; //Custom
+			if (!unwatchWorkingCopy)
+				unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
+		} else {
+
+			if(autosaveTimer) {
+				$timeout.cancel(autosaveTimer);
+				autosaveTimer = null;
+			}
+
+
+			if (unwatchWorkingCopy) {
+				unwatchWorkingCopy();
+				unwatchWorkingCopy = null;
+			}
+		}
+	}
+
+	resetMeetingNotes(); 
+	setupNotesMgmt();
+	$scope.canEditMeetingNotes = canEditMeetingNotes;
+	$scope.saveMeetingNotes = saveMeetingNotes;
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {&#13;
+position: relative;&#13;
+}&#13;
+&#13;
+.panel-heading i {&#13;
+  cursor: pointer;&#13;
+  position: absolute;&#13;
+  padding: 10px;&#13;
+  top: 0px;&#13;
+  right: 0px;  &#13;
+}&#13;
+&#13;
+#cab_meeting_notes {&#13;
+ text-align: center; &#13;
+}&#13;
+&#13;
+.mn-container {&#13;
+    margin:15px;&#13;
+}&#13;
+&#13;
+.mn-save-btn {&#13;
+    margin:1px 0px 0px 10px;&#13;
+}&#13;
+&#13;
+.mn-static-notes {&#13;
+	padding: 8px;&#13;
+  //height:500px;&#13;
+  overflow:auto;&#13;
+}&#13;
+&#13;
+.mn-footer {&#13;
+  margin:10px 10px 10px 0px !important;&#13;
+}&#13;
+&#13;
+.noSelect{&#13;
+	-webkit-user-select: none;&#13;
+	-moz-user-select: none;&#13;
+	-ms-user-select: none;&#13;
+	user-select: none;&#13;
+}&#13;
+&#13;
+#cab_meeting_notes_notification {&#13;
+	padding:5px 10px 5px 10px;&#13;
+}&#13;
+&#13;
+.fade-in-out {&#13;
+	-webkit-transition: opacity .3s linear;&#13;
+	-moz-transition: opacity .3s linear;&#13;
+	-o-transition: opacity .3s linear;&#13;
+	-ms-transition: opacity .3s linear;&#13;
+	transition: opacity .3s linear;&#13;
+	opacity: 1;&#13;
+	filter: alpha(opacity = 100);&#13;
+}&#13;
+&#13;
+.fade-in-out.ng-hide {&#13;
+	opacity: 0;&#13;
+	filter: alpha(opacity = 0);&#13;
+&#13;
+}&#13;
+&#13;
+.notes_txt {&#13;
+  width: 100%;&#13;
+  height: 250px;&#13;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */&#13;
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */&#13;
+     box-sizing: border-box;         /* Opera/IE 8+ */&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>Widget for displaying the MI chronology incident worklog entry of the major incident specified in the sys_id URL parameter. This is a customized clone of the OOB CAB meeting notes widget.</description>
+        <docs/>
+        <field_list>glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-mi-chronology</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC MI Chronology Widget</name>
+        <option_schema>[{"name":"mi_title","label":"Title","type":"string"},{"name":"mi_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	
+	// data.major_incident_Id = 'f369a48edbcf8300b096e3a84b9619c5';
+	data.major_incident_Id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || options.sys_id;
+	data.mi_worklog = [];
+	data.mi_worklog_array = [];
+	
+	var mi_worklog_GR = new GlideRecord('u_incident_worklog');
+	mi_worklog_GR.addQuery('parent', 'f369a48edbcf8300b096e3a84b9619c5');
+			mi_worklog_GR.addQuery('u_choice_1','CONTAINS', 'CHRONOLOGY');
+			mi_worklog_GR.setLimit(1);
+			mi_worklog_GR.orderByDesc('sys_updated_on');
+			mi_worklog_GR.query();
+	while(mi_worklog_GR.next()) {
+				// // local function array variable for storing each incident worklog record
+				/**/
+				var incident_worklog = {};
+			  incident_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
+				incident_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
+				incident_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
+				incident_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
+				incident_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
+				incident_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
+				incident_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
+				//Push each incident worklog to local function array
+				data.mi_worklog_array.push(incident_worklog);
+				/**/
+				data.mi_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
+				data.worklogID = mi_worklog_GR.getDisplayValue('sys_id');
+				data.mi_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
+				data.mi_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
+				data.mi_chronology = mi_worklog_GR.getDisplayValue('description');
+				data.mi_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
+				data.mi_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
+				data.mi_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
+				data.mi_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
+			}
+	//console.log("Array");
+	//console.log(data.mi_worklog_array);
+	//console.log("Not Array");
+	//console.log(data.mi_worklog);
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 06:29:41</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>f1e63ab3db871740544fdd0b5e96191c</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>SSC MI Chronology Widget</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_f1e63ab3db871740544fdd0b5e96191c</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-11 22:20:11</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.mi_hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.mi_title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-body"> <!-- Main Panel Body-->
+    <div class='mn-container' id='cab_meeting_notes'>
+      <div ng-if="canEditMeetingNotes()">
+<!--  Below is version for HTML input field
+<textarea ui-tinymce="tinymceConfig" ng-model="editor.workingCopy" ng-model-options="{debounce:1000}"></textarea>
+-->
+        <textarea class="notes_txt"  ng-model="editor.workingCopy" ng-model-options="{debounce:1000}"></textarea>
+      </div>
+      <div class="mn-static-notes" ng-if="!canEditMeetingNotes()" ng-bind-html="data.mi_chronology"></div>      
+      <div class="row mn-footer" > 
+        <span id='cab_meeting_notes_notification' class="noSelect fade-in-out" ng-show="showNotification"> ${Meeting notes saved} </span>
+        <div ng-repeat="worklog in data.mi_worklog_array">        
+        <p>
+          Updated on {{worklog.inc_wklg_updated_on}} by {{worklog.inc_wklg_updated_by}}
+        </p>
+      </div>
+        <!--
+<input type='button' ng-click="shareMeetingNotes()" class="btn btn-sm btn-default pull-right" value="${Share}"
+ng-disabled="isSharingNotesInProgress || editor.concurrentUpdate || !editor.workingCopy || editor.workingCopy.length == 0 || editor.workingCopy != editor.savedCopy"/>
+-->
+      </div>        
+    </div>
+  </div> <!-- Main Panel Body -->
+</div>]]></template>
+    </sp_widget>
+</record_update>

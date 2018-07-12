@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_ibmss_ssc_itsm.widgetScriptInclude</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>widgetScriptInclude</name>
+        <script><![CDATA[var widgetScriptInclude = Class.create();
+widgetScriptInclude.prototype = {
+	initialize: function() {
+	},
+
+	getItems: function() {
+		var inc = this._getIncidents();
+		var results = inc.concat(this._getRequests());
+		results.sort(function(a, b) {
+			return b.sortOrder - a.sortOrder;
+		});
+		return results;
+	},
+
+	_getIncidents: function() {
+		var results = [];
+		var z = new GlideRecord('incident');
+		z.addActiveQuery();
+		z.addQuery('caller_id', gs.getUserID());
+		z.orderByDesc('sys_updated_on');
+		z.setLimit('50');
+		z.query();
+		while (z.next()) {
+			var a = {};
+			$sp.getRecordValues(a, z, 'short_description,sys_id,number,sys_updated_on');
+			a.__table = z.getTableName();
+			a.__page = "ticket";
+			a.type = 'record';
+			//a.sortOrder = z.sys_updated_on.getGlideObject().getNumericValue();
+			results.push(a);
+		}
+		return results;
+	},
+
+	_getRequests: function() {
+		var results = [];
+		var z = new GlideRecord('sc_request');
+		z.addActiveQuery();
+		z.addQuery('requested_for', gs.getUserID());
+		z.orderByDesc('sys_updated_on');
+		z.setLimit('50');
+		z.query();
+		while (z.next()) {
+			var ritm = new GlideRecord('sc_req_item');
+			ritm.addQuery('request', z.getUniqueValue());
+			ritm.query();
+			if (!ritm.next())
+				continue;
+
+			var a = {};
+			$sp.getRecordValues(a, z, 'sys_id,number,sys_updated_on');
+			if (ritm.hasNext())
+				a.short_description = ritm.getRowCount() + ' requested items';
+			else
+				a.short_description = ritm.cat_item.getDisplayValue() || ritm.getDisplayValue("short_description");
+			a.__table = z.getTableName();
+			a.__page = "sc_request";
+			a.type = 'request';
+			//a.sortOrder = z.sys_updated_on.getGlideObject().getNumericValue();
+			results.push(a);
+		}
+		return results;
+	},
+
+
+	type: 'widgetScriptInclude'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 05:13:41</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>a4f4a6f3db471740544fdd0b5e9619eb</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>widgetScriptInclude</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sys_script_include_a4f4a6f3db471740544fdd0b5e9619eb</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-11 03:26:52</sys_updated_on>
+    </sys_script_include>
+</record_update>

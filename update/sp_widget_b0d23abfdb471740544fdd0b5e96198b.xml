@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $http, $rootScope) {
+	/* widget controller */
+	var c = this;
+	var shared = c.widget.options.shared; //Get the shared object from the "My Pet" widget
+	c.data.sel_RMI = true;
+	c.data.sel_QMI = true;
+	c.data.sel_PMI = true;
+
+	// Tab Navigation
+	$scope.current_page  = "search_page";
+	c.Navigate = function(i) {
+		$scope.current_page = i;
+		c.data.current_page = i;
+		// c.server.update()
+	};
+
+	//Message updates
+	c.add = function() {
+		c.data.action = "addTicket";
+		c.server.update().then(function(){
+			c.data.action = undefined;
+			c.data.sel_ticket = "";
+		})
+	}
+	c.remove = function(i) {
+		c.data.i = i;
+		c.data.action = "removeTicket";
+		c.server.update().then(function(){
+			c.data.action = undefined;
+		})
+	}
+
+	// Apply Filters
+	c.ApplyFilters = function() {
+		c.data.action = "applyFilter";
+		c.server.update().then(function(){
+			$scope.current_page  = "results_page";
+			c.data.action = undefined;
+			// shared.problems_search = data.problems_search;
+			//$rootScope.$broadcast('problems_searched', c.data.selected_problems);
+		})
+	}
+
+	// Reset Filters
+	c.ResetActiveFilters = function(){
+		c.data.selstartdate = "";
+		c.data.selenddate = "";
+		$('#group_name').select2("val", "");
+		$('#app_name').select2("val", "");
+		$('#root_cause_category').select2("val", "");
+		$('#root_cause_owner').select2("val", "");
+	};
+
+	//Assignment Group Filter logice
+	// var group_name = [$('#group_name').select2('val')];
+	/*	$('#group_name').select2(); */
+	
+	c.data.selstartdate = {
+		displayValue: c.data.selstartdate,
+		value: c.data.selstartdate,
+		name: 'selstartdate'
+	};
+	c.data.selenddate = {
+		displayValue: c.data.selenddate,
+		value: c.data.selenddate,
+		name: 'selenddate'
+	};
+	
+	$scope.$watch('c.data.selstartdate.value', function(newVal, oldVal) {
+		shared.selstartdate = newVal;
+	});
+	$scope.$watch('c.data.selenddate.value', function(newVal, oldVal) {
+		shared.selenddate = newVal;
+	});
+	$scope.$watch('c.data.sel_RMI', function(newVal, oldVal) {
+		shared.sel_RMI = newVal;
+	});
+	$scope.$watch('c.data.sel_QMI', function(newVal, oldVal) {
+		shared.sel_QMI = newVal;
+	});
+	$scope.$watch('c.data.sel_PMI', function(newVal, oldVal) {
+		shared.sel_PMI = newVal;
+	});
+
+
+	$scope.group_name = {
+		displayValue: $scope.data.groups.name || [],
+		value: $scope.data.groups.sys_id || [],
+		name: 'group_name'
+	};
+	$scope.$on("field.change", function(evt, parms) {
+		if (parms.field.name == 'group_name'){
+			$scope.data.groups = parms.newValue;		
+			//shared.selstartdate = c.data.selstartdate;
+			//shared.selenddate = c.data.selenddate;	
+			shared.groups = parms.newValue;			
+			//console.log(shared);
+			// $scope.server.update();
+		}
+	});	
+	$scope.root_cause_owner = {
+		displayValue: $scope.data.rco.label || [],
+		value: $scope.data.rco.value || [],
+		name: 'root_cause_owner'
+	};
+	$scope.$on("field.change", function(evt, parms) {
+		if (parms.field.name == 'root_cause_owner'){
+			$scope.data.rco = parms.newValue;			
+			
+			shared.root_cause_owner = parms.newValue;
+			//$scope.server.update();
+		}
+	});	
+	$scope.root_cause_category = {
+		displayValue: $scope.data.rcc.label || [],
+		value: $scope.data.rcc.value || [],
+		name: 'root_cause_category'
+	};
+	$scope.$on("field.change", function(evt, parms) {
+		if (parms.field.name == 'root_cause_category'){
+			$scope.data.rcc = parms.newValue;			
+			
+			shared.root_cause_category = parms.newValue;
+			//$scope.server.update();
+		}
+	});
+	$scope.app_name = {
+		displayValue: $scope.data.sel_apps.name || [],
+		value: $scope.data.sel_apps.value || [],
+		name: 'app_name'
+	};
+	$scope.$on("field.change", function(evt, parms) {
+		//console.log(parms.newValue);
+		if (parms.field.name == 'app_name'){
+			$scope.data.sel_apps = parms.newValue;
+			
+			shared.sel_apps = parms.newValue;			
+			//$scope.server.update();
+		}
+	});
+	
+
+	/*
+$scope.$on("field.change", function(evt, parms) {
+	if (parms.field.name == 'group_name')
+		c.data.sel_group = parms.newValue;
+		c.data.action = "addGroup";
+	c.server.update().then(function(response) {
+		c.data.action = undefined;
+		spUtil.update($scope);
+	})
+});
+*/	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>// Table, header, row, and cell styles
+th {  font-weight: bold; font-size: 18px; padding-bottom: 10px; }
+td { padding: 10px;}
+// Button styles
+/*
+button.ssc_custom {
+  background-color:  #007298; /* SSC Light Blue */
+  border: 1px;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  /* border: 2px solid white; */
+}
+button#pressed { 
+  background-color:   #e4ecf0; 
+  color: #0A2F5D;
+} 
+*/
+// Navhub stylrs
+.sn-navhub-btn:active, selected{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}
+.sn-navhub-btn:hover{
+  border-bottom: 3px solid #bdc0c4; ($color-light) 
+}
+.sn-navhub-btn:default{
+  color: #343d47; ($color-darkest)
+}
+.sn-navhub-btn-active{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}
+// Checkbox styles
+input[type=checkbox] + label {
+  border-radius: 3px;
+  padding: 2px;
+  background-color: #ffffff; 
+  border: 1px solid #bdc0c4; 
+}
+input[type=checkbox]:hover + label{
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc;  
+}
+input[type=checkbox]:focused + label{
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  border-shadow: 0 0 6px 0 #278efc; 
+  box-sizing: border-box;
+}
+input[type=checkbox]:checked + label {
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  color: #278efc;
+}
+input[type=checkbox]:not(:checked) + label {
+border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #bdc0c4; 
+}
+.input-checkbox {
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  color: #278efc;
+}
+
+//set max height
+
+.list-group{
+  white-space: pre-wrap;
+  overflow-y:scroll;overflow-x:hidden;
+  max-height: 500px;
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>Widget that allows user input for filtering list of problem records.</description>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-pbm-widget-activefilter</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Active Filter</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	// var shared = [];
+	data.groups = [];
+	data.selected_problems = [];
+	data.rcc = [];
+	data.rco = [];
+	data.sel_apps = [];
+	data.ciWithProblem = [];
+	// data.problems_search = [];
+	// shared.problems_search = [];
+	/*
+	var problemGr = new GlideRecord('problem');
+	problemGr.addEncodedQuery('u_opened_by_group.name=IBM-SSM-PROBLEM-MGT')
+	problemGr.setLimit(1000);
+	problemGr.orderByDesc('sys_created_on');
+	problemGr.query();
+	while ( problemGr.next() ) {data.ciWithProblem.push(problemGr.getValue('cmdb_ci') )	}
+	
+	console.log(data.ciWithProblem);
+	
+	var cmdbGr = new GlideRecord('cmdb_ci_service');
+	cmdbGr.addQuery('operational_status', 1);
+	cmdbGr.addQuery('u_cmdb_ci_used_for', 'production');
+	cmdbGr.addQuery('sys_id', 'IN', data.ciWithProblem);
+	cmdbGr.setLimit(1000);
+	cmdbGr.orderBy('name');
+	cmdbGr.query();
+	data.ciRecordPickerQuery = cmdbGr.getEncodedQuery();
+	console.log(data.ciRecordPickerQuery);
+	*/
+	if (input.action) {
+		data.groups = input.groups;
+		data.selected_problems = input.selected_problems;
+		var gr = new GlideRecord('problem');
+		gr.addActiveQuery();
+		gr.addNotNullQuery('parent');
+		gr.setLimit(100);
+		gr.orderByDesc('sys_updated_on');
+		gr.query();
+
+		if (input.action == "addTicket") {
+			data.selected_problems.push(input.sel_ticket);
+		}
+
+		if (input.action == "removeTicket") {
+			data.selected_problems.splice(input.i,1);
+		}
+
+		if (input.action == "applyFilter") {
+
+			if (input.selstartdate) {
+				// data.selected_problems.push(input.selstartdate);
+				var start_date = input.selstartdate + " 00:00:00";
+				var gdt_start = new GlideDateTime();
+				gdt_start.setDisplayValue(start_date, "MM/dd/yyyy HH:mm:ss");
+				// data.selected_problems.push(gdt_start.getDisplayValue());
+				// data.selected_problems.push(start_date);
+				gr.addQuery('sys_created_on', ">=", start_date);
+			}
+			if (input.selenddate) {
+				// data.selected_problems.push(input.selenddate);
+				var end_date = input.selenddate + " 00:00:00";
+				var gdt_end = new GlideDateTime();
+				gdt_end.setDisplayValue(end_date, "MM/dd/yyyy HH:mm:ss");
+				// data.selected_problems.push(gdt_end.getDisplayValue());
+				gr.addQuery('sys_created_on', "=<", end_date);
+			}
+			if (input.groups) {
+				//data.selected_problems.push(input.groups);
+				gr.addQuery('assignment_group', 'IN', input.groups);
+			}
+			if (input.rcc) {
+				//data.selected_problems.push(input.rcc);
+			}
+			if (input.rco) {
+				//data.selected_problems.push(input.rco);
+			}
+			if (input.sel_apps) {
+				//data.selected_problems.push(input.sel_apps);
+				gr.addQuery('cmdb_ci', 'IN', input.sel_apps);
+			}
+		}
+
+		while(gr.next()) {
+			//var calc = gr.getDisplayValue('number') + " / " + gr.getDisplayValue('parent.number');
+			 var problem = {};
+			problem.label = gr.getDisplayValue('number') + " / " + gr.getDisplayValue('parent.number') + " - "+ gr.getDisplayValue('short_description');
+			problem.sys_id = gr.getUniqueValue();
+			problem.number = gr.getDisplayValue('number');
+			data.shared.selected_problems.push(problem);
+			// data.problems_search.push(problem);
+		}
+
+	}
+
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 06:11:52</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b0d23abfdb471740544fdd0b5e96198b</sys_id>
+        <sys_mod_count>58</sys_mod_count>
+        <sys_name>SSC Active Filter</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_b0d23abfdb471740544fdd0b5e96198b</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-11 22:03:06</sys_updated_on>
+        <template><![CDATA[<div> <!-- Active Filter Widget -->
+  <!--
+  <div class="sn-navhub">
+    <div class="sn-navhub-content">
+      <div ng-if="current_page == 'search_page'" class="btn sn-navhub-btn-active sn-navhub-btn_text" ng-click="c.Navigate('search_page')">Enter Search Parameters</div>
+      <div ng-if="current_page != 'search_page'" class="btn sn-navhub-btn sn-navhub-btn_text" ng-click="c.Navigate('search_page')">Enter Search Parameters</div>
+      <div ng-if="current_page == 'results_page'" class="btn sn-navhub-btn-active sn-navhub-btn_text" ng-click="c.Navigate('results_page')">View Results</div>
+      <div ng-if="current_page != 'results_page'" class="btn sn-navhub-btn sn-navhub-btn_text" ng-click="c.Navigate('results_page')">View Results</div>
+    </div>
+  </div> <br/>
+  -->
+  <div id="search_page" ng-if="current_page == 'search_page'">
+    <table> <col width="50%"> <col width="50%"> 
+      <tr> <th> Problem Create Date Range: </th> <th> Major Incident Types: </th> </tr>
+      <tr> 
+        <td>
+          <p>Select start date:</p> <sp-date-picker field="selstartdate" ng-model="c.data.selstartdate.value" ng-model-options="{getterSetter: true}" sn-disabled="false" sn-change=""></sp-date-picker>
+          <p>Select end date:</p> <sp-date-picker field="selenddate" ng-model="c.data.selenddate.value" ng-model-options="{getterSetter: true}" sn-disabled="false" sn-change=""></sp-date-picker>
+        </td>
+        <td>          
+          <div class="form-group"> 
+            <span class="input-group-checkbox checkbox-inline">
+              <input id="checkboxRMI" class="checkbox" type="checkbox" name="checkboxRMI" ng-model="c.data.sel_RMI" checked="checked">
+              <label for="checkboxRMI" class="checkbox-label">Reportable Major Incident</label><br/>
+              <input id="checkboxQMI" class="checkbox" type="checkbox" name="checkboxQMI" ng-model="c.data.sel_QMI" checked="checked">
+              <label for="checkboxQMI" class="checkbox-label">Qualified Major Incident</label><br/>
+              <input id="checkboxPMI" class="checkbox" type="checkbox" name="checkboxPMI" ng-model="c.data.sel_PMI" checked="checked">                
+              <label for="checkboxPMI" class="checkbox-label">Process Major Incident</label><br/>
+            </span>            
+          </div>
+        </td>
+      </tr>
+      <tr> <th> Select Problem Owner Groups: </th> <th> Select Root Cause Category: </th> </tr>
+      <tr>
+        <td>
+          <sn-record-picker id="group_name" field="group_name" table="'sys_user_group'" default-query="'active=true^typeLIKE3307a4670fa082005a72ba8ce1050e9b^nameNOT LIKEBAD'" display-field="'name'" value-field="'sys_id'" search-fields="'name'" page-size="100" multiple="true"></sn-record-picker>
+        </td>
+        <td>
+          <sn-record-picker id="root_cause_category" field="root_cause_category" table="'sys_choice'" display-field="'label'" default-query="'element=u_root_cause_category'" value-field="'value'" search-fields="'label'" page-size="100" multiple="true" style="padding-bottom:10px"></sn-record-picker>
+        </td>
+      </tr>
+      <tr> <th> Select Applications: </th> <th> Select Root Cause Owner: </th> </tr>
+      <tr>
+        <td>
+          <sn-record-picker id="app_name" field="app_name" table="'cmdb_ci_service'" default-query="'sys_class_name=cmdb_ci_service^u_cmdb_ci_used_for=production^operational_status=1'" display-field="'name'" value-field="'sys_id'" search-fields="'name'" page-size="100" multiple="true"></sn-record-picker>
+        </td>
+        <td>
+          <sn-record-picker id="root_cause_owner" field="root_cause_owner" table="'sys_choice'" display-field="'label'" default-query="'element=u_root_cause_owner'" value-field="'value'" search-fields="'label'" page-size="100" multiple="true"></sn-record-picker>
+        </td>
+      </tr>
+      <tr>
+        <!--
+        <td style="text-align: center;" colspan="2">
+          <br/>
+          <button class="ssc_custom" ng-click="c.ApplyFilters()" >Apply Filter</button>
+          <button class="ssc_custom" ng-click="c.ResetActiveFilters()" >Reset Filter</button>
+        </td>
+				-->
+      </tr>
+    </table>
+  </div>
+  <div id="results_page" ng-if="current_page == 'results_page'">
+    <div class="panel panel-default">
+      <div class="panel-body m-b-n">
+        <ul class="list-group">
+
+          <li ng-if="c.data.selected_problems.length == 0" class="list-group-item">${No Ticket Results}</li>
+
+          <li class="list-group-item" ng-repeat="message in c.data.selected_problems track by $index">
+            <span>{{message.label}}</span>&nbsp;
+            <a href="" ng-click="c.remove($index)" class="fa fa-remove pull-right text-danger"></a>
+          </li>
+
+        </ul>
+      </div>
+      <div class="panel-footer text-center">
+
+        <div class="input-group">
+          <input type="text" ng-model="c.data.sel_ticket" class="form-control" aria-label="...">
+          <div class="input-group-btn">
+            <button type="submit" ng-click="c.add()" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

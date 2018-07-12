@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {
+  /* widget controller */
+  var c = this;
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>$nr-myitems-title-size: $font-size-base !default;&#13;
+$nr-myitems-title-color: $brand-primary !default;&#13;
+&#13;
+.item-title {&#13;
+  font-size: $nr-myitems-title-size;&#13;
+  color: $nr-myitems-title-color&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>This is a custom SSC widget to provide additional data table layout options.</description>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ssc-sp-widget-data-table-widget</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Data Table Widget</name>
+        <option_schema>[{"name":"template","section":"Presentation","label":"Template","type":"choice","choices":[{"label":"myitems-default.html","value":"myitems-default.html"},{"label":"myitems-debug.html","value":"myitems-debug.html"}]}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+
+	options.title = options.title || gs.getMessage("My Items");
+	options.template = options.template || "myitems-default.html"
+	
+	var si = new widgetScriptInclude();
+	data.items = si.getItems();
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 19:46:51</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>5bbc21c8db535740544fdd0b5e96194d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>SSC Data Table Widget</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_5bbc21c8db535740544fdd0b5e96194d</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-09 19:46:51</sys_updated_on>
+        <template><![CDATA[<sp-panel title="options.title" body-class="'list-group'">
+	<div ng-include="options.template"></div>
+</sp-panel>]]></template>
+    </sp_widget>
+</record_update>

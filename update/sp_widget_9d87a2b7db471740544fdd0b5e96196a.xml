@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function(){
+	var c = this;
+	c.optionExists = (c.options.report !== undefined);
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.report_widget{&#13;
+  border: solid 1px rgba(0,0,0,0);&#13;
+  border-radius:10px;&#13;
+  background-color:#FFF;&#13;
+  padding: 10px;&#13;
+  margin:0 0 10px 0;&#13;
+  &#13;
+  .report_widget--container{&#13;
+  	position:relative;&#13;
+    margin-left:-10px;&#13;
+    overflow-y: hidden;&#13;
+  }&#13;
+  &#13;
+  .report_widget--text{&#13;
+  	font-size: 16px;&#13;
+    color: #000;&#13;
+    text-align: center;&#13;
+  }&#13;
+  &#13;
+  iFrame{&#13;
+    width:100%;&#13;
+    height:442px; //420px + 22px&#13;
+    border: solid 1px rgba(0,0,0,0);&#13;
+    overflow-y: hidden;&#13;
+    //margin: auto;&#13;
+  }&#13;
+  &#13;
+  .report_widget--overlay{&#13;
+  	position:absolute;&#13;
+    top:0;&#13;
+    left:0;&#13;
+    width:100%;&#13;
+    height:100%;&#13;
+    z-index:10;&#13;
+    &#13;
+  }&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>This is widget allows you to select an existing report to be displayed using ServceNow's built-in report viewer in an iFrame.</description>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ssc-sp-widget-display-report</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Report Widget</name>
+        <option_schema>[{"displayValue":"Widget Configuration","name":"report","label":"Report","type":"reference","value":"sys_report","ed":{"reference":"sys_report"}},{"hint":"Default: Report","name":"link_to","label":"Link Override","type":"choice","choices":[{"label":"Report","value":"Report"},{"label":"No Link","value":"No Link"},{"label":"No Override (not recommended)","value":"No Override (not recommended)"}]}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	var reportID = options.report;
+  	options.link_to = options.link_to || "Report";
+	var report = new GlideRecord('sys_report');
+	if (report.get(reportID)){
+		data.reportName = report.title.toString();
+		data.url = "/report_viewer.do?jvar_report_id=" + reportID;
+      	data.link_to = options.link_to;
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-09 05:22:29</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>9d87a2b7db471740544fdd0b5e96196a</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>SSC Report Widget</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_9d87a2b7db471740544fdd0b5e96196a</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-09 05:56:03</sys_updated_on>
+        <template><![CDATA[<div class='report_widget'>
+  <div ng-hide="c.optionExists">
+    <div class='report_widget--text'><i>Specify a report: CTRL+click here and choose Instance Options</i></div>
+  </div>
+  <div ng-show="c.optionExists"  class="report_widget--container">
+    <a href={{c.data.url}} target="_blank" ng-if="c.data.link_to == 'Report'"><div class="report_widget--overlay"></div></a>
+  	<div class="report_widget--overlay" ng-if="c.data.link_to == 'No Link'"></div>
+    <iFrame src={{c.data.url}} scrolling="no"></iFrame>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

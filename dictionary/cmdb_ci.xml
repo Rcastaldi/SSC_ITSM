@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element attributes="all_tables.text_index_translations=true" defaultsort="-1" dynamic_creation_script="// default on the table level is to create a server&#13;&#10;&#13;&#10;var gr = new GlideRecord(&quot;cmdb_ci_server&quot;);&#13;&#10;gr.initialize();&#13;&#10;gr.name=value;&#13;&#10;gr.insert();" extends="cmdb" label="Configuration Item" max_length="40" name="cmdb_ci" sizeclass="131719" type="collection">
+        <element label="CMDB Related IPs" max_length="20000" name="x_ibmss_ssc_itsm_u_cmdb_ci_related_ips" type="string"/>
+    </element>
+</database>
