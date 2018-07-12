@@ -63,116 +63,117 @@ $rootScope.$on("$locationChangeSuccess", function(name, data) {
 
 }]]></client_script>
         <controller_as>c</controller_as>
-        <css>.panel {&#13;
-position: relative;&#13;
- &#13;
-}&#13;
-.panel-heading i {&#13;
-  cursor: pointer;&#13;
-  position: absolute;&#13;
-  padding: 10px;&#13;
-  top: 0px;&#13;
-  right: 0px;  &#13;
-}&#13;
-&#13;
-/* Table,th,tr,td Elements ------------------- */&#13;
-table {&#13;
-  width: 100%;&#13;
-  border-radius: 10px;&#13;
-  border-collapse: collapse;&#13;
-  background-color: white;&#13;
-  font-family: Arial, sans-serif;&#13;
-  word-wrap: break-word;&#13;
-  text-overflow: ellipsis;&#13;
-}&#13;
-th, td { padding: 10px; }&#13;
-td { color: black; }&#13;
-&#13;
-/* Change default bootstrap behaviors -------------*/&#13;
-//	Change Table Row Hover state collor to SSC Color &#13;
-.table-hover tbody tr:hover td {&#13;
-  background-color: #86BBD1; // SSC Hover Color GEO&#13;
-}&#13;
-&#13;
-/* Table,th,tr,td Classes ------------------------ */&#13;
-.problem_title {&#13;
-  background-color:  #0A2F5D; /* SSC Blue */&#13;
-  color: white;&#13;
-  border: thick solid #0A2F5D; &#13;
-  font-size: 20px;&#13;
-}&#13;
-.problem_title span {&#13;
-	font-size: 16px; &#13;
-  font-style: italic;&#13;
-}&#13;
-.moreDetailsRow, .problem_task_cat_header {&#13;
-  background-color:  #007298; /* SSC Light Blue */&#13;
-  color: white;&#13;
-}&#13;
-.problem_task_cat_header {font-weight: bold; font-size: 16px;}&#13;
-.problem_task_list, .problem_task_list_item, .summaryTblCell {&#13;
-  text-align: left;&#13;
-  vertical-align: top;&#13;
-}&#13;
-.problem_task_list {padding: 0px;}&#13;
-.itals {font-style: italic;}&#13;
-.addBotmBrdr { border-bottom: thin solid gray; }&#13;
-.addThickBlueBotmBrdr { border-bottom: thick solid #0A2F5D; }&#13;
-.addThickBlueRightBrdr { border-right: thick solid #0A2F5D; }&#13;
-.addThickBlueLeftBrdr { border-left: thick solid #0A2F5D; }&#13;
-&#13;
-/* Table,th,tr,td Named Elements --------- */&#13;
-.problem_task_list_item, #incidentDetailTable td, #incidentDetailTable th, #incidentDetailTable tr {&#13;
-  padding: 2px 4px 2px 4px;&#13;
-}&#13;
-/* ng-class section --------- */&#13;
-.Major {&#13;
-  color:white;&#13;
-  padding: 10px 10px;&#13;
-  font-weight: bold;&#13;
-}&#13;
-.Reportable { background: red }&#13;
-.Qualified { background: #f56e00 }&#13;
-.Process { background: #0A2F5D }&#13;
-/* Style for layout of large multi-line text used for --------- */&#13;
-/* showing worklog description i.e. MI chronology */&#13;
-.timeline-body &gt; p {&#13;
-  white-space: pre-wrap;&#13;
-  overflow-y:scroll;overflow-x:hidden;&#13;
-  max-height: 300px;&#13;
-}&#13;
-/* Button style section --------- */&#13;
-button {&#13;
-  // background-color:  #007298; /* SSC Light Blue */&#13;
-  background-color:  #2F749A; /* SSC Primary Button CAL */&#13;
-  border: 1px;&#13;
-  color: white;&#13;
-  padding: 10px 10px;&#13;
-  text-align: center;&#13;
-  text-decoration: none;&#13;
-  display: inline-block;&#13;
-  font-size: 16px;&#13;
-  // border-radius: 15px;&#13;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);&#13;
-}&#13;
-button:hover {&#13;
-  background-color: #E1ECF2; // SSC Hover ColorMAE&#13;
-  color: #FFFFFF;&#13;
-}&#13;
-button#pressed { &#13;
-  // background-color: #e4ecf0; color: #0A2F5D;&#13;
-  background-color:  #092E5D; /* SSC Selected Button BEN */&#13;
-  color: white;&#13;
-}&#13;
-/* ICON styles */&#13;
-.fa-check-circle, .fa-calendar-check-o-active, .fa-calendar-check-o-warn, .fa-calendar-times-o, .fa-exclamation-circle {&#13;
-  padding-left: 10px;&#13;
-}&#13;
-.fa-plus-square, .fa-minus-square { padding-right: 10px; }&#13;
-.fa-calendar-times-o, .fa-exclamation-circle { color: red; }&#13;
-.fa-calendar-check-o-active { color: #0A2F5D;}&#13;
-.fa-calendar-check-o-warn { color: #f56e00;}&#13;
-.fa-print { color: #007298;font-size:36px; padding-left: 15px; padding-right: 15px; }&#13;
+        <css>.panel {
+position: relative;
+ 
+}
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+
+/* Table,th,tr,td Elements ------------------- */
+table {
+  width: 100%;
+  border-radius: 10px;
+  border-collapse: collapse;
+  background-color: white;
+  font-family: Arial, sans-serif;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+}
+th, td { padding: 10px; }
+td { color: black; }
+
+/* Change default bootstrap behaviors -------------*/
+//	Change Table Row Hover state collor to SSC Color 
+.table-hover tbody tr:hover td {
+  // background-color: #86BBD1; // SSC Hover Color GEO
+  background-color: #E1ECF2; // SSC Menu Hover MAE
+}
+
+/* Table,th,tr,td Classes ------------------------ */
+.problem_title {
+  background-color:  #0A2F5D; /* SSC Blue */
+  color: white;
+  border: thick solid #0A2F5D; 
+  font-size: 20px;
+}
+.problem_title span {
+	font-size: 16px; 
+  font-style: italic;
+}
+.moreDetailsRow, .problem_task_cat_header {
+  background-color:  #007298; /* SSC Light Blue */
+  color: white;
+}
+.problem_task_cat_header {font-weight: bold; font-size: 16px;}
+.problem_task_list, .problem_task_list_item, .summaryTblCell {
+  text-align: left;
+  vertical-align: top;
+}
+.problem_task_list {padding: 0px;}
+.itals {font-style: italic;}
+.addBotmBrdr { border-bottom: thin solid gray; }
+.addThickBlueBotmBrdr { border-bottom: thick solid #0A2F5D; }
+.addThickBlueRightBrdr { border-right: thick solid #0A2F5D; }
+.addThickBlueLeftBrdr { border-left: thick solid #0A2F5D; }
+
+/* Table,th,tr,td Named Elements --------- */
+.problem_task_list_item, #incidentDetailTable td, #incidentDetailTable th, #incidentDetailTable tr {
+  padding: 2px 4px 2px 4px;
+}
+/* ng-class section --------- */
+.Major {
+  color:white;
+  padding: 10px 10px;
+  font-weight: bold;
+}
+.Reportable { background: red }
+.Qualified { background: #f56e00 }
+.Process { background: #0A2F5D }
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.timeline-body &gt; p {
+  white-space: pre-wrap;
+  overflow-y:scroll;overflow-x:hidden;
+  max-height: 300px;
+}
+/* Button style section --------- */
+button {
+  // background-color:  #007298; /* SSC Light Blue */
+  background-color:  #2F749A; /* SSC Primary Button CAL */
+  border: 1px;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  // border-radius: 15px;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+button:hover {
+  background-color: #E1ECF2; // SSC Hover ColorMAE
+  color: #464646; // SSC Typography
+}
+button#pressed { 
+  // background-color: #e4ecf0; color: #0A2F5D;
+  background-color:  #092E5D; /* SSC Selected Button BEN */
+  color: white;
+}
+/* ICON styles */
+.fa-check-circle, .fa-calendar-check-o-active, .fa-calendar-check-o-warn, .fa-calendar-times-o, .fa-exclamation-circle {
+  padding-left: 10px;
+}
+.fa-plus-square, .fa-minus-square { padding-right: 10px; }
+.fa-calendar-times-o, .fa-exclamation-circle { color: red; }
+.fa-calendar-check-o-active { color: #0A2F5D;}
+.fa-calendar-check-o-warn { color: #f56e00;}
+.fa-print { color: #007298;font-size:36px; padding-left: 15px; padding-right: 15px; }
 </css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -375,7 +376,7 @@ button#pressed { &#13;
         <sys_created_on>2018-07-09 06:33:49</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>52d7fab3db871740544fdd0b5e9619a7</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>14</sys_mod_count>
         <sys_name>SSC PBM Executive Summary Form</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -383,7 +384,7 @@ button#pressed { &#13;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_52d7fab3db871740544fdd0b5e9619a7</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-09 11:53:33</sys_updated_on>
+        <sys_updated_on>2018-07-12 04:37:39</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.pbm_exec_summ_form_hide_header">
     <h4 class="panel-title">      
@@ -421,7 +422,7 @@ button#pressed { &#13;
             <td>{{problem.state}}</td>
           </tr>
           <tr>
-            <th>Problem CI:</th>
+            <th>Problem Application:</th>
             <td>{{problem.cmdb_ci}}</td>
           </tr>
           <tr>

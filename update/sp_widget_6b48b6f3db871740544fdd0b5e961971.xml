@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
-        <client_script><![CDATA[function($scope, $rootScope, spUtil, $location) {
+        <client_script><![CDATA[function($scope, $rootScope, spUtil, $location, spModal) {
 	/* widget controller */
 	var c = this;
+	var shared = {};	
 
 	$rootScope.$on("$locationChangeSuccess", function(name, data) {
 	console.log("function is working")
@@ -23,8 +24,34 @@
 		link.sys_id = obj.sys_id;
 		link.table = obj.table;
 		link.id = c.data.page;
-		$location.search(link);
+		//$location.search(link);
+		c.OpenTicketModal(link.table, link.sys_id);
 	})
+	
+	c.OpenTicketModal = function(targetTable, targetSysId){
+		// shared.problems = c.data.problems;
+		// Modal for custom filters
+		console.log(targetTable);
+		console.log(targetSysId);
+		shared.sys_id = targetSysId;
+		shared.table = targetTable;
+		spModal.open({
+			//spModal.open will open a modal, and we'll pass it the following parameters
+			size: 'lg',
+			title: 'Ticket Form',
+			widget: 'ssc-sp-widget-enhanced-form', //Insert sys_id of the embedded widget
+			buttons: [ {label:'${Finished}', primary: true} ],
+			table: targetTable,
+			sys_id: targetSysId,
+			shared: shared //We make the 'shared' array available to modal's embedded widget
+		}).then(function() {
+			//This function is triggered by submitting/closing the modal.
+			console.log(shared);
+			//$scope.data.returned_search = shared.problems_search;
+			//$scope.CurrentActiveFilter = "custom";
+			//c.server.update();
+		});
+	};
 	
 }]]></client_script>
         <controller_as>c</controller_as>
@@ -203,7 +230,7 @@ SOFTWARE.
         <sys_created_on>2018-07-09 06:35:49</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>6b48b6f3db871740544fdd0b5e961971</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>11</sys_mod_count>
         <sys_name>SSC Enhanced Form Related Lists</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -211,7 +238,7 @@ SOFTWARE.
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_6b48b6f3db871740544fdd0b5e961971</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-09 06:36:13</sys_updated_on>
+        <sys_updated_on>2018-07-12 05:23:33</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default" ng-if="data.related_lists.length > 0">
   <div class="panel-body">
 
