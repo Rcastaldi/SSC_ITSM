@@ -24,17 +24,28 @@ position: relative;&#13;
         <internal>false</internal>
         <link/>
         <name>SSC Widget Template</name>
-        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"},{"name":"title","label":"Title","type":"string"}]</option_schema>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
         <public>false</public>
         <roles/>
-        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <script><![CDATA[/* Introduction --------------------- */
+/*		e.g., data.table = $sp.getValue('table'); */
+/* Widget Options ------------------- */
+/*		title               =           */
+/*		hide_header         =           */
+
+(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	/* Server Script Variables --------- */
+
+})();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:17:46</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>9c7666b3db471740544fdd0b5e9619e9</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>4</sys_mod_count>
         <sys_name>SSC Widget Template</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -42,7 +53,7 @@ position: relative;&#13;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_9c7666b3db471740544fdd0b5e9619e9</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-09 05:57:47</sys_updated_on>
+        <sys_updated_on>2018-08-03 13:09:18</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.hide_header">
     <h4 class="panel-title">      

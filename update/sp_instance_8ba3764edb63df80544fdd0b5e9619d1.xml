@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css>.white-text {
+  //color: #464646;  
+  color: white;
+}
+h5 {
+  //line-height: 1.7;
+}
+.btn-outline-white {
+  border: 2px solid #fff !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: .25rem;
+}
+.introMessage {
+ padding-top: 50px;  
+}
+.panel {
+  //background-color: #F0F0F0 !important;
+  //background: rgba(240, 240, 240, 0.8) !important;
+  background: rgba(70, 70, 70, 0.9) !important;
+  padding: 10px;
+  border-radius: 1.0rem;
+  
+}
+.fadeInLeft {
+    -webkit-animation-name: fadeInLeft;
+    animation-name: fadeInLeft;
+}
+.btn-outline-white:active, .btn-outline-white:hover {
+    border-color: #fff !important;
+    background-color: #86BBD1 !important;
+    color: #fff !important;
+}
+</css>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">d5a3f64edb63df80544fdd0b5e9619dc</sp_column>
+        <sp_widget display_value="HTML">8679ef89cb21120000f8d856634c9c4f</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-28 16:17:36</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>8ba3764edb63df80544fdd0b5e9619d1</sys_id>
+        <sys_mod_count>65</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_8ba3764edb63df80544fdd0b5e9619d1</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-01 04:10:33</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"html": {
+		"value": "<div class=\"introMessage col-md-10 white-text  text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h1 class=\"h1-responsive font-weight-bold mt-sm-5 text-center\">What does that mean?</h1>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">State Street has proprietary metadata (i.e. the SAID of an application CI) that can be used to identify records in ServiceNow and how they are related. Some of this data is already in ServiceNow, and as we expand the platform more will be added. This data may be embedded within an Out-of-Box (OOB) table with a custom column; or the data may be stored as a record in a custom table mapped through a reference field.</h5>\n<h5 class=\"mb-4\">In both scenarios, a custom column or table should be contained within a 'scoped' ServiceNow application, along with all other customizations, as per best practice. With an organization the size of State Street, you also do not want all your customizations in one large scoped application, which would be difficult to manage. Scoped applications should be specific to the service it provides or the OOB application it modifies.</h5>\n<h5 class=\"mb-4\">The objective of State Street Towers is to contain and centrally manage the shared metadata, data mappings, and customizations that will be used by multiple ServiceNow applications or external systems, and to leverage the Service Portal to provide an intuitive interface to manage the data. The purpose is to simplify the adoption of the ServiceNow platform's enhanced capabilities in a way that is scalable for our global organization and reduces administrative tasks.</h5>\n<h5 class=\"mb-4\">Below are real world examples of how Towers can meet this objective for multiple use cases with a simple table and a custom service portal widget integrated with an OOB ServiceNow application \"On-call Scheduling\".</h5>\n</div>\n</div>",
+		"displayValue": "<div class=\"introMessage col-md-10 white-text  text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h1 class=\"h1-responsive font-weight-bold mt-sm-5 text-center\">What does that mean?</h1>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">State Street has proprietary metadata (i.e. the SAID of an application CI) that can be used to identify records in ServiceNow and how they are related. Some of this data is already in ServiceNow, and as we expand the platform more will be added. This data may be embedded within an Out-of-Box (OOB) table with a custom column; or the data may be stored as a record in a custom table mapped through a reference field.</h5>\n<h5 class=\"mb-4\">In both scenarios, a custom column or table should be contained within a 'scoped' ServiceNow application, along with all other customizations, as per best practice. With an organization the size of State Street, you also do not want all your customizations in one large scoped application, which would be difficult to manage. Scoped applications should be specific to the service it provides or the OOB application it modifies.</h5>\n<h5 class=\"mb-4\">The objective of State Street Towers is to contain and centrally manage the shared metadata, data mappings, and customizations that will be used by multiple ServiceNow applications or external systems, and to leverage the Service Portal to provide an intuitive interface to manage the data. The purpose is to simplify the adoption of the ServiceNow platform's enhanced capabilities in a way that is scalable for our global organization and reduces administrative tasks.</h5>\n<h5 class=\"mb-4\">Below are real world examples of how Towers can meet this objective for multiple use cases with a simple table and a custom service portal widget integrated with an OOB ServiceNow application \"On-call Scheduling\".</h5>\n</div>\n</div>"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=8ba3764edb63df80544fdd0b5e9619d1"/>
+</record_update>

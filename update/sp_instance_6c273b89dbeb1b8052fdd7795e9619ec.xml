@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>info</color>
+        <css>.b {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.panel-body{
+  margin: 0px;
+  padding: 0px;
+}
+.jumbotron {
+  //border: none;
+  //margin: 0px;
+}</css>
+        <glyph>building</glyph>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">67a6b389dbeb1b8052fdd7795e96199a</sp_column>
+        <sp_widget display_value="SSC Jumbotron">81b772f3db871740544fdd0b5e961909</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-25 18:38:25</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>6c273b89dbeb1b8052fdd7795e9619ec</sys_id>
+        <sys_mod_count>14</sys_mod_count>
+        <sys_name>State Street Towers Introduction</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_6c273b89dbeb1b8052fdd7795e9619ec</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-30 19:17:50</sys_updated_on>
+        <title>State Street Towers Introduction</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"hide_header": {
+		"value": "true",
+		"displayValue": "true"
+	},
+	"title": {
+		"value": "State Street Towers Introduction",
+		"displayValue": "State Street Towers Introduction"
+	},
+	"content_heading": {
+		"value": "State Street Towers In Action",
+		"displayValue": "State Street Towers In Action"
+	},
+	"content_body": {
+		"value": "Welcome to the State Street Towers Service Portal Demo page. Towers, with its centralized management of metadata, allows for the easy organization of ServiceNow groups into the same hierarchy as our IT Service Delivery and ADM Platform support teams. The data is maintained in a separate table that you do not need security admin privileges to update. This allows for the scalability to implement features like the ServiceNow On-Call Scheduling plugin, which can then be used for automated ticket routing, notifications, escalations, and more.",
+		"displayValue": "Welcome to the State Street Towers Service Portal Demo page. Towers, with its centralized management of metadata, allows for the easy organization of ServiceNow groups into the same hierarchy as our IT Service Delivery and ADM Platform support teams. The data is maintained in a separate table that you do not need security admin privileges to update. This allows for the scalability to implement features like the ServiceNow On-Call Scheduling plugin, which can then be used for automated ticket routing, notifications, escalations, and more."
+	},
+	"content_body2": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=6c273b89dbeb1b8052fdd7795e9619ec"/>
+</record_update>

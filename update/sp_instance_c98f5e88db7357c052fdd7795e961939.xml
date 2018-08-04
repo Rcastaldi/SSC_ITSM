@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css>.white-text {
+  color: white;
+  font-wight: bold;
+}
+h5 {
+  //line-height: 1.7;
+  line-height: 1;
+  padding: 0;
+}
+.btn-outline-white {
+  border: 2px solid #fff !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: .25rem;
+}
+.introMessage {
+ //padding-top: 100px;
+  padding: 0px;
+}
+.fadeInLeft {
+    -webkit-animation-name: fadeInLeft;
+    animation-name: fadeInLeft;
+}
+.btn-outline-white:active, .btn-outline-white:hover {
+    border-color: #fff !important;
+    background-color: #86BBD1 !important;
+    color: #fff !important;
+}
+.panel {
+  //background-color: #F0F0F0 !important;
+  //background: rgba(240, 240, 240, 0.8) !important;
+  background: rgba(70, 70, 70, 0.6) !important;
+  padding: 5px;
+  //padding: 0;
+  border-radius: 1.0rem;
+  margin-top: 30px;
+}
+.towersCol {
+ background-image: url('State%20Street%20Towers.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: white;
+  margin-top: -20px;
+  margin-bottom: -10px;
+  min-height: 25vh;
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+}
+hr {
+  padding: 0;
+  margin: 0;
+}</css>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">fb12f037db6bd3c052fdd7795e96190c</sp_column>
+        <sp_widget display_value="HTML">8679ef89cb21120000f8d856634c9c4f</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-03 19:57:24</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>c98f5e88db7357c052fdd7795e961939</sys_id>
+        <sys_mod_count>27</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_c98f5e88db7357c052fdd7795e961939</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-03 20:44:10</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"html": {
+		"value": "<div class=\"container-fluid towersCol \">\n<div class=\"col-xs-6\">&nbsp;</div>\n<div class=\"introMessage col-xs-6 white-text text-center text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h3 class=\"h1-responsive font-weight-bold mt-sm-5\">State Street Towers <span class=\"reg_sign\">&reg;</span></h3>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">Bringing scalability for State Street to ServiceNow.</h5>\n<a href=\"?id=ssc_sp_itsm_towers\"> <button class=\"btn btn-outline-white\">Learn more</button></a></div>\n</div>\n</div>",
+		"displayValue": "<div class=\"container-fluid towersCol \">\n<div class=\"col-xs-6\">&nbsp;</div>\n<div class=\"introMessage col-xs-6 white-text text-center text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h3 class=\"h1-responsive font-weight-bold mt-sm-5\">State Street Towers <span class=\"reg_sign\">&reg;</span></h3>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">Bringing scalability for State Street to ServiceNow.</h5>\n<a href=\"?id=ssc_sp_itsm_towers\"> <button class=\"btn btn-outline-white\">Learn more</button></a></div>\n</div>\n</div>"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=c98f5e88db7357c052fdd7795e961939"/>
+</record_update>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>
+.panel {
+position: relative;
+}
+.panel-body {
+  margin-top: 0;
+}
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+.align-optionHeading-top {
+margin-top: 0px;
+  padding-bottom: 10px;
+}
+.navbar-avatar {
+  margin-top: 0px;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>Widget that can display 1-2 users and 1-2 groups, each with headings. </description>
+        <docs/>
+        <field_list>glyph,title,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-people-info</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC People Information</name>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"},{"name":"panel_heading","label":"Panel Heading","type":"string"},{"name":"person1_title","label":"Person 1 Title","type":"string"},{"name":"person1_employee_id","label":"Person 1 employee ID","type":"string"},{"name":"person2_title","label":"Person 2 Title","type":"string"},{"name":"person2_employee_id","label":"Person 2 employee ID","type":"string"},{"name":"group1_title","label":"Group 1 Title","type":"string"},{"name":"group1_name","label":"Group 1 ServiceNow Group Name","type":"string"},{"name":"group2_title","label":"Group 2 Title","type":"string"},{"name":"group2_name","label":"Group 2 ServiceNow Group Name","type":"string"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[/* Introduction --------------------- */
+/*		e.g., data.table = $sp.getValue('table'); */
+/* Widget Options ------------------- */
+/*		title               =           */
+/*		hide_header         =           */
+/*		panel_heading       =           */
+/*		person1_title       =           */
+/*		person1_employee_id =           */
+/*		person2_title       =           */
+/*		person2_employee_id =           */
+/*		group1_title        =           */
+/*		group1_name         =           */
+/*		group2_title        =           */
+/*		group2_name         =           */
+
+(function() {
+	/* Server Script Variables --------- */
+
+	data.peopleInformation = [];
+	var people = [
+		{ uLabel: options.person1_title,
+		 eID: options.person1_employee_id,
+		 sOrder: 1	},
+		{			uLabel: options.person1_title,
+		 eID: options.person2_employee_id,
+		 sOrder: 2		}	];
+	var teams = [
+		{ uLabel: options.group1_title,
+		 eID: options.group1_name,
+		 sOrder: 1	},
+		{			uLabel: options.group2_title,
+		 eID: options.group2_name,
+		 sOrder: 2		}	];
+	
+	data.stringOfUserIDs = options.person1_employee_id + ", " + options.person2_employee_id;
+	data.stringOfGroupNames = options.group1_name + ", " + options.group2_name;
+	
+	data.teamData = {};	
+
+	
+	var teamGR = new GlideRecord("sys_user");
+	teamGR.addActiveQuery();
+	teamGR.addQuery('user_name', "IN", data.stringOfUserIDs);
+	teamGR.query();
+	while(teamGR.next()) {
+		people.forEach(function(forEaUser, i, a){
+			if (teamGR.getValue('user_name').equals(forEaUser.eID))
+				data.peopleInformation.push(buildUser(teamGR, a[i].uLabel, a[i].sOrder));
+		})
+	}
+	/*
+	var teamGR = new GlideRecord("sys_user");
+		teamGR.addActiveQuery();
+		teamGR.addQuery("manager", data.teamData.manager.sys_id);
+		teamGR.query();
+		while(teamGR.next()) {
+			if (!teamGR.getValue("sys_id").equals(data.sysUserID))
+				data.teamData.members.push(buildUser(teamGR));
+		}
+	*/
+	function buildUser(userGR, uLabel, order) {
+		return {
+			sOrder: order || "",
+			uLabel: uLabel || "",
+			email: userGR.getValue("email") || "",
+			eID: userGR.getValue("user_name"),
+			first_name: userGR.getValue("first_name"),
+			last_name: userGR.getValue("last_name"),
+			name: userGR.getValue("name"),
+			phone: userGR.getValue("phone") || "",
+			schedule: userGR.getValue("schedule") || "",
+			sys_id: userGR.getValue("sys_id")
+		}
+	}
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-03 06:28:19</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>19562337db2717c052fdd7795e96191b</sys_id>
+        <sys_mod_count>36</sys_mod_count>
+        <sys_name>SSC People Information</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_19562337db2717c052fdd7795e96191b</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-04 06:27:21</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->  
+  <div class="panel-body"> <!-- Main Panel Body-->    
+    <div class="row">  
+    <div class="col-xs-12">
+  <h3 class="align-optionHeading-top"> {{c.options.panel_heading}} </h3>
+    </div>
+    </div>
+    <div class="row info-row" ng-repeat="member in  data.peopleInformation | orderBy:'sOrder' " ng-click="openProfile(member)">
+      <div class="col-xs-2">        
+        <span class="navbar-avatar">
+          <sn-avatar class="avatar-small-medium" primary="member.sys_id" show-presence="false" />
+        </span>
+      </div>      
+      <div class="col-xs-7" ng-click="openProfile(member)">
+        <h6 class="m-n text-muted ">{{member['uLabel']}}</h5>
+        {{member['name']}}
+      </div>
+      <div class="col-xs-1 align-bottom" ng-class="{'hide-element': !member.phone}">
+        <a href="tel:{{member.phone}}">
+          <fa name="phone" size="2"></fa>
+        </a>
+      </div>
+      <div class="col-xs-1 align-bottom" ng-class="{'hide-element': !member.email}" style="text-align: right;">
+        <a href="mailto:{{member.email}}">
+          <fa name="envelope" size="2"></fa>
+        </a>
+      </div>
+    </div>    
+    
+  </div> <!-- Main Panel Body -->
+</div>]]></template>
+    </sp_widget>
+</record_update>

@@ -18,7 +18,7 @@
 	//c.server.uodate();
 	})
 	
-	$rootScope.$on('data_table.click', function(event,obj) {
+	$scope.$on('data_table.click', function(event,obj) {
 		//console.log(obj);
 		var link = {};
 		link.sys_id = obj.sys_id;
@@ -39,10 +39,12 @@
 			//spModal.open will open a modal, and we'll pass it the following parameters
 			size: 'lg',
 			title: 'Ticket Form',
+			widgetInput: { 
+				table: targetTable,
+				sys_id:targetSysId
+			},
 			widget: 'ssc-sp-widget-enhanced-form', //Insert sys_id of the embedded widget
-			buttons: [ {label:'${Finished}', primary: true} ],
-			table: targetTable,
-			sys_id: targetSysId,
+			buttons: [ {label:'${Finished}', primary: true} ],			
 			shared: shared //We make the 'shared' array available to modal's embedded widget
 		}).then(function() {
 			//This function is triggered by submitting/closing the modal.
@@ -230,7 +232,7 @@ SOFTWARE.
         <sys_created_on>2018-07-09 06:35:49</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>6b48b6f3db871740544fdd0b5e961971</sys_id>
-        <sys_mod_count>11</sys_mod_count>
+        <sys_mod_count>17</sys_mod_count>
         <sys_name>SSC Enhanced Form Related Lists</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -238,7 +240,7 @@ SOFTWARE.
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_6b48b6f3db871740544fdd0b5e961971</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-12 05:23:33</sys_updated_on>
+        <sys_updated_on>2018-07-26 01:33:21</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default" ng-if="data.related_lists.length > 0">
   <div class="panel-body">
 

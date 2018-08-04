@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+  //position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+
+th, .header_list {
+  text-align: center;
+  color: white;
+  background-color: #0A2F5D; /* SSC Blue */
+}
+iframe {
+  //position: relative;    
+}
+.content {
+  display: table;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-world-clocks</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC World Clocks</name>
+        <option_schema>[{"name":"tower_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-26 04:56:48</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>f6a4c2d1db271f80544fdd0b5e9619ea</sys_id>
+        <sys_mod_count>55</sys_mod_count>
+        <sys_name>SSC World Clocks</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_f6a4c2d1db271f80544fdd0b5e9619ea</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-31 05:16:42</sys_updated_on>
+        <template><![CDATA[<div class="container-fluid">      
+  <table>
+    <tr class="text-center">
+      <th class="hidden-md">Sacramento</th>
+      <!-- <th class="hidden-sm">Kansas City</th> -->
+      <th>Boston</th>
+      <th>London</th>
+      <th class="hidden-md">Luxembourg</th>
+      <th class="hidden-md">Mumbai</th>
+      <th class="hidden-sm">Hong Kong</th>
+      <th >Sydney</th>
+    </tr>
+    <tr>
+      <td class="hidden-md">
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n217/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="130" height="36" allowTransparency="true"></iframe>
+      </td>
+      <!--
+      <td class="hidden-sm">
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n405/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="131" height="36" allowTransparency="true"></iframe>
+      </td>          
+			-->
+      <td>
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n43/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="130" height="36" allowTransparency="true"></iframe>
+      </td>          
+      <td>
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n136/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="130" height="36" allowTransparency="true"></iframe>
+      </td>          
+      <td class="hidden-md">
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n534/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="139" height="36" allowTransparency="true"></iframe>
+      </td>          
+      <td class="hidden-md">
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n44/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="89" height="36" allowTransparency="true"></iframe>
+      </td>          
+      <td class="hidden-sm">
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n102/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="132" height="36" allowTransparency="true"></iframe>
+      </td>          
+      <td >
+        <iframe src="https://freesecure.timeanddate.com/clock/i3urdpde/n240/fn2/fs12/fc464646/tct/pct/tt0/tw0/tm1/ts1/ta1/tb4" frameborder="0" width="139" height="36" allowTransparency="true"></iframe>
+      </td>
+    </tr>
+  </table> <!-- Table Layout -->
+</div>    ]]></template>
+    </sp_widget>
+</record_update>

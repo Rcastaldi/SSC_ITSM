@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">1dc583ffdba317c052fdd7795e9619be</sp_column>
+        <sp_widget display_value="SSC Jumbotron">81b772f3db871740544fdd0b5e961909</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-03 04:07:14</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>fa060333dbe317c052fdd7795e96197e</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>Major Incident Workbench</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_fa060333dbe317c052fdd7795e96197e</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-03 04:07:50</sys_updated_on>
+        <title>Major Incident Workbench</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"hide_header": {
+		"value": "true",
+		"displayValue": "true"
+	},
+	"title": {
+		"value": "Major Incident Workbench",
+		"displayValue": "Major Incident Workbench"
+	},
+	"content_heading": {
+		"value": "Major Incident Workbench",
+		"displayValue": "Major Incident Workbench"
+	},
+	"content_body": {
+		"value": "",
+		"displayValue": ""
+	},
+	"content_body2": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=fa060333dbe317c052fdd7795e96197e"/>
+</record_update>

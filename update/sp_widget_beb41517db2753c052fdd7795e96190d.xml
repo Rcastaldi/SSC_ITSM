@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, $location) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.openProfile = function(user) {
+		$location.search("id=user_profile&sys_id=" + user.sys_id); 
+	};
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+position: relative;
+}
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+.row.info-row:hover {
+	background-color: #f0f0f0;
+}
+.memberTitle {
+  padding-left: 10px ;
+}
+a.widget-button {
+    float: right;
+    clear: both;
+    margin: 10px 0;
+    border-radius: 3px;
+    background-color: #B9B9B9;
+    color: #fff;
+    padding: 3px 10px;
+    font-weight: 100;
+}
+ 
+a.widget-button:hover {
+	background-color: #428bca;
+}
+
+.row.info-row&gt;div {
+	height: 35px;
+	cursor: pointer;
+    padding-top: 9px;
+}
+
+.team_header {
+	font-size: 15px;
+	margin: 20px 0 5px 0;
+	color: #428BCA;
+}
+
+.more_link {
+	font-size: 90%;
+    padding: 10px;
+}
+
+.hide-element {
+	visibility: hidden;
+}
+
+.fa-2x {
+  font-size: 1.5em;
+  margin-top: -3px;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>title,color,glyph</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-info</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC ITSM Information</name>
+        <option_schema>[{"name":"itsm_info_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	data.teamMembers = [];
+	var team = [
+		{ uLabel:'ITSM Program Owner',
+			eID:'e397137',
+			sOrder: 1	},
+		{			uLabel:'ServiceNow Platform Owner',
+			eID:'e300744',
+			sOrder: 2		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e408504',
+			sOrder: 3		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e407134',
+			sOrder: 4		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e589078',
+			sOrder: 5		}	];	
+
+	data.stringOfUserIDs = "e397137, e300744, e408504, e407134, e589078";
+
+	var teamGR = new GlideRecord("sys_user");
+	teamGR.addActiveQuery();
+	teamGR.addQuery('user_name', "IN", data.stringOfUserIDs);
+	teamGR.query();
+	while(teamGR.next()) {
+		team.forEach(function(forEaUser, i, a){
+			if (teamGR.getValue('user_name').equals(forEaUser.eID))
+			data.teamMembers.push(buildUser(teamGR, a[i].uLabel, a[i].sOrder));
+		})		
+	}
+/*
+	data.team.forEach(function(forEaUser){
+			console.log(forEaUser.first_name);
+		})
+	*/
+	function buildUser(userGR, uLabel, order) {
+		return {
+			sOrder: order || "",
+			uLabel: uLabel || "",
+			email: userGR.getValue("email") || "",
+			eID: userGR.getValue("user_name"),
+			first_name: userGR.getValue("first_name"),
+			last_name: userGR.getValue("last_name"),
+			name: userGR.getValue("name"),
+			phone: userGR.getValue("phone") || "",
+			schedule: userGR.getValue("schedule") || "",
+			sys_id: userGR.getValue("sys_id")
+		}
+	}
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-01 06:35:12</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>beb41517db2753c052fdd7795e96190d</sys_id>
+        <sys_mod_count>118</sys_mod_count>
+        <sys_name>SSC ITSM Information</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_beb41517db2753c052fdd7795e96190d</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-02 15:15:09</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">  
+  <div class="panel-heading" ng-if="::!c.options.itsm_info_hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-body"> <!-- Main Panel Body-->
+
+    <div class="row info-row" ng-repeat="member in data.teamMembers | orderBy:'sOrder' " ng-click="openProfile(member)">
+      <h4 class="memberTitle" ng-if="member.eID != 'e407134' && member.eID != 'e589078'">{{member['uLabel']}}</h4>		
+      <div class="col-xs-2">        
+        <span class="navbar-avatar">
+          <sn-avatar class="avatar-small-medium" primary="member.sys_id" show-presence="false" />
+        </span>
+      </div>
+      <div class="col-xs-7" ng-click="openProfile(member)">{{member['name']}}</div>
+      <div class="col-xs-1" ng-class="{'hide-element': !member.phone}">
+        <a href="tel:{{member.phone}}">
+          <fa name="phone" size="2"></fa>
+        </a>
+      </div>
+      <div class="col-xs-1" ng-class="{'hide-element': !member.email}" style="text-align: right;">
+        <a href="mailto:{{member.email}}">
+          <fa name="envelope" size="2"></fa>
+        </a>
+      </div>
+    </div>    
+
+  </div> <!-- Main Panel Body -->
+</div> <!-- Main Panel -->]]></template>
+    </sp_widget>
+</record_update>

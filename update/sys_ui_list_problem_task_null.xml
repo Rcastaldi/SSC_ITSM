@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update>
+    <sys_ui_list parent="" relationship="" sys_domain="global" table="problem_task" version="2" view="">
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>number</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>0</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>edd628b8db1bd740544fdd0b5e96197a</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>problem</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>1</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>65d628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>problem.parent</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>2</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>e5d628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>u_problem_task_category</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>3</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>69d628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>short_description</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>4</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>e9d628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>assignment_group</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>5</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>6dd628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>due_date</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>6</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>edd628b8db1bd740544fdd0b5e96197b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>work_end</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>7</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>61d628b8db1bd740544fdd0b5e96197c</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>state</element>
+            <list_id display_value="problem_task" element="NULL" name="problem_task" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">65d628b8db1bd740544fdd0b5e96197a</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>8</position>
+            <sum>false</sum>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-11 22:34:10</sys_created_on>
+            <sys_id>e1d628b8db1bd740544fdd0b5e96197c</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-11 22:34:10</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element/>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <name>problem_task</name>
+            <parent/>
+            <position/>
+            <relationship/>
+            <sum>false</sum>
+            <sys_class_name>sys_ui_list</sys_class_name>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-07-31 18:47:27</sys_created_on>
+            <sys_customer_update>true</sys_customer_update>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>9bb23287dbeb13c052fdd7795e961966</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>problem_task</sys_name>
+            <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+            <sys_update_name>sys_ui_list_problem_task_null</sys_update_name>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-07-31 18:47:27</sys_updated_on>
+            <sys_user display_value="Ryan Castaldi [SSC]">92678fe5dbf08300047dd7795e961975</sys_user>
+            <view display_value="Default view" name="NULL">Default view</view>
+            <view_name/>
+        </sys_ui_list>
+    </sys_ui_list>
+</record_update>

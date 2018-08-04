@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $location) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.$on("$locationChangeSuccess", function(name, data) {
+	var searchObject = $location.search();
+	$scope.data.sys_id = searchObject.sys_id || searchObject.sl_sys_id;
+	//spUtil.update($scope);
+	c.server.update();
+	});
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+
+.list-item-order {
+font-weight: bold;
+  font-size: large;
+  vertical-align: center;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>title,glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-config-item-details</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Configuration Item Details</name>
+        <option_schema>[{"name":"tower_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+
+	//var gr = $sp.getRecord();
+	//'ae609114db2bd780544fdd0b5e961953'	
+	//data.options = options;
+	//data.input =  input;
+	/*
+	if (input) {data.sys_id = input.s || input.sys_id;}
+	else {
+		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id");	
+	}
+	if (!data.sys_id) {
+		data.welcomeMessage = true;
+		return;
+	}	
+	*/
+	data.sys_id = 'bc2b10c7db9893c081ee15ce3b961962';
+	data.welcomeMessage = false;
+	
+	var grTowerLevel = new GlideRecord('cmdb_ci_service');
+	grTowerLevel.get('sys_id', data.sys_id);
+	
+	var fields = $sp.getFields(grTowerLevel,
+'name, sys_class_name, u_cmdb_ci_service_said, busines_criticality, u_cmdb_ci_type, u_qs_cmdb_ci_application_id, u_cmdb_ci_service_application_code, operational_status, u_cmdb_ci_used_for, support_group,short_description');	
+
+	data.fields = fields;
+	data.tableLabel = grTowerLevel.getLabel();
+	data.table = grTowerLevel.getTableName();
+	data.subscriberData = {};
+	data.subscriberData.members = [];
+	
+	// Build list of subscribers
+	var stringOfSubscribers;
+	//var grSubscribers = new GlideRecord('m2m_sp_status_subscription');
+	var grSubscribers = new GlideRecord('sys_notif_subscription');
+	grSubscribers.addQuery('affected_record', data.sys_id);
+	grSubscribers.query();
+	
+	while(grSubscribers.next()){		
+//console.log(grSubscribers.sys_user.name);
+		if (!stringOfSubscribers){
+		stringOfSubscribers = grSubscribers.getValue('user');
+			} else {stringOfSubscribers = stringOfSubscribers + grSubscribers.getValue('user');}
+	}
+	var grSysUser = new GlideRecord('sys_user');
+	grSysUser.addQuery('sys_id', "IN", stringOfSubscribers);
+	grSysUser.query();
+	while(grSysUser.next())
+		data.subscriberData.members.push(buildUser(grSysUser));
+	
+	function buildUser(userGR) {
+	return {
+		email: userGR.getValue("email") || "",
+		first_name: userGR.getValue("first_name"),
+		last_name: userGR.getValue("last_name"),
+		name: userGR.getValue("name"),
+		phone: userGR.getValue("phone") || "",
+		sys_id: userGR.getValue("sys_id")
+	}
+	}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-30 18:54:22</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>f2ba253adbe7df8052fdd7795e961921</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>SSC Configuration Item Details</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_f2ba253adbe7df8052fdd7795e961921</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-04 17:18:25</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.tower_hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div  class="panel-body"> <!-- Main Panel Body-->
+    <div class="row">
+      <div class="panel-body">        
+        <div ng-if="data.fields.length > 0">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 m-b break-word" ng-repeat="field in data.fields" 
+                 ng-if="field.value && (field.type != 'decimal' || field.type == 'decimal' && field.value != 0)" >
+              <h6 class="m-n text-muted ">{{field.label}}</h6>
+              <span ng-switch="field.type">
+                <div ng-switch-when="glide_date_time" title="{{field.display_value}}">
+                  <sn-time-ago timestamp="::field.value" />
+                </div>
+                <div ng-switch-default>{{field.display_value}}</div>
+              </span>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+    <h4>
+        Configuration Item Subscribers
+      </h4>
+    <div class="well">      
+      <div class="row info-row" ng-repeat="member in data.subscriberData.members">
+			<div class="col-xs-2" ng-click="openProfile(member)">
+				<span class="navbar-avatar">
+					<sn-avatar class="avatar-small-medium" primary="member.sys_id" show-presence="false" />
+				</span>
+			</div>
+			<div class="col-xs-7" ng-click="openProfile(member)">{{member['name']}}</div>
+			<div class="col-xs-1" ng-class="{'hide-element': !member.phone}">
+				<a href="tel:{{member.phone}}">
+					<fa name="phone" size="2"></fa>
+				</a>
+			</div>
+			<div class="col-xs-1" ng-class="{'hide-element': !member.email}" style="text-align: right;">
+				<a href="mailto:{{member.email}}">
+					<fa name="envelope" size="2"></fa>
+				</a>
+			</div>
+		</div>
+    </div>
+  </div> <!-- Main Panel Body -->
+</div>]]></template>
+    </sp_widget>
+</record_update>

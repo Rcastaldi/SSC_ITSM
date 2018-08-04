@@ -16,21 +16,21 @@
         <scoped_administration>false</scoped_administration>
         <short_description>This application contains State Street specific ITSM content and enhancements to the ServiceNow ITSM core applications.</short_description>
         <source>x_ibmss_ssc_itsm</source>
-        <store_correlation_id>REPOAPP0000069055</store_correlation_id>
+        <store_correlation_id>REPOAPP0000072015</store_correlation_id>
         <store_url/>
         <sys_class_name>sys_app</sys_class_name>
         <sys_code/>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:01:00</sys_created_on>
         <sys_id>2a92e67fdb071740544fdd0b5e9619d7</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>18</sys_mod_count>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-12 17:11:19</sys_updated_on>
+        <sys_updated_on>2018-08-03 20:47:03</sys_updated_on>
         <template/>
         <trackable>true</trackable>
         <user_role/>
         <vendor/>
         <vendor_prefix/>
-        <version>1.0.2</version>
+        <version>1.0.8</version>
     </sys_app>
 </record_update>

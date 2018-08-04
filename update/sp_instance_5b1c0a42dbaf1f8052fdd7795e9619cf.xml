@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css>.white-text {
+  color: white;  
+}
+h5 {
+  line-height: 1.7;
+}
+.btn-outline-white {
+  border: 2px solid #fff !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: .25rem;
+}
+.introMessage {
+ padding-top: 100px; 
+}
+.fadeInLeft {
+    -webkit-animation-name: fadeInLeft;
+    animation-name: fadeInLeft;
+}
+.btn-outline-white:active, .btn-outline-white:hover {
+    border-color: #fff !important;
+    background-color: #86BBD1 !important;
+    color: #fff !important;
+}
+</css>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">a36dc682dbaf1f8052fdd7795e961975</sp_column>
+        <sp_widget display_value="HTML">8679ef89cb21120000f8d856634c9c4f</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-28 13:24:46</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>5b1c0a42dbaf1f8052fdd7795e9619cf</sys_id>
+        <sys_mod_count>44</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_5b1c0a42dbaf1f8052fdd7795e9619cf</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-29 04:27:13</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"html": {
+		"value": "<div class=\"introMessage col-md-10 white-text text-center text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<h1 class=\"h1-responsive font-weight-bold mt-sm-5\">Welcome to State Street Towers <span class=\"reg_sign\">&reg;</span></h1>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">Towers is a custom application for the centralized management of State Street's shared metadata between users, groups, and configurations items. This is to ensure reporting consistency across the ServiceNow platform and to simplify the adoption of it's enhanced capabilities.</h5>\n<a href=\"?id=ssc_sp_itsm_towers_learn_more\"> <button class=\"btn btn-outline-white\">Learn more</button></a></div>",
+		"displayValue": "<div class=\"introMessage col-md-10 white-text text-center text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<h1 class=\"h1-responsive font-weight-bold mt-sm-5\">Welcome to State Street Towers <span class=\"reg_sign\">&reg;</span></h1>\n<hr class=\"hr-light\" />\n<h5 class=\"mb-4\">Towers is a custom application for the centralized management of State Street's shared metadata between users, groups, and configurations items. This is to ensure reporting consistency across the ServiceNow platform and to simplify the adoption of it's enhanced capabilities.</h5>\n<a href=\"?id=ssc_sp_itsm_towers_learn_more\"> <button class=\"btn btn-outline-white\">Learn more</button></a></div>"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=5b1c0a42dbaf1f8052fdd7795e9619cf"/>
+</record_update>

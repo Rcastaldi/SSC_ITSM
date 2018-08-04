@@ -3,16 +3,21 @@
     <sp_widget action="INSERT_OR_UPDATE">
         <client_script><![CDATA[function ($scope, $http, $interval, $timeout, $window, $log, $uibModal, spUtil, $element) {
 	var c = this;
-	
+	$scope.data.flagToServerScriptToCreateNewMiWorklog = false;
 	$scope.data.mi_worklog = c.data.mi_worklog; //custom
 	$scope.showNotification = false;
-	
-	var unwatchWorkingCopy //unmount for the working copy watcher
+	$scope.data.toggleEdit = 'OFF';
+	$scope.data.canUserEdit = c.data.canUserEdit;
+
+	var unwatchWorkingCopy; //unmount for the working copy watcher
 	var autosaveHttpPromise;
 	var autosaveTimer, notificationTimer;
-	
+
 	function canEditMeetingNotes() {
-		return false;
+		if ($scope.data.toggleEdit == 'ON') {
+			//console.log("Setting can edit meeting notes to " + $scope.data.canUserEdit);
+		return $scope.data.canUserEdit; 
+		} else {return false;}
 	}
 
 	function debounceNotification() {
@@ -29,6 +34,7 @@
 	}
 
 	function onFinalizeSaveNotes(args,isErrorCall) {
+		//console.log("onFinalizeSaveNotes");
 		autosaveHttpPromise = null;
 		if(autosaveTimer) {
 			$timeout.cancel(autosaveTimer);
@@ -41,6 +47,7 @@
 				debounceNotification();
 			}
 			else
+				console.log("Error Call")
 				debounceNotification();
 		}
 		/*
@@ -56,6 +63,7 @@
 	}
 
 	function saveMeetingNotes() {
+		//console.log("save meeting notes");
 		// Concurrent update.  Don't save.
 		if ($scope.editor.concurrentUpdate)
 			return;
@@ -69,6 +77,7 @@
 
 		var prevSaved = $scope.editor.savedCopy;
 		$scope.editor.savedCopy = $scope.editor.workingCopy;
+		$scope.data.mi_chronology = $scope.editor.workingCopy;
 		// Push the saved copy to the server.
 		var post = {'description': $scope.editor.savedCopy};
 		$scope.data.worklogID = c.data.worklogID;
@@ -84,6 +93,7 @@
 	}
 
 	function resetMeetingNotes() {
+		//console.log("resetMeetingNotes");
 		$scope.editor = {			
 			'workingCopy': c.data.mi_chronology,
 			'savedCopy':  c.data.mi_chronology,
@@ -94,8 +104,10 @@
 
 	function setupNotesMgmt() {
 		// If it's changed to a state where we can now edit the notes.
+		//console.log("setupNotesMgmt");
 		if (canEditMeetingNotes()) {
-		$scope.editor.savedCopy = $scope.editor.workingCopy = c.data.mi_chronology; //Custom
+			//console.log("setupNotesMgmt - canEditMeetingNotes");
+			$scope.editor.savedCopy = $scope.editor.workingCopy = c.data.mi_chronology; //Custom
 			if (!unwatchWorkingCopy)
 				unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
 		} else {
@@ -117,76 +129,92 @@
 	setupNotesMgmt();
 	$scope.canEditMeetingNotes = canEditMeetingNotes;
 	$scope.saveMeetingNotes = saveMeetingNotes;
+
+	$scope.createMiChronologyWorklog = function() {
+
+		$scope.data.flagToServerScriptToCreateNewMiWorklog = true;
+		c.data.flagToServerScriptToCreateNewMiWorklog = true;
+		//console.log("button clicked");
+		c.server.update();
+	}
+	
+	$scope.toggleEdit = function(toggleP) {
+		$scope.data.toggleEdit = toggleP;
+		c.data.toggleEdit = toggleP;
+		setupNotesMgmt();
+		//spUtil.update($scope);
+		//console.log("toggle button clicked " + toggleP);		
+	}
 	
 }]]></client_script>
         <controller_as>c</controller_as>
-        <css>.panel {&#13;
-position: relative;&#13;
-}&#13;
-&#13;
-.panel-heading i {&#13;
-  cursor: pointer;&#13;
-  position: absolute;&#13;
-  padding: 10px;&#13;
-  top: 0px;&#13;
-  right: 0px;  &#13;
-}&#13;
-&#13;
-#cab_meeting_notes {&#13;
- text-align: center; &#13;
-}&#13;
-&#13;
-.mn-container {&#13;
-    margin:15px;&#13;
-}&#13;
-&#13;
-.mn-save-btn {&#13;
-    margin:1px 0px 0px 10px;&#13;
-}&#13;
-&#13;
-.mn-static-notes {&#13;
-	padding: 8px;&#13;
-  //height:500px;&#13;
-  overflow:auto;&#13;
-}&#13;
-&#13;
-.mn-footer {&#13;
-  margin:10px 10px 10px 0px !important;&#13;
-}&#13;
-&#13;
-.noSelect{&#13;
-	-webkit-user-select: none;&#13;
-	-moz-user-select: none;&#13;
-	-ms-user-select: none;&#13;
-	user-select: none;&#13;
-}&#13;
-&#13;
-#cab_meeting_notes_notification {&#13;
-	padding:5px 10px 5px 10px;&#13;
-}&#13;
-&#13;
-.fade-in-out {&#13;
-	-webkit-transition: opacity .3s linear;&#13;
-	-moz-transition: opacity .3s linear;&#13;
-	-o-transition: opacity .3s linear;&#13;
-	-ms-transition: opacity .3s linear;&#13;
-	transition: opacity .3s linear;&#13;
-	opacity: 1;&#13;
-	filter: alpha(opacity = 100);&#13;
-}&#13;
-&#13;
-.fade-in-out.ng-hide {&#13;
-	opacity: 0;&#13;
-	filter: alpha(opacity = 0);&#13;
-&#13;
-}&#13;
-&#13;
-.notes_txt {&#13;
-  width: 100%;&#13;
-  height: 250px;&#13;
-     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */&#13;
-     -moz-box-sizing: border-box;    /* Firefox, other Gecko */&#13;
-     box-sizing: border-box;         /* Opera/IE 8+ */&#13;
+        <css>.panel {
+position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+
+#cab_meeting_notes {
+ text-align: center; 
+}
+
+.mn-container {
+    margin:15px;
+}
+
+.mn-save-btn {
+    margin:1px 0px 0px 10px;
+}
+
+.mn-static-notes {
+	padding: 8px;
+  //height:500px;
+  overflow:auto;
+}
+
+.mn-footer {
+  margin:10px 10px 10px 0px !important;
+}
+
+.noSelect{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#cab_meeting_notes_notification {
+	padding:5px 10px 5px 10px;
+}
+
+.fade-in-out {
+	-webkit-transition: opacity .3s linear;
+	-moz-transition: opacity .3s linear;
+	-o-transition: opacity .3s linear;
+	-ms-transition: opacity .3s linear;
+	transition: opacity .3s linear;
+	opacity: 1;
+	filter: alpha(opacity = 100);
+}
+
+.fade-in-out.ng-hide {
+	opacity: 0;
+	filter: alpha(opacity = 0);
+
+}
+
+.notes_txt {
+  width: 100%;
+  height: 250px;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+     box-sizing: border-box;         /* Opera/IE 8+ */
 }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -202,62 +230,116 @@ position: relative;&#13;
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
-	
+	// To Do List
+	// - Add logic to check if sys_id is valid MI
+	// 
+	// 
+	// 
+	// 
 	// data.major_incident_Id = 'f369a48edbcf8300b096e3a84b9619c5';
-	data.major_incident_Id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || options.sys_id;
+	var newMiWorkLogSysId;
+	data.toggleEdit = 'OFF';
+	data.canUserEdit = false;
+	data.mi_chronology_does_not_exist = false;
+	
+	if (input) {
+		if (input.flagToServerScriptToCreateNewMiWorklog == true){
+			//console.log("I should create a record for " + input.sys_id);
+			var grNewMiWorklog = new GlideRecord('u_incident_worklog');
+			grNewMiWorklog.initialize();
+			grNewMiWorklog.parent = input.sys_id;
+			grNewMiWorklog.u_choice_1 = 'MI CHRONOLOGY EVENTS'; 
+			grNewMiWorklog.short_description = 'Created from Service Portal'; 
+			newMiWorkLogSysId = grNewMiWorklog.insert();
+			console.log("I created " + newMiWorkLogSysId);
+			data.sys_id = input.sys_id;
+		} else {
+			data.sys_id = input.sys_id;
+		}
+	}
+	else {
+		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id");	
+	}
+	
+	if (!data.sys_id) {
+		console.log("Im returing");
+		data.displayWelcomeMessage = 'RecordNotFound';
+		return;
+	}
+
+	data.displayWelcomeMessage = false;
+	var currentUser = gs.getUser(); 
+	if(currentUser.isMemberOf('SSC-ETS-SMA') || currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT')){
+		data.canUserEdit = true;
+	} else {
+		data.canUserEdit = false;
+	}
+console.log("UserEdit " + data.canUserEdit);
+	
+	data.major_incident_Id = data.sys_id;
 	data.mi_worklog = [];
 	data.mi_worklog_array = [];
-	
+
 	var mi_worklog_GR = new GlideRecord('u_incident_worklog');
-	mi_worklog_GR.addQuery('parent', 'f369a48edbcf8300b096e3a84b9619c5');
-			mi_worklog_GR.addQuery('u_choice_1','CONTAINS', 'CHRONOLOGY');
-			mi_worklog_GR.setLimit(1);
-			mi_worklog_GR.orderByDesc('sys_updated_on');
-			mi_worklog_GR.query();
+	if (newMiWorkLogSysId) {
+		//console.log("entered if of GR");
+		data.mi_chronology_does_not_exist = false;
+			mi_worklog_GR.addQuery('sys_id', newMiWorkLogSysId);
+	}else 
+		{
+	mi_worklog_GR.addQuery('parent', data.major_incident_Id);
+	mi_worklog_GR.addQuery('u_choice_1', 'MI CHRONOLOGY EVENTS');
+		}
+	mi_worklog_GR.setLimit(1);
+	mi_worklog_GR.orderByDesc('sys_updated_on');
+	mi_worklog_GR.query();
+
 	while(mi_worklog_GR.next()) {
-				// // local function array variable for storing each incident worklog record
-				/**/
-				var incident_worklog = {};
-			  incident_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
-				incident_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
-				incident_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
-				incident_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
-				incident_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
-				incident_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
-				incident_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
-				//Push each incident worklog to local function array
-				data.mi_worklog_array.push(incident_worklog);
-				/**/
-				data.mi_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
-				data.worklogID = mi_worklog_GR.getDisplayValue('sys_id');
-				data.mi_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
-				data.mi_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
-				data.mi_chronology = mi_worklog_GR.getDisplayValue('description');
-				data.mi_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
-				data.mi_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
-				data.mi_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
-				data.mi_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
-			}
-	//console.log("Array");
-	//console.log(data.mi_worklog_array);
-	//console.log("Not Array");
-	//console.log(data.mi_worklog);
+		// // local function array variable for storing each incident worklog record
+		/**/
+		var incident_worklog = {};
+		//console.log("sys_id from GR loop " + mi_worklog_GR.getDisplayValue('sys_id'));
+		incident_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
+		incident_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
+		incident_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
+		incident_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
+		incident_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
+		incident_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
+		incident_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
+		//Push each incident worklog to local function array
+		data.mi_worklog_array.push(incident_worklog);
+		/**/
+		data.mi_worklog.inc_wklg_Id = mi_worklog_GR.getDisplayValue('sys_id');
+		data.worklogID = mi_worklog_GR.getDisplayValue('sys_id');
+		data.mi_worklog.inc_wklg_number = mi_worklog_GR.getDisplayValue('number');
+		data.mi_worklog.inc_wklg_short_description = mi_worklog_GR.getDisplayValue('short_description');
+		data.mi_chronology = mi_worklog_GR.getDisplayValue('description');
+		data.mi_worklog.inc_wklg_description = mi_worklog_GR.getDisplayValue('description');
+		data.mi_worklog.inc_wklg_type = mi_worklog_GR.getDisplayValue('u_choice_1');
+		data.mi_worklog.inc_wklg_updated_on = mi_worklog_GR.getDisplayValue('sys_updated_on');
+		data.mi_worklog.inc_wklg_updated_by = mi_worklog_GR.getDisplayValue('sys_updated_by');
+	}
+
+	if (!data.mi_worklog.inc_wklg_Id) {		
+		data.mi_chronology_does_not_exist = true;		
+	}
+
 })();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 06:29:41</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
+        <sys_customer_update>true</sys_customer_update>
         <sys_id>f1e63ab3db871740544fdd0b5e96191c</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>63</sys_mod_count>
         <sys_name>SSC MI Chronology Widget</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>true</sys_replace_on_upgrade>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_f1e63ab3db871740544fdd0b5e96191c</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-12 03:00:42</sys_updated_on>
+        <sys_updated_on>2018-07-26 22:01:25</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.mi_hide_header">
     <h4 class="panel-title">      
@@ -280,14 +362,17 @@ position: relative;&#13;
         <p>
           Updated on {{worklog.inc_wklg_updated_on}} by {{worklog.inc_wklg_updated_by}}
         </p>
-      </div>
-        <!--
-<input type='button' ng-click="shareMeetingNotes()" class="btn btn-sm btn-default pull-right" value="${Share}"
-ng-disabled="isSharingNotesInProgress || editor.concurrentUpdate || !editor.workingCopy || editor.workingCopy.length == 0 || editor.workingCopy != editor.savedCopy"/>
--->
+      </div>        
+          <div ng-if="data.mi_chronology_does_not_exist && data.canUserEdit">
+          <input type='button' ng-click="createMiChronologyWorklog()" class="btn btn-default pull-right" value="${Create MI Chronology Worklog}"/>
+        </div>
+        <div ng-if="data.canUserEdit && !data.mi_chronology_does_not_exist" class="text-center">
+          <input type='button' ng-if="data.toggleEdit == 'OFF'" ng-click="toggleEdit('ON')" class="btn btn-default" value="${Edit MI Chronology Worklog}"/>
+          <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF')" class="btn btn-default" value="${Done Editing}"/>
+        </div>
       </div>        
     </div>
-  </div> <!-- Main Panel Body -->
+  </div> <!-- Main Panel Body -->  
 </div>]]></template>
     </sp_widget>
 </record_update>

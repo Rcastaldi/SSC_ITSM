@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+  position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+.cardDeck {
+  //display: flex;
+  //width: 100%;
+  //flex-wrap: wrap;
+  //display: table;
+}
+.card {
+  //display: flex;
+  //display: table-cell;
+  padding-bottom: 10px;
+  margin: 0px;
+  height: 100%;
+}
+.card:hover {
+    box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2);
+}
+.cardheader { 
+  //width: 20%; 
+  //height: 40%;  
+  border-top: 1px solid #D3D3D3; 
+  border-right : 1px solid #D3D3D3; 
+  border-left : 1px solid #D3D3D3;	 
+  padding: 5px 0 5px 5px; 
+  color: #000 !important; 
+  border-radius: 10px 10px 0px 0; 
+  background: rgba(247,247,247,1); 
+} 
+.innerbox{ 
+  //width: 20%;
+  //display: table-cell;
+  height: 100px;
+  padding: 5px 0 5px 5px;
+  border: 1px solid #D3D3D3; 
+  overflow-y: auto;
+  /* 	-webkit-box-shadow: 7px 9px 12px -6px rgba(0,0,0,0.75); 
+  -moz-box-shadow: 7px 9px 12px -6px rgba(0,0,0,0.75); 
+  box-shadow: 7px 9px 12px -6px rgba(0,0,0,0.75); */ 
+
+} 
+.cardfooter{ 
+  /* border-radius: 0 0 10px 10px; */ 
+  border-right: 1px solid #D3D3D3; 
+  border-left: 1px solid #D3D3D3; 
+  border-bottom: 1px solid #D3D3D3; 
+  padding: 5px 0 5px 5px; 
+  //width: 20%; 
+  background: rgba(247,247,247,1); 
+  //height: 30px; 
+} 
+.active{ 
+  display: inherit; 
+  transition-property: display; 
+  transition-duration:10s; 
+  transition-delay:2.5s; 
+  -webkit-transition-duration:20s; 
+  -webkit-transition-delay:0.5s; 
+} 
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-open-mi-cards</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Open Major Incident Cards</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	
+	data.incidents = [];
+	var inc_num_gr = new GlideRecord('incident');
+	inc_num_gr.addEncodedQuery('u_qs_major_incident=true^active=true');
+	inc_num_gr.setLimit(100);
+	inc_num_gr.orderBy('sys_created_on');
+	inc_num_gr.query();
+	
+while (inc_num_gr.next()) {
+	var incident = {};
+	incident.number = inc_num_gr.getDisplayValue('number');
+	incident.sys_id = inc_num_gr.getUniqueValue();
+	incident.shortdescription = inc_num_gr.getDisplayValue('short_description');
+	incident.created = inc_num_gr.getDisplayValue('sys_created_on')
+	incident.mitype = inc_num_gr.getDisplayValue('u_mi_type')
+	incident.updatedon = inc_num_gr.getDisplayValue('sys_updated_on')
+	incident.updatedby = inc_num_gr.getDisplayValue('sys_updated_by')
+	incident.description = inc_num_gr.getDisplayValue('description')
+	data.incidents.push(incident);
+}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-31 21:43:08</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>f0fa5343db6f13c052fdd7795e961919</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>SSC Open Major Incident Cards</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_f0fa5343db6f13c052fdd7795e961919</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-04 17:52:00</sys_updated_on>
+        <template><![CDATA[<div class="container-fluid panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="container-fluid panel-body"> <!-- Main Panel Body-->
+    <div class="row"> 
+
+
+
+
+      <div class="col-sm-6 col-lg-3 cardDeck" ng-repeat = "incident in data.incidents" >
+        <div class="card">
+          <div class="cardheader text-center">
+            <a ng-href="?id=ssc_sp_mi_form&table=incident&sys_id={{::incident.sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{incident.number}}" target="_blank">
+              <h3 class="card-heading">{{incident.number}}</h3>
+            </a>
+            <div class="card-body innertext text-left">
+              <h6 class="m-n text-muted ">Created</h6>{{incident.created}}
+              <h6 class="m-n text-muted ">Mi Type</h6>{{incident.mitype}}
+            </div> 
+          </div>
+          <div class="card-body innerbox text-center">
+            <h4 class="card-title">Short Description</h4>
+            <p class="card-text">{{incident.shortdescription}}.</p>  
+            <p class="card-text">{{incident.description}}.</p>
+          </div>
+          <div class="cardfooter text-left">
+            <p style="text-align: left"> <span style="float:right">Updated On: {{incident.updatedon}}</span> Updated By: {{incident.updatedby}}</p>
+            <!--<p> Updated By: {{incident.updatedby}}</p> -->
+          </div>
+        </div>
+        
+      </div> <!-- End of Row 1 -->      
+    </div> <!-- Main Panel Body -->
+  </div>]]></template>
+    </sp_widget>
+</record_update>

@@ -4,7 +4,7 @@
         <client_script><![CDATA[function($scope, spUtil, $http, $rootScope) {
 	/* widget controller */
 	var c = this;
-	var shared = c.widget.options.shared; //Get the shared object from the "My Pet" widget
+	var shared = c.widget.options.shared || []; //Get the shared object from the "My Pet" widget
 	c.data.sel_RMI = true;
 	c.data.sel_QMI = true;
 	c.data.sel_PMI = true;
@@ -159,27 +159,8 @@ $scope.$on("field.change", function(evt, parms) {
         <css>// Table, header, row, and cell styles
 th {  font-weight: bold; font-size: 18px; padding-bottom: 10px; }
 td { padding: 10px;}
-// Button styles
-/*
-button.ssc_custom {
-  background-color:  #007298; /* SSC Light Blue */
-  border: 1px;
-  color: white;
-  padding: 10px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  /* border: 2px solid white; */
-}
-button#pressed { 
-  background-color:   #e4ecf0; 
-  color: #0A2F5D;
-} 
-*/
-// Navhub stylrs
+
+// Navhub styles
 .sn-navhub-btn:active, selected{
   border-bottom: 3px solid #278efc; ($color-accent)
 }
@@ -259,7 +240,90 @@ border-radius: 3px;
 	data.rcc = [];
 	data.rco = [];
 	data.sel_apps = [];
+		
+	data.problem = [];
 	data.ciWithProblem = [];
+	data.groupsWithProblem = [];
+	data.rcoList = [];
+	data.rccList = [];
+	//var retObj = {$$state: {value: {data: {results: []}}}};
+	
+	var problemGr = new GlideRecord('problem');	
+	problemGr.addEncodedQuery('u_opened_by_group.name=IBM-SSM-PROBLEM-MGT');
+	problemGr.addNotNullQuery('cmdb_ci');
+	problemGr.setLimit(5000);
+	problemGr.orderByDesc('sys_created_on');
+	problemGr.query();
+	while ( problemGr.next() ) {
+		var problems = {};
+		problems.ci_sys_id = problemGr.getValue('cmdb_ci');
+		problems.ci_display_id = problemGr.getDisplayValue('cmdb_ci');
+		problems.assignedGroup_id = problemGr.getValue('assignment_group');
+		problems.assignedGroup_display_id = problemGr.getDisplayValue('assignment_group');
+		data.problem.push(problems);		
+	}
+	//Build list of sys_ids of Applications and Groups that have problem records	
+	var stringOfCis = data.problem[0].ci_sys_id.toString();
+	var stringOfAGs = data.problem[0].assignedGroup_id.toString();
+	data.problem.forEach(function(forEaProblem){
+		stringOfCis = stringOfCis + ", " + forEaProblem.ci_sys_id.toString();
+		stringOfAGs = stringOfAGs + ", " + forEaProblem.assignedGroup_id.toString();
+	})
+	
+	//Build List of Applications that have problem records sys_user_group
+	var cmdbGr = new GlideRecord('cmdb_ci_service');
+	cmdbGr.addQuery('sys_id', 'IN', stringOfCis);
+	cmdbGr.setLimit(1000);
+	cmdbGr.orderBy('name');
+	cmdbGr.query();
+	while ( cmdbGr.next() ) {
+		var ciSelect = {};
+		ciSelect.id = cmdbGr.getUniqueValue();
+		ciSelect.text = cmdbGr.getValue('name');
+		data.ciWithProblem.push(ciSelect);
+	}
+	
+	//Build List of Groups that have problem records
+	var sugGr = new GlideRecord('sys_user_group');
+	sugGr.addQuery('sys_id', 'IN', stringOfAGs);
+	sugGr.setLimit(1000);
+	sugGr.orderBy('name');
+	sugGr.query();
+	while ( sugGr.next() ) {
+		var groupSelect = {};
+		groupSelect.id = sugGr.getUniqueValue();
+		groupSelect.text = sugGr.getValue('name');
+		data.groupsWithProblem.push(groupSelect);				
+	}
+
+	//Root Cause Owner List
+	var rcoGr = new GlideRecord('sys_choice');
+	rcoGr.addEncodedQuery('element=u_root_cause_owner^inactive=false');
+	rcoGr.setLimit(100);
+	rcoGr.orderBy('sequence');
+	rcoGr.query();
+	while ( rcoGr.next() ) {
+		//console.log(rcoGr.getDisplayValue('label'));
+		var rcoOpt = {};
+		rcoOpt.label = rcoGr.getDisplayValue('label');
+		rcoOpt.value = rcoGr.getValue('value');
+		data.rcoList.push(rcoOpt);
+	}
+	
+	//Root Cause Category List
+	var rccGr = new GlideRecord('sys_choice');
+	rccGr.addEncodedQuery('element=u_root_cause_category^inactive=false');
+	rccGr.setLimit(100);
+	rccGr.orderBy('sequence');
+	rccGr.query();
+	while ( rccGr.next() ) {
+		//console.log(rccGr.getDisplayValue('label'));
+		var rccOpt = {};
+		rccOpt.label = rccGr.getDisplayValue('label');
+		rccOpt.value = rccGr.getValue('value');
+		data.rccList.push(rccOpt);
+	}
+	
 	// data.problems_search = [];
 	// shared.problems_search = [];
 	/*
@@ -282,6 +346,7 @@ border-radius: 3px;
 	data.ciRecordPickerQuery = cmdbGr.getEncodedQuery();
 	console.log(data.ciRecordPickerQuery);
 	*/
+	/*
 	if (input.action) {
 		data.groups = input.groups;
 		data.selected_problems = input.selected_problems;
@@ -346,7 +411,7 @@ border-radius: 3px;
 		}
 
 	}
-
+*/
 
 })();]]></script>
         <servicenow>false</servicenow>
@@ -355,7 +420,7 @@ border-radius: 3px;
         <sys_created_on>2018-07-09 06:11:52</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>b0d23abfdb471740544fdd0b5e96198b</sys_id>
-        <sys_mod_count>58</sys_mod_count>
+        <sys_mod_count>74</sys_mod_count>
         <sys_name>SSC Active Filter</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -363,7 +428,7 @@ border-radius: 3px;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_b0d23abfdb471740544fdd0b5e96198b</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-11 22:03:06</sys_updated_on>
+        <sys_updated_on>2018-07-18 09:38:36</sys_updated_on>
         <template><![CDATA[<div> <!-- Active Filter Widget -->
   <!--
   <div class="sn-navhub">
@@ -399,10 +464,10 @@ border-radius: 3px;
       <tr> <th> Select Problem Owner Groups: </th> <th> Select Root Cause Category: </th> </tr>
       <tr>
         <td>
-          <sn-record-picker id="group_name" field="group_name" table="'sys_user_group'" default-query="'active=true^typeLIKE3307a4670fa082005a72ba8ce1050e9b^nameNOT LIKEBAD'" display-field="'name'" value-field="'sys_id'" search-fields="'name'" page-size="100" multiple="true"></sn-record-picker>
+          <ssc-record-picker id="group_name" field="group_name" table="'sys_user_group'" default-query="'active=true^typeLIKE3307a4670fa082005a72ba8ce1050e9b^nameNOT LIKEBAD'" display-field="'name'" value-field="'sys_id'" search-fields="'name'" page-size="100" multiple="true"></sn-record-picker>
         </td>
         <td>
-          <sn-record-picker id="root_cause_category" field="root_cause_category" table="'sys_choice'" display-field="'label'" default-query="'element=u_root_cause_category'" value-field="'value'" search-fields="'label'" page-size="100" multiple="true" style="padding-bottom:10px"></sn-record-picker>
+          <ssc-record-picker id="root_cause_category" field="root_cause_category" table="'sys_choice'" display-field="'label'" default-query="'element=u_root_cause_category'" value-field="'value'" search-fields="'label'" page-size="100" multiple="true" style="padding-bottom:10px"></sn-record-picker>
         </td>
       </tr>
       <tr> <th> Select Applications: </th> <th> Select Root Cause Owner: </th> </tr>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">b980846bdb2393c052fdd7795e96198d</sp_column>
+        <sp_widget display_value="SSC Report Widget">9d87a2b7db471740544fdd0b5e96196a</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-01 19:16:34</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>a7f200ebdb2393c052fdd7795e9619e4</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_a7f200ebdb2393c052fdd7795e9619e4</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-04 05:52:13</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"report": {
+		"value": "1a6937c7db7f83c0ba6c5eea4b961984",
+		"displayValue": "Problem KRI1 Non Compliant Count"
+	},
+	"link_to": {
+		"value": "Report",
+		"displayValue": "Report"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=a7f200ebdb2393c052fdd7795e9619e4"/>
+</record_update>

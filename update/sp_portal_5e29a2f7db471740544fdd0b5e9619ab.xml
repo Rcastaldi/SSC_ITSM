@@ -23,9 +23,9 @@ $btn-default-bg: #fff;
 $text-muted: #727272;
 </css_variables>
         <default>false</default>
-        <homepage display_value="ssc_sp_problem_home">c214d4c1db051b00544fdd0b5e96192c</homepage>
+        <homepage display_value="ssc_sp_itsm_home">5f20318cdb535740544fdd0b5e961902</homepage>
         <icon/>
-        <kb_knowledge_base display_value="Internal IT">a037bbebdb70cb0052fdd7795e96193c</kb_knowledge_base>
+        <kb_knowledge_base display_value="ServiceNow Training for IT Users">3df3ab98db720704544fdd0b5e9619f7</kb_knowledge_base>
         <kb_knowledge_page display_value="kb_view2">26c2e030d7201200a9addd173e24d437</kb_knowledge_page>
         <login_page display_value="landing">36c61807cb31120000f8d856634c9ca9</login_page>
         <logo/>
@@ -41,7 +41,7 @@ $text-muted: #727272;
         <sys_created_on>2018-07-09 05:30:24</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>5e29a2f7db471740544fdd0b5e9619ab</sys_id>
-        <sys_mod_count>30</sys_mod_count>
+        <sys_mod_count>33</sys_mod_count>
         <sys_name>State Street IT Service Management</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -49,7 +49,7 @@ $text-muted: #727272;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_portal_5e29a2f7db471740544fdd0b5e9619ab</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-11 11:54:34</sys_updated_on>
+        <sys_updated_on>2018-08-04 06:37:05</sys_updated_on>
         <theme display_value="Stock">79315153cb33310000f8d856634c9c4b</theme>
         <title>State Street IT Service Management</title>
         <url_suffix>itsm</url_suffix>

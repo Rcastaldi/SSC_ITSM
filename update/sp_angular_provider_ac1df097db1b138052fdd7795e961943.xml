@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>sscEditableField</name>
+        <script><![CDATA[function(glideFormFactory, $http, spUtil, sscModelUtil) {
+	console.log("sscEditableField start");
+	return {
+		restrict: 'E',
+		templateUrl: 'sp_editable_field.xml',
+		scope: {
+			fieldModel: "=",
+			table: "@",
+			tableId: "=",
+			block: "=?",
+			editableByUser: "=",
+			onChange: "=?",
+			onSubmit: "=?",
+			asyncSubmitValidation: "=?"
+		},
+		transclude: true,
+		replace: true,		
+		controller: function($scope) {			
+			var REST_API_PATH = "/api/now/v1/ui/table_edit/";
+			var g_form;			
+			this.createShadowModel = function() {
+				$scope.table = "problem";
+				console.log("calling sscModelUtil to extendField");
+				console.log($scope.fieldModel);
+				sscModelUtil.extendField($scope.fieldModel);
+				console.log("sscModelUtil extendField completed");
+				$scope.shadowModel = angular.copy($scope.fieldModel);
+				$scope.shadowModel.table = $scope.table;				
+				$scope.shadowModel.sys_id = $scope.tableId;
+				$scope.blockDisplay = $scope.block ? {display: 'block'} : {};
+				$scope.editable = !$scope.shadowModel.readonly && $scope.editableByUser;
+				$scope.fieldID = $scope.table + "-" + $scope.shadowModel.name.replace('.', '_dot_') + "-" + $scope.tableId;
+				console.log("init glide form");
+				initGlideForm();
+			};
+			this.createShadowModel();
+			$scope.getGlideForm = function() {
+				console.log("return g_form");
+				return g_form;
+			};
+			$scope.saveForm = function() {
+				if (g_form)
+					g_form.submit();
+				if (angular.isDefined($scope.asyncSubmitValidation)) {
+					$scope.asyncSubmitValidation(g_form, $scope.shadowModel).then(function(result) {
+						if (result)
+							completeSave();
+					});
+				}
+			};
+			function completeSave() {
+				var url = REST_API_PATH + $scope.table + "?sysparm_records=" + $scope.tableId + "&sysparm_view=default&sysparm_fields=" + $scope.shadowModel.name;
+				var data = {};
+				data[$scope.shadowModel.name] = $scope.shadowModel.value;
+				$http.put(url, data).success(function (data) {
+					if (data.result && Array.isArray(data.result.records))
+						updateFieldModel(data.result.records);
+					$scope.closePopover();
+				});
+			}
+			function updateFieldModel(records) {
+				for (var i=0; i<records.length; i++){
+					var r = records[i];
+					if (r.data && $scope.fieldModel.name in r.data) {
+						var updated = r.data[$scope.fieldModel.name];
+						$scope.fieldModel.value = updated.value;
+						$scope.fieldModel.displayValue = updated.display_value;
+					}
+				}
+			}
+			function initGlideForm() {
+				if (g_form)
+					g_form.$private.events.cleanup();
+				var uiMessageHandler = function(g_form, type, message) {
+					switch (type) {
+						case 'infoMessage':
+							spUtil.addInfoMessage(message);
+							break;
+						case 'errorMessage':
+							spUtil.addErrorMessage(message);
+							break;
+						case 'clearMessages':
+							break;
+						default:
+							return false;
+					}
+				};
+				g_form = glideFormFactory.create($scope, $scope.table, $scope.tableId, [$scope.shadowModel], null, {uiMessageHandler: uiMessageHandler});
+				$scope.$emit("spEditableField.gForm.initialized", g_form, $scope.shadowModel);
+				if (angular.isDefined($scope.onChange))
+					g_form.$private.events.on("change", function(fieldName, oldValue, newValue){ return $scope.onChange.call($scope.onChange, g_form, $scope.shadowModel, oldValue, newValue); });
+				if (angular.isDefined($scope.onSubmit))
+					g_form.$private.events.on("submit", function(){ return $scope.onSubmit.call($scope.onSubmit, g_form, $scope.shadowModel); });
+				if (!angular.isDefined($scope.asyncSubmitValidation)) {
+					g_form.$private.events.on('submitted', function() {
+						completeSave();
+					});
+				}
+			}
+		},
+		link: function(scope, el, attrs, ctrl) {
+			scope.closePopover = function() {
+				if (scope.shadowModel.popoverIsOpen)
+					ctrl.createShadowModel();
+				scope.shadowModel.popoverIsOpen = false;
+			};
+			$('body').on('click', function (event) {
+				var $et = $(event.target);
+				if (!($et.closest(".popover-" + scope.fieldID).length
+					  || $et.closest(".popover-trigger-" + scope.fieldID).length)) {
+					scope.$evalAsync('closePopover()');
+				}
+			});
+			function executeEventHandlers(event){
+				trapKeyboardFocus(event);
+				closePopoverOnEscape(event);
+			}
+			function trapKeyboardFocus(event) {
+				if(!scope.shadowModel.popoverIsOpen)
+					return;
+				if (event.which === 9 && !event.shiftKey) {
+					if ( ($(event.target).is("button[ng-click='closePopover();']"))) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+				}
+				if(event.which === 9 && event.shiftKey) {
+					if(!isTargetedElementSPFormField(event))
+						return;
+					if($('button[ng-click="openReference(field, formModel.view)"]').length === 1){
+						if($(event.target).is("button")){
+							event.preventDefault();
+							event.stopPropagation();
+						}
+					}
+					else if($("sp-email-element").length === 1){
+						if($("sp-email-element").length === 1){
+							if($(event.target).is("input")){
+								event.preventDefault();
+								event.stopPropagation();
+							}
+						}
+					}
+					else {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+				}
+			}
+			function isTargetedElementSPFormField(event){
+				return $(event.target).parents("#editableSaveForm").length === 1;
+			}
+			function closePopoverOnEscape(event){
+				if(event.which === 27)
+					closePopover();
+			}
+			function closePopover(){
+				scope.$evalAsync('closePopover()');
+			}
+			$('body').on('keydown', executeEventHandlers);
+			scope.$on("$destroy", function() {
+				$('body').off('keyup', closePopover);
+			});
+			scope.$on('sp.spFormField.rendered', function(e, element, input) {
+				input.focus();
+			});
+		}
+	};
+}
+]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-19 18:39:29</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>ac1df097db1b138052fdd7795e961943</sys_id>
+        <sys_mod_count>21</sys_mod_count>
+        <sys_name>sscEditableField</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_angular_provider_ac1df097db1b138052fdd7795e961943</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-19 20:55:01</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+</record_update>

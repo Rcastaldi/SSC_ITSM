@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $location) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.$on("$locationChangeSuccess", function(name, data) {
+	var searchObject = $location.search();
+	$scope.data.sys_id = searchObject.sys_id || searchObject.sl_sys_id;
+	//spUtil.update($scope);
+	c.server.update();
+	});
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+position: relative;
+}
+
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+
+.list-item-order {
+font-weight: bold;
+  font-size: large;
+  vertical-align: center;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>title,glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-tower-main</id>
+        <internal>false</internal>
+        <link/>
+        <name>State Street Towers</name>
+        <option_schema>[{"name":"tower_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+
+	//var gr = $sp.getRecord();
+	//'ae609114db2bd780544fdd0b5e961953'	
+	//data.options = options;
+	//data.input =  input;
+	
+	if (input) {data.sys_id = input.s || input.sys_id;}
+	else {
+		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || 'ae609114db2bd780544fdd0b5e961953';	
+	}
+	if (!data.sys_id) {
+		data.welcomeMessage = true;
+		return;
+	}			
+	data.welcomeMessage = false;
+	
+	var grTowerLevel = new GlideRecord('cmn_rota');
+	grTowerLevel.get('sys_id', data.sys_id);
+	
+	var fields = $sp.getFields(grTowerLevel, 'name,x_ibmss_ssc_towers_tower,group');	
+
+	data.fields = fields;
+	data.tableLabel = grTowerLevel.getLabel();
+	data.table = grTowerLevel.getTableName();
+	data.TowerLevelRoster = [];
+	data.TowerLevelRosterMember = [];
+
+	var stringOfRosters = [];
+	var stringOfMembers = [];
+	var grTowerLevelRoster = new GlideRecord('cmn_rota_roster');
+	grTowerLevelRoster.addQuery('rota', data.sys_id);
+	grTowerLevelRoster.orderBy('order');
+	grTowerLevelRoster.query();
+
+	while (grTowerLevelRoster.next()) {
+		var towerLevelRoster = {};
+		towerLevelRoster.order = grTowerLevelRoster.getDisplayValue('order');
+		towerLevelRoster.name = grTowerLevelRoster.getDisplayValue('name');
+		towerLevelRoster.sys_id = grTowerLevelRoster.getValue('sys_id');
+		stringOfRosters.push(towerLevelRoster.sys_id);
+		data.TowerLevelRoster.push(towerLevelRoster);
+	}
+
+	var grTowerLevelRosterMembers = new GlideRecord('cmn_rota_member');
+	grTowerLevelRosterMembers.addQuery('roster', "IN", stringOfRosters);
+	grTowerLevelRosterMembers.orderBy('order');
+	grTowerLevelRosterMembers.query();
+
+	while (grTowerLevelRosterMembers.next()) {
+		var towerLevelRosterMembers = {};
+		towerLevelRosterMembers.order = grTowerLevelRosterMembers.getDisplayValue('order');
+		towerLevelRosterMembers.roster = grTowerLevelRosterMembers.getValue('roster');
+		towerLevelRosterMembers.name = grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_name');
+		towerLevelRosterMembers.contact = 
+			grTowerLevelRosterMembers.getDisplayValue('member') || 
+			grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_group') ||
+			grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_name');
+		towerLevelRosterMembers.contact_number = 
+			grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_group_phone_number') || 
+			grTowerLevelRosterMembers.getDisplayValue('member.phone');
+		towerLevelRosterMembers.contact_email = 
+			grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_group_email') ||
+			grTowerLevelRosterMembers.getDisplayValue('member.email') ||
+			grTowerLevelRosterMembers.getDisplayValue('group.email');
+		towerLevelRosterMembers.sys_id = grTowerLevelRosterMembers.getValue('sys_id');
+		//console.log(grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_name'));
+		stringOfMembers.push(grTowerLevelRosterMembers.getDisplayValue('member'));
+		data.TowerLevelRosterMember.push(towerLevelRosterMembers);
+	}
+
+
+	//Build list of rosters	
+	/*
+		data.problem.forEach(function(forEaProblem){
+		stringOfCis = stringOfCis + ", " + forEaProblem.ci_sys_id.toString();
+		stringOfAGs = stringOfAGs + ", " + forEaProblem.assignedGroup_id.toString();
+	})
+	*/
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-23 20:57:19</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>7bb30664db6f1b80544fdd0b5e961989</sys_id>
+        <sys_mod_count>153</sys_mod_count>
+        <sys_name>State Street Towers</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_7bb30664db6f1b80544fdd0b5e961989</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-30 19:35:20</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.tower_hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div  class="panel-body"> <!-- Main Panel Body-->
+    <div class="row">
+      <div>
+        <div class="panel-body">
+          <div ng-if="data.welcomeMessage">
+            <h4 class="text-center">
+              IT-to-IT Esclation Matrix - Select a Tower level on the left to view escalation information
+            </h4>
+
+          </div>
+          <div ng-if="data.fields.length > 0">
+            <div class="row">
+              <div class="col-md-6 col-sm-6 m-b break-word" ng-repeat="field in data.fields" 
+                   ng-if="field.value && (field.type != 'decimal' || field.type == 'decimal' && field.value != 0)" >
+                <h6 class="m-n text-muted ">{{field.label}}</h6>
+                <span ng-switch="field.type">
+                  <div ng-switch-when="glide_date_time" title="{{field.display_value}}">
+                    <sn-time-ago timestamp="::field.value" />
+                  </div>
+                  <div ng-switch-default>{{field.display_value}}</div>
+                </span>
+              </div>
+            </div>
+          </div> 
+        </div> 
+        <div class="panel-body" ng-if="data.welcomeMessage == false"> 
+          <!-- Tower Level Rosters -->
+          <h4 class="section-title">
+            Tower Level Rosters
+          </h4>
+          <div class="list-group TowerLevelRosters">
+            <div ng-repeat="TowerLevelRosters in data.TowerLevelRoster">
+              <div class="list-group-item" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle" style="cursor: pointer;">
+                <div> 
+                  <i class="glyphicon" ng-class="{'glyphicon-chevron-down': variable_toggle, 'glyphicon-chevron-right': !variable_toggle}"></i>
+                  <span class="list-item-order">{{TowerLevelRosters.order}}</span> - {{TowerLevelRosters.name}}
+                </div>
+                <!-- Tower Level Roster Members -->
+                <div class="list-group" ng-if="variable_toggle"> 
+                  <br/>
+                  <div ng-repeat="TowerLevelRosterMembers in data.TowerLevelRosterMember | filter: {'roster': TowerLevelRosters.sys_id }">
+                    <div class="list-group-item">
+                      <div>                          
+                        <span class="list-item-order">{{TowerLevelRosterMembers.order}}</span> - {{TowerLevelRosterMembers.name}}
+                        <div class="list-group-item">
+                          {{TowerLevelRosterMembers.contact}} - {{TowerLevelRosterMembers.contact_number}} - {{TowerLevelRosterMembers.contact_email}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div> <!-- Tower Level Roster Members -->
+              </div>
+            </div>
+          </div> <!-- Each Tower Level Roster -->
+        </div><!-- Tower Level Rosters -->
+
+      </div> <!-- Main Panel Body -->
+      <!--
+      <pre>Options - {{data.options | json}}</pre>
+      <pre>Input - {{data.input | json}}</pre>
+			-->
+    </div>]]></template>
+    </sp_widget>
+</record_update>

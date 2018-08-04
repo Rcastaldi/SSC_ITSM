@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_page">
+    <sp_page action="INSERT_OR_UPDATE">
+        <css>section.page, section.body {
+    padding-top: 0px !important;
+}
+</css>
+        <id>ssc_sp_itsm_towers</id>
+        <internal>false</internal>
+        <public>false</public>
+        <roles/>
+        <short_description>Organized view of  State Street groups with on-call information.</short_description>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-23 20:57:19</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>3fb30664db6f1b80544fdd0b5e96198b</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>ssc_sp_itsm_towers</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_page_3fb30664db6f1b80544fdd0b5e96198b</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-07-25 18:29:56</sys_updated_on>
+        <title>State Street Towers</title>
+    </sp_page>
+    <sys_translated_text action="delete_multiple" query="documentkey=3fb30664db6f1b80544fdd0b5e96198b"/>
+</record_update>

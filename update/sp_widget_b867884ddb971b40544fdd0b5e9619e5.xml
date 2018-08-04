@@ -1,37 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
-        <client_script><![CDATA[function($scope, spUtil, $http) {
+        <client_script><![CDATA[function($scope, spUtil, $http, $rootScope) {
 	/* widget controller */
-	var c = this;
+	var c = this;	
+	var appSelection = [];
+	var groupSelection = [];
+	var root_cause_ownerSelection = [];
+	var root_cause_categorySelection = [];
 
-	c.locations = [];
-	c.data.location = '';
-	c.selected = {value: c.locations[0]};
-	c.refreshLocation = function(query){
-		if(query) {
-			c.server.get({
-				action: 'searchLocation',
-				query: query
-			}).then(function(response){
-				c.locations = response.data.locations;
-			});
-		}
-	}
-	c.onSelectCallback = function(item, model) {
-		c.data.location = item.sys_id;
-	}
-	c.remove = function (item) {
-		var index = c.data.files.indexOf(item);
-		c.data.files.splice(index, 1);
-	}
+	var shared = c.widget.options.shared || []; //Get the shared object from the "My Pet" widget
+	c.data.sel_RMI = true;
+	c.data.sel_QMI = true;
+	c.data.sel_PMI = true;
+
 	
+	$scope.$watch('selstartdate', function(newVal, oldVal) {
+		if(newVal){shared.selstartdate = newVal;}
+	});
+	$scope.$watch('selenddate', function(newVal, oldVal) {
+		if(newVal){shared.selenddate = newVal;}
+	});
+	$scope.$watch('c.data.sel_RMI', function(newVal, oldVal) {
+		shared.sel_RMI = newVal;
+	});
+	$scope.$watch('c.data.sel_QMI', function(newVal, oldVal) {
+		shared.sel_QMI = newVal;
+	});
+	$scope.$watch('c.data.sel_PMI', function(newVal, oldVal) {
+		shared.sel_PMI = newVal;
+	});
+	$scope.$watch('c.appSelection', function(newVal, oldVal) {
+		if(newVal){shared.sel_apps = newVal.id;}		
+	});
+	$scope.$watch('c.groupSelection', function(newVal, oldVal) {
+		if(newVal){shared.groups = newVal.id;}					
+	});
+	$scope.$watch('c.root_cause_categorySelection', function(newVal, oldVal) {
+		if(newVal){shared.root_cause_category = newVal.value;}		
+	});
+	$scope.$watch('c.root_cause_ownerSelection', function(newVal, oldVal) {
+		if(newVal){shared.root_cause_owner = newVal.value;}		
+	});
 }]]></client_script>
         <controller_as>c</controller_as>
-        <css/>
+        <css>// Table, header, row, and cell styles
+th {  font-weight: bold; font-size: 18px; padding-bottom: 10px; }
+td { padding: 10px;}
+
+// Navhub styles
+.sn-navhub-btn:active, selected{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}
+.sn-navhub-btn:hover{
+  border-bottom: 3px solid #bdc0c4; ($color-light) 
+}
+.sn-navhub-btn:default{
+  color: #343d47; ($color-darkest)
+}
+.sn-navhub-btn-active{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}
+// Checkbox styles
+input[type=checkbox] + label {
+  border-radius: 3px;
+  padding: 2px;
+  background-color: #ffffff; 
+  border: 1px solid #bdc0c4; 
+}
+input[type=checkbox]:hover + label{
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc;  
+}
+input[type=checkbox]:focused + label{
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  border-shadow: 0 0 6px 0 #278efc; 
+  box-sizing: border-box;
+}
+input[type=checkbox]:checked + label {
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  color: #278efc;
+}
+input[type=checkbox]:not(:checked) + label {
+border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #bdc0c4; 
+}
+.input-checkbox {
+  border-radius: 3px;
+  background-color: #ffffff; 
+  border: 1px solid #278efc; 
+  color: #278efc;
+}
+
+//set max height
+.list-group{
+  white-space: pre-wrap;
+  overflow-y:scroll;overflow-x:hidden;
+  max-height: 500px;
+}
+</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
-        <description/>
+        <description>Widget that allows user input for filtering list of problem records.</description>
         <docs/>
         <field_list/>
         <has_preview>true</has_preview>
@@ -44,26 +120,88 @@
         <roles/>
         <script><![CDATA[(function() {	
 
-	var locations = [];
+	data.problem = [];
+	data.ciWithProblem = [];
+	data.groupsWithProblem = [];
+	data.rcoList = [];
+	data.rccList = [];
 
-	if(input && input.action === 'searchLocation'){
-		var grl = new GlideRecord('cmn_location');	
-		if(options.locations_query){
-			grl.addEncodedQuery(options.locations_query);
-		}
-		grl.addQuery('name', 'CONTAINS', input.query);
-		grl.setLimit(20);
-		grl.query();
-		while(grl.next()){
-			locations.push({
-				name: grl.name.toString(),
-				sys_id: grl.sys_id.toString()
-			});
-		}
-		data.locations = locations;
-		return data;
+	var problemGr = new GlideRecord('problem');	
+	problemGr.addEncodedQuery('u_opened_by_group.name=IBM-SSM-PROBLEM-MGT');
+	problemGr.addNotNullQuery('cmdb_ci');
+	problemGr.setLimit(5000);
+	problemGr.orderByDesc('sys_created_on');
+	problemGr.query();
+	while ( problemGr.next() ) {
+		var problems = {};
+		problems.ci_sys_id = problemGr.getValue('cmdb_ci');
+		problems.ci_display_id = problemGr.getDisplayValue('cmdb_ci');
+		problems.assignedGroup_id = problemGr.getValue('assignment_group');
+		problems.assignedGroup_display_id = problemGr.getDisplayValue('assignment_group');
+		data.problem.push(problems);
+	}
+	//Build list of sys_ids of Applications and Groups that have problem records	
+	var stringOfCis = data.problem[0].ci_sys_id.toString();
+	var stringOfAGs = data.problem[0].assignedGroup_id.toString();
+	data.problem.forEach(function(forEaProblem){
+		stringOfCis = stringOfCis + ", " + forEaProblem.ci_sys_id.toString();
+		stringOfAGs = stringOfAGs + ", " + forEaProblem.assignedGroup_id.toString();
+	})
+	
+	//Build List of Applications that have problem records sys_user_group
+	var cmdbGr = new GlideRecord('cmdb_ci_service');
+	cmdbGr.addQuery('sys_id', 'IN', stringOfCis);
+	cmdbGr.setLimit(1000);
+	cmdbGr.orderBy('name');
+	cmdbGr.query();
+	while ( cmdbGr.next() ) {
+		var ciSelect = {};
+		ciSelect.id = cmdbGr.getUniqueValue();
+		ciSelect.text = cmdbGr.getValue('name');
+		data.ciWithProblem.push(ciSelect);
+	}
+	
+	//Build List of Groups that have problem records
+	var sugGr = new GlideRecord('sys_user_group');
+	sugGr.addQuery('sys_id', 'IN', stringOfAGs);
+	sugGr.setLimit(1000);
+	sugGr.orderBy('name');
+	sugGr.query();
+	while ( sugGr.next() ) {
+		var groupSelect = {};
+		groupSelect.id = sugGr.getUniqueValue();
+		groupSelect.text = sugGr.getValue('name');
+		data.groupsWithProblem.push(groupSelect);
 	}
 
+	//Root Cause Owner List
+	var rcoGr = new GlideRecord('sys_choice');
+	rcoGr.addEncodedQuery('element=u_root_cause_owner^inactive=false');
+	rcoGr.setLimit(100);
+	rcoGr.orderBy('sequence');
+	rcoGr.query();
+	while ( rcoGr.next() ) {
+		//console.log(rcoGr.getDisplayValue('label'));
+		var rcoOpt = {};
+		rcoOpt.label = rcoGr.getDisplayValue('label');
+		rcoOpt.value = rcoGr.getValue('value');
+		data.rcoList.push(rcoOpt);
+	}
+	
+	//Root Cause Category List
+	var rccGr = new GlideRecord('sys_choice');
+	rccGr.addEncodedQuery('element=u_root_cause_category^inactive=false');
+	rccGr.setLimit(100);
+	rccGr.orderBy('sequence');
+	rccGr.query();
+	while ( rccGr.next() ) {
+		//console.log(rccGr.getDisplayValue('label'));
+		var rccOpt = {};
+		rccOpt.label = rccGr.getDisplayValue('label');
+		rccOpt.value = rccGr.getValue('value');
+		data.rccList.push(rccOpt);
+	}
+	
 })();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
@@ -71,7 +209,7 @@
         <sys_created_on>2018-07-12 14:55:15</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>b867884ddb971b40544fdd0b5e9619e5</sys_id>
-        <sys_mod_count>14</sys_mod_count>
+        <sys_mod_count>339</sys_mod_count>
         <sys_name>SSC End-User Filter</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -79,26 +217,109 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_b867884ddb971b40544fdd0b5e9619e5</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-12 15:55:28</sys_updated_on>
-        <template><![CDATA[<div>
-  <sp-panel title="options.title" body-class="'list-group'">
-
-    <div id="name-group" class="form-group" ng-class="{'has-error' : SafetyForm.location.$invalid && !SafetyForm.location.$pristine}">
-      <label>Location*</label>
-      <ui-select ng-model="c.selected.value" on-select="c.onSelectCallback($item, $model)" ng-required="true">
-        <ui-select-match>
-          <span ng-bind="$select.selected.name"></span>
-        </ui-select-match>
-        <ui-select-choices ng-repeat="item in (c.locations | filter: $select.search) track by item.sys_id" refresh="c.refreshLocation($select.search)" refresh-delay="0">
-         <span ng-bind="item.name"></span>
-        </ui-select-choices>
-      </ui-select>
-      <span class="help-block" ng-show="SafetyForm.location.$invalid && !SafetyForm.location.$pristine">
-        Please describe the location.
-      </span>
-    </div>
-
-  </sp-panel>
-</div>]]></template>
+        <sys_updated_on>2018-07-18 14:25:39</sys_updated_on>
+        <template><![CDATA[<div>  
+    <form>
+      <table> <col width="50%"> <col width="50%"> 
+        <tr> 
+          <th> Problem Create Date Range: </th> 
+          <th> Major Incident Types: </th> 
+        </tr> <!-- Date and Mi Type Header -->
+        <tr> 
+          <td>
+            <p>Select start date:</p> 
+            <sp-date-picker 
+                            field="selstartdate" 
+                            ng-model="selstartdate" 
+                            ng-model-options="{getterSetter: true}" 
+                            sn-disabled="false" 
+                            sn-change="">
+            </sp-date-picker>
+            <p>Select end date:</p>
+            <sp-date-picker
+                            field="selenddate" 
+                            ng-model="selenddate" 
+                            ng-model-options="{getterSetter: true}" 
+                            sn-disabled="false" 
+                            sn-change="">
+            </sp-date-picker>
+          </td> <!-- Select Start and End Dates -->
+          <td>          
+            <div class="form-group"> 
+              <span class="input-group-checkbox checkbox-inline">
+                <input id="checkboxRMI" class="checkbox" type="checkbox" name="checkboxRMI" ng-model="c.data.sel_RMI" >
+                <label for="checkboxRMI" class="checkbox-label">Reportable Major Incident</label><br/>
+                <input id="checkboxQMI" class="checkbox" type="checkbox" name="checkboxQMI" ng-model="c.data.sel_QMI" >
+                <label for="checkboxQMI" class="checkbox-label">Qualified Major Incident</label><br/>
+                <input id="checkboxPMI" class="checkbox" type="checkbox" name="checkboxPMI" ng-model="c.data.sel_PMI" >                
+                <label for="checkboxPMI" class="checkbox-label">Process Major Incident</label><br/>
+              </span>            
+            </div>
+          </td> <!-- Select MI Type Checkboxes -->
+        </tr>
+        <tr> 
+          <th> Select Problem Owner Group: </th> 
+          <th> Select Root Cause Category: </th> 
+        </tr> <!-- Owner Group and RCC Header -->
+        <tr>
+          <td>
+            <select 
+                    type="text"                    
+                    class="dropdown" 
+                    name="groups[]" 
+                    field="group_name" 
+                    style="width: 250px"
+                    ng-model="c.groupSelection"
+                    ng-options="groupsWithProblems.text for groupsWithProblems in data.groupsWithProblem">
+            </select>            
+          </td> <!-- Assignment Group select box -->
+          <td>
+            <div class="select2-container">
+              
+            
+            <select 
+                    type="text" 
+                    class="dropdown js-example-basic-multiple" 
+                    name="root_cause_categorys[]" 
+                    field="root_cause_category" 
+                    style="width: 250px"
+                    ng-model="c.root_cause_categorySelection"
+                    ng-options="rccListS.label for rccListS in data.rccList">
+            </select>
+              
+              </div>
+          </td> <!-- Root Cause Category select box -->
+        </tr>
+        <tr> 
+          <th> Select Application: </th> 
+          <th> Select Root Cause Owner: </th> 
+        </tr> <!-- Application and RCO Header -->
+        <tr>
+          <td>
+            <select 
+                    type="text" 
+                    class="dropdown" 
+                    name="applications[]" 
+                    field="app_name" 
+                    style="width: 250px"
+                    ng-model="c.appSelection"
+                    ng-options="ciWithProblems.text for ciWithProblems in data.ciWithProblem">
+            </select>
+          </td> <!-- Application select box -->
+          <td>
+            <select 
+                    type="text" 
+                    class="dropdown" 
+                    name="root_cause_owners[]" 
+                    field="root_cause_owner" 
+                    style="width: 250px"
+                    ng-model="c.root_cause_ownerSelection"
+                    ng-options="rcoListS.label for rcoListS in data.rcoList">
+            </select>
+          </td> <!-- Root Cause Owner select box -->
+        </tr>        
+      </table>
+    </form>
+ </div>]]></template>
     </sp_widget>
 </record_update>

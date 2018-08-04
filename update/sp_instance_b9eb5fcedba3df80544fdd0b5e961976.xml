@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css>.white-text {
+  //color: #464646;  
+  color: white;
+}
+h5 {
+  //line-height: 1.7;
+}
+.btn {
+  float: right;
+}
+.btn-outline-white {
+  border: 2px solid #fff !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-radius: .25rem;  
+}
+.panel {
+  //background-color: #F0F0F0 !important;
+  //background: rgba(240, 240, 240, 0.6) !important;
+  background: rgba(70, 70, 70, 0.9) !important;
+  padding: 10px;
+  padding-bottom: 50px;
+  border-radius: 1.0rem;
+}
+.fadeInLeft {
+    -webkit-animation-name: fadeInLeft;
+    animation-name: fadeInLeft;
+}
+.btn-outline-white:active, .btn-outline-white:hover {
+    border-color: #fff !important;
+    background-color: #86BBD1 !important;
+    color: #fff !important;
+}
+</css>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">d5a3f64edb63df80544fdd0b5e9619dc</sp_column>
+        <sp_widget display_value="HTML">8679ef89cb21120000f8d856634c9c4f</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-07-28 19:13:22</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b9eb5fcedba3df80544fdd0b5e961976</sys_id>
+        <sys_mod_count>35</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_b9eb5fcedba3df80544fdd0b5e961976</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-01 04:11:24</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"html": {
+		"value": "<div class=\"introMessage col-md-10 white-text text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h3>Use case 1: Escalation</h3>\n<h5 class=\"mb-4\">The IT-to-IT escalation matrix is an Excel spreadsheet that has to be manually maintained with each team having to communicate updates. This can often lead to stale information.</h5>\n<h3>Use case 2: Notifications</h3>\n<h5 class=\"mb-4\">CI Interested Contacts was a replacement for Remedy Server and Contacts, and is a custom table with a record for each person to CI relationship. The many-to-many-to-many relationship between user/group, CI, and Interested Contacts without a hierarchical structure or context is difficult to manage and does not allow for the easy use of this information to other applications.</h5>\n<h3>Use case 4: Reporting</h3>\n<h5 class=\"mb-4\">There is a demand for reporting and dashboards based on Service Delivery Tower or ADM Application. In our previous ticketing system, without a centralized solution, users created hard-coded filters resulting in inefficient reporting that is difficult to maintain and returned inconsistent data sets.</h5>\n<a href=\"?id=ssc_sp_itsm_towers\"> <button class=\"text-right btn btn-outline-white\">Let me see it in action!</button></a></div>\n</div>",
+		"displayValue": "<div class=\"introMessage col-md-10 white-text text-md-left mt-xl-5 mb-5 wow fadeInLeft\" data-wow-delay=\"0.3s\">\n<div class=\"panel\">\n<h3>Use case 1: Escalation</h3>\n<h5 class=\"mb-4\">The IT-to-IT escalation matrix is an Excel spreadsheet that has to be manually maintained with each team having to communicate updates. This can often lead to stale information.</h5>\n<h3>Use case 2: Notifications</h3>\n<h5 class=\"mb-4\">CI Interested Contacts was a replacement for Remedy Server and Contacts, and is a custom table with a record for each person to CI relationship. The many-to-many-to-many relationship between user/group, CI, and Interested Contacts without a hierarchical structure or context is difficult to manage and does not allow for the easy use of this information to other applications.</h5>\n<h3>Use case 4: Reporting</h3>\n<h5 class=\"mb-4\">There is a demand for reporting and dashboards based on Service Delivery Tower or ADM Application. In our previous ticketing system, without a centralized solution, users created hard-coded filters resulting in inefficient reporting that is difficult to maintain and returned inconsistent data sets.</h5>\n<a href=\"?id=ssc_sp_itsm_towers\"> <button class=\"text-right btn btn-outline-white\">Let me see it in action!</button></a></div>\n</div>"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=b9eb5fcedba3df80544fdd0b5e961976"/>
+</record_update>
