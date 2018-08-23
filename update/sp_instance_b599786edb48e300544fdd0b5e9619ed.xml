@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>primary</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="3">2839346edb48e300544fdd0b5e96195e</sp_column>
+        <sp_widget display_value="SSC People Information">19562337db2717c052fdd7795e96191b</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 17:12:35</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b599786edb48e300544fdd0b5e9619ed</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Configuration Management Team</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_b599786edb48e300544fdd0b5e9619ed</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-23 17:14:10</sys_updated_on>
+        <title>Configuration Management Team</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"hide_header": {
+		"value": "",
+		"displayValue": ""
+	},
+	"panel_heading": {
+		"value": "",
+		"displayValue": ""
+	},
+	"person1_title": {
+		"value": "Process Owner",
+		"displayValue": "Process Owner"
+	},
+	"person1_employee_id": {
+		"value": "e397137",
+		"displayValue": "e397137"
+	},
+	"person2_title": {
+		"value": "Process Manager",
+		"displayValue": "Process Manager"
+	},
+	"person2_employee_id": {
+		"value": "e404960",
+		"displayValue": "e404960"
+	},
+	"group1_title": {
+		"value": "",
+		"displayValue": ""
+	},
+	"group1_name": {
+		"value": "",
+		"displayValue": ""
+	},
+	"group2_title": {
+		"value": "",
+		"displayValue": ""
+	},
+	"group2_name": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=b599786edb48e300544fdd0b5e9619ed"/>
+</record_update>

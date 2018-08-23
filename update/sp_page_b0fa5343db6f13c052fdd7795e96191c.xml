@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_page">
     <sp_page action="INSERT_OR_UPDATE">
-        <css/>
+        <css>section.page {
+	//background-color: $sp-homepage-bg;
+}
+section.page, section.body {
+  padding-top: 0px !important;
+}
+.row-no-padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;  
+}
+
+.pageCol {  
+  border-right: 2px solid;
+}
+.well {
+  margin-left: 5px;
+  padding-left: 5px;
+  background-color: #fff;
+}
+.portalLinks .panel-heading {
+  background-color: rgba(47, 116, 154, 1);
+  color: #fff;
+}</css>
         <id>ssc_sp_itsm_open_mi_dashboard</id>
         <internal>false</internal>
         <public>false</public>
@@ -12,7 +34,7 @@
         <sys_created_on>2018-07-31 21:43:08</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>b0fa5343db6f13c052fdd7795e96191c</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>ssc_sp_itsm_open_mi_dashboard</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -20,8 +42,8 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_b0fa5343db6f13c052fdd7795e96191c</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-09 00:29:00</sys_updated_on>
-        <title>Open Major Incident Dashboard</title>
+        <sys_updated_on>2018-08-23 17:27:35</sys_updated_on>
+        <title>Command Center Major Incident Dashboard</title>
     </sp_page>
     <sys_translated_text action="delete_multiple" query="documentkey=b0fa5343db6f13c052fdd7795e96191c"/>
 </record_update>

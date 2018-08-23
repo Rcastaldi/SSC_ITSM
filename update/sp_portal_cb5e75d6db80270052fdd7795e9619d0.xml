@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_portal">
+    <sp_portal action="INSERT_OR_UPDATE">
+        <css_variables>$brand-primary: #2f749a;
+$body-bg: #f0f0f0;
+$state-success-text: #28743e;
+$sp-homepage-bg: #fff;
+$sp-navbar-divider-color: #092E5D;
+$text-color: #464646;
+$sp-logo-margin-y: .5rem;
+$navbar-inverse-link-hover-color: #E1EcF2;
+$panel-bg: #eef5fa;
+$brand-success: #28743e;
+$navbar-inverse-bg: #092E5D;
+$brand-warning: #ffbc06;
+$brand-danger: #b91224;
+$sp-tagline-color: #717171;
+$navbar-inverse-link-color: #FFFFFF;
+$brand-info: #86bbd1;
+$link-color: #2f749a;
+$sp-logo-margin-x: 15px;
+$btn-default-bg: #fff;
+$text-muted: #727272;
+</css_variables>
+        <default>false</default>
+        <homepage display_value="ssc_sp_itsm_incident_home">92ceb91adb80270052fdd7795e961925</homepage>
+        <icon/>
+        <kb_knowledge_base/>
+        <kb_knowledge_page display_value="kb_view2">26c2e030d7201200a9addd173e24d437</kb_knowledge_page>
+        <login_page display_value="landing">36c61807cb31120000f8d856634c9ca9</login_page>
+        <logo/>
+        <notfound_page display_value="404">3c2c9063cb11020000f8d856634c9c1f</notfound_page>
+        <quick_start_config/>
+        <sc_catalog display_value="Service Catalog">e0d08b13c3330100c8b837659bba8fb4</sc_catalog>
+        <sc_catalog_page display_value="sc_home">fe87a11147132100ba13a5554ee490b9</sc_catalog_page>
+        <sp_chat_queue/>
+        <sp_rectangle_menu display_value="Incident Management">59b20adadb80270052fdd7795e961956</sp_rectangle_menu>
+        <sqanda_knowledge_base/>
+        <sys_class_name>sp_portal</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 03:38:35</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>cb5e75d6db80270052fdd7795e9619d0</sys_id>
+        <sys_mod_count>17</sys_mod_count>
+        <sys_name>Incident Management</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_portal_cb5e75d6db80270052fdd7795e9619d0</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-23 14:22:41</sys_updated_on>
+        <theme display_value="State Street Theme">b2934c68db375bc0544fdd0b5e9619ad</theme>
+        <title>Incident Management</title>
+        <url_suffix>incident</url_suffix>
+    </sp_portal>
+    <sys_translated_text action="delete_multiple" query="documentkey=cb5e75d6db80270052fdd7795e9619d0"/>
+    <sys_attachment action="INSERT_OR_UPDATE">
+        <average_image_color>#ffffff</average_image_color>
+        <compressed>true</compressed>
+        <content_type>image/png</content_type>
+        <encryption_context/>
+        <file_name>logo</file_name>
+        <image_height>24</image_height>
+        <image_width>168</image_width>
+        <size_bytes>1926</size_bytes>
+        <size_compressed>1949</size_compressed>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 03:39:33</sys_created_on>
+        <sys_id>448f315adb80270052fdd7795e961980</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-23 03:39:33</sys_updated_on>
+        <table_name>ZZ_YYsp_portal</table_name>
+        <table_sys_id>cb5e75d6db80270052fdd7795e9619d0</table_sys_id>
+        <u_record>cb5e75d6db80270052fdd7795e9619d0</u_record>
+    </sys_attachment>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>H4sIAAAAAAAAAA==</data>
+        <length>16</length>
+        <position>0</position>
+        <sys_attachment display_value="logo" sys_id="448f315adb80270052fdd7795e961980">448f315adb80270052fdd7795e961980</sys_attachment>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 03:39:33</sys_created_on>
+        <sys_id>4c8f315adb80270052fdd7795e961980</sys_id>
+    </sys_attachment_doc>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>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</data>
+        <length>2588</length>
+        <position>1</position>
+        <sys_attachment display_value="logo" sys_id="448f315adb80270052fdd7795e961980">448f315adb80270052fdd7795e961980</sys_attachment>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 03:39:33</sys_created_on>
+        <sys_id>cc8f315adb80270052fdd7795e961980</sys_id>
+    </sys_attachment_doc>
+</record_update>

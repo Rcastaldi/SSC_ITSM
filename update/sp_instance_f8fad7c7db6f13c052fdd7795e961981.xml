@@ -3,11 +3,11 @@
     <sp_instance action="INSERT_OR_UPDATE">
         <active>true</active>
         <class_name/>
-        <color>default</color>
+        <color>danger</color>
         <css/>
-        <glyph/>
+        <glyph>fire</glyph>
         <id/>
-        <order>1</order>
+        <order>0</order>
         <roles/>
         <short_description/>
         <size>md</size>
@@ -18,18 +18,23 @@
         <sys_created_on>2018-07-31 21:43:08</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>f8fad7c7db6f13c052fdd7795e961981</sys_id>
-        <sys_mod_count>0</sys_mod_count>
-        <sys_name/>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>Open Major Incidents</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_f8fad7c7db6f13c052fdd7795e961981</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-31 21:43:08</sys_updated_on>
-        <title/>
+        <sys_updated_on>2018-08-23 17:34:04</sys_updated_on>
+        <title>Open Major Incidents</title>
         <url/>
-        <widget_parameters/>
+        <widget_parameters><![CDATA[{
+	"hide_header": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
     </sp_instance>
     <sys_translated_text action="delete_multiple" query="documentkey=f8fad7c7db6f13c052fdd7795e961981"/>
 </record_update>

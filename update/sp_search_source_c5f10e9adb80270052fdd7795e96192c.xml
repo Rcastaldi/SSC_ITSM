@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_search_source">
+    <sp_search_source action="INSERT_OR_UPDATE">
+        <advanced_typeahead_config>false</advanced_typeahead_config>
+        <condition table="incident">state!=7^u_qs_major_incident!=true^EQ<item endquery="false" field="state" goto="false" newquery="false" operator="!=" or="false" value="7"/>
+            <item endquery="false" field="u_qs_major_incident" goto="false" newquery="false" operator="!=" or="false" value="true"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </condition>
+        <data_fetch_script><![CDATA[(function(query) {
+  var results = [];
+  /* Calculate your results here. */
+  
+  return results;
+})(query);]]></data_fetch_script>
+        <display_fields>number,sys_created_on,assignment_group,state</display_fields>
+        <enable_typeahead>true</enable_typeahead>
+        <id>active_incidents_ss</id>
+        <is_scripted_source>false</is_scripted_source>
+        <name>Active Incidents</name>
+        <page display_value="form">ed5f8ec347730200ba13a5554ee49046</page>
+        <primary_display_field>short_description</primary_display_field>
+        <roles/>
+        <search_page_template><![CDATA[<div>
+  <a href="?id=form&sys_id={{item.sys_id}}&table={{item.table}}" class="h4 text-primary m-b-sm block">
+    <span ng-bind-html="highlight(item.primary, data.q)"></span>
+  </a>
+  <span class="text-muted" ng-repeat="f in item.fields | limitTo: 4">
+    <span class="m-l-xs m-r-xs" ng-if="!$first"> &middot; </span>
+    {{f.label}}: <span ng-bind-html="highlight(f.display_value, data.q)"></span>
+  </span>
+</div>]]></search_page_template>
+        <source_table>incident</source_table>
+        <sys_class_name>sp_search_source</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 03:53:17</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>c5f10e9adb80270052fdd7795e96192c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Active Incidents</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_search_source_c5f10e9adb80270052fdd7795e96192c</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-23 03:53:17</sys_updated_on>
+        <typeahead_glyph>exclamation-triangle</typeahead_glyph>
+        <typeahead_template/>
+    </sp_search_source>
+</record_update>

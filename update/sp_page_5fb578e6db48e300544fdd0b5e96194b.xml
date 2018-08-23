@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_page">
+    <sp_page action="INSERT_OR_UPDATE">
+        <css>section.page {&#13;
+	//background-color: $sp-homepage-bg;&#13;
+}&#13;
+section.page, section.body {&#13;
+  padding-top: 0px !important;&#13;
+}&#13;
+.row-no-padding {&#13;
+  padding-left: 0 !important;&#13;
+  padding-right: 0 !important;  &#13;
+}&#13;
+&#13;
+.pageCol {  &#13;
+  border-right: 2px solid;&#13;
+}&#13;
+.well {&#13;
+  margin-left: 5px;&#13;
+  padding-left: 5px;&#13;
+  background-color: #fff;&#13;
+}&#13;
+.portalLinks .panel-heading {&#13;
+  background-color: rgba(47, 116, 154, 1);&#13;
+  color: #fff;&#13;
+}</css>
+        <id>ssc_sp_itsm_cmdb_home</id>
+        <internal>false</internal>
+        <public>false</public>
+        <roles>itil</roles>
+        <short_description>Configuration Management Home Page</short_description>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-23 16:56:36</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>5fb578e6db48e300544fdd0b5e96194b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ssc_sp_itsm_cmdb_home</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_page_5fb578e6db48e300544fdd0b5e96194b</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-23 16:56:36</sys_updated_on>
+        <title>CMDB Home</title>
+    </sp_page>
+    <sys_translated_text action="delete_multiple" query="documentkey=5fb578e6db48e300544fdd0b5e96194b"/>
+</record_update>

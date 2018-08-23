@@ -7,24 +7,24 @@
         <bootstrap_alt>false</bootstrap_alt>
         <class_name/>
         <container_class_name/>
-        <name>Welcome to the Problem Management Service Portal - Container 3</name>
+        <name>Problem Home - Container 3</name>
         <order>3</order>
         <sp_page display_value="ssc_sp_itsm_problem_home">f51fbb1bdb2393c052fdd7795e961953</sp_page>
         <subheader>false</subheader>
         <sys_class_name>sp_container</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-01 19:03:21</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>c2fff35bdb2393c052fdd7795e9619f5</sys_id>
-        <sys_mod_count>2</sys_mod_count>
-        <sys_name>Welcome to the Problem Management Service Portal - Container 3</sys_name>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Problem Home - Container 3</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_container_c2fff35bdb2393c052fdd7795e9619f5</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-08 21:40:38</sys_updated_on>
+        <sys_updated_on>2018-08-23 16:45:57</sys_updated_on>
         <width>container-fluid</width>
     </sp_container>
 </record_update>

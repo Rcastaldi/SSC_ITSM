@@ -182,7 +182,7 @@ text-align:center;
         <sys_created_on>2018-08-03 06:28:19</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>19562337db2717c052fdd7795e96191b</sys_id>
-        <sys_mod_count>50</sys_mod_count>
+        <sys_mod_count>52</sys_mod_count>
         <sys_name>SSC People Information</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -190,10 +190,10 @@ text-align:center;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_19562337db2717c052fdd7795e96191b</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-13 06:31:31</sys_updated_on>
+        <sys_updated_on>2018-08-23 16:35:02</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.hide_header">
-    <h4 class="panel-title">      
+    <h4 style="margin-top: 0; margin-bottom: 0">      
       <span ng-if="c.options.glyph">
         <fa name="{{::c.options.glyph}}" />
       </span>{{::c.options.title}}</h4>  	
