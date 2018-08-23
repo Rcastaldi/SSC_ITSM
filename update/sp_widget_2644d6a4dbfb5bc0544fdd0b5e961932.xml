@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $location, spModal, $uibModal, $rootScope ) {
+	/* widget controller */
+	var c = this;
+	var shared = {};
+	shared.openinmodal = true;
+
+	$scope.$on("$locationChangeSuccess", function(name, data) {
+		var searchObject = $location.search();
+		$scope.data.sys_id = searchObject.sys_id || searchObject.sl_sys_id;
+		//spUtil.update($scope);
+		c.server.update();
+	});
+
+	$scope.getMItypeClass = function() {return $scope.data.problem.parent_inc_mi_type;};
+
+	$scope.getTaskTypeClass = function(taskType) {
+		if (taskType == "Custom") {return "label-success";}
+		else if (taskType == "Default") {return "label-primary";}
+		else {return "label-default";}
+		return "label-default";
+	};
+	
+	$scope.ModuleColExpand = function(toggle) {
+		if(toggle == false) {
+			return "col-sm-6";
+		} else
+			return "col-sm-12";		
+	}
+
+	c.OpenTicketModal = function(){						
+		spModal.open({
+			//spModal.open will open a modal, and we'll pass it the following parameters
+			size: 'lg',
+			title: 'Ticket Form',
+			widgetInput: {
+				disableUIActions: true,
+				view: 'service_portal',
+				table: 'problem_task',
+				sys_id: '-1',
+				_fields: $scope.data.pbmFormModel,				
+				problem: $scope.data.sys_id				
+			},
+			openinmodal: true,
+			widget: 'ssc-sp-widget-enhanced-form', //Insert sys_id of the embedded widget				
+			shared: shared //We make the 'shared' array available to modal's embedded widget
+		}).then(function() {
+			//This function is triggered by submitting/closing the modal.
+			console.log('Shared - ' + shared);
+			spUtil.update($scope);
+		});
+	};
+
+	$scope.closeModal = function() {c.modalInstance.close();}
+
+	$scope.newTaskRecord = function(){
+		c.modalInstance = $uibModal.open({
+			templateUrl: 'form.html',
+			scope: $scope,
+			size: 'lg',
+			shared: shared
+		});
+		spUtil.get('ssc-sp-widget-enhanced-form', {sys_id: -1, table:'problem_task', _fields: $scope.data.pbmFormModel, view:'service_portal', openinmodal:true}).then(function(response) {
+			c.formWidget = response;
+		});
+	};
+
+	$rootScope.$on('closeModal', function() {
+		c.modalInstance.close();
+		spUtil.update($scope);
+	});
+
+	spUtil.get('ssc-sp-widget-itsm-worklog-buddy', {table: 'incident', sys_id: $scope.data.problem.parent_id}).then(function(response) {
+		c.incWorklogWidget = response;
+		c.incWorklogWidget.options =
+			{				
+			"hide_header": "true",
+			"hide_buttons": "true",
+			"hide_toggle": "false",
+			"embed_widget": "true",
+			"table": "incident",
+			"sys_id": $scope.data.problem.parent_id
+		};
+
+	});
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Panels Section ----------- */
+.panel {
+  position: relative;  
+}
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+.panel-title, .panel-heading {
+  background-color:  #0A2F5D; /* SSC Blue */
+  color: white;  
+}
+#mainHeading {
+  background-color:  #0A2F5D; /* SSC Blue */
+  border-bottom: none #0A2F5D !important;
+}
+#mainPanelBody { 
+  background-color:  #007298; /* SSC Light Blue */
+  padding-top: 0;
+  border-top: 0;
+  margin-top: -1px;
+  margin-bottom: 0px;
+}
+/* Module Section ----------- */
+.moduleTitle {
+  color: white;
+  margin-left: -10px;
+}
+#execSummaryRow, #miDetailsRow, #prbDetailsRow { 
+  padding-top: 10px;
+  //border: 1px solid #0A2F5D;
+  border-radius: 10px;
+  background-color: #fff;
+}
+#execSummaryModule {
+  //background-color: pink; 
+  background-color: transparent;
+}
+.task_detail_row {
+  padding: 5px;
+  word-wrap: break-word;
+}
+.list-group-item {
+  padding: 5px;
+  word-wrap: break-word;
+}
+.list-group-item:hover {
+  // background-color: #86BBD1; // SSC Hover Color GEO
+  background-color: #E1ECF2; // SSC Menu Hover MAE
+}
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.timeline-body  &gt; p {
+  //padding-top: 5px;
+  //vertical-align: top;
+  white-space: pre-line;
+  overflow-y:auto;
+  overflow-x:hidden;
+  max-height: 300px;
+  margin-bottom: 20px; 
+  display: block;
+}
+/* Text Section ------------ */
+.fieldValue {
+  padding-bottom: 10px;
+}
+.itals {font-style: italic;}
+.execSummaryLabel {
+  border-bottom: 1px solid; 
+}
+.label-default {
+  color:white;
+  background: #0A2F5D
+    padding: 10px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.taskType {
+  text-align: center;
+  //align-vertical: middle;
+  padding: 5px;
+  margin-bottom: 0;
+  font-weight: bold;
+  //background-color:  #007298; /* SSC Light Blue */
+  //color: white;
+}
+#addTasklabel {
+  //align-vertical: bottom;
+  font-weight: 200;
+  padding-right: 4px;
+  padding-top: 2px;
+  display: none;
+}
+/* Button section ----------- */
+.iconButton {
+  cursor: pointer;
+  border: 1px solid #fff !important;
+  border-radius: 50%;
+  padding: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.iconButton:hover {
+  background-color:  #fff; 
+  color: #007298; /* SSC Light Blue */
+}
+#addTaskButton {
+  fill:#fff;
+  cursor: pointer;
+  //border: 1px solid #fff !important;
+  border-radius: 50%;
+  padding: 1px;
+  //align-vertical: bottom;
+  //padding-left: 4px;
+  //padding-right: 4px;
+}
+#addTaskButton:hover {
+  background-color:  #fff; 
+  color: #007298; /* SSC Light Blue */
+  fill: #007298 !important;
+}
+#addTaskButton:hover .cls-1 {
+  fill: #007298 !important;
+}
+#addTaskButton:hover + #addTasklabel {
+  display: inline;
+}
+/* ng-class section --------- */
+.Major {
+  //align-vertical: middle;
+  color:white;
+  //padding: 10px 10px;
+  border-radius: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-weight: bold;
+}
+.Reportable { background: red }
+.Qualified { background: #f56e00 }
+.Process { background: #0A2F5D }
+/* ICON styles */
+.fa-check-circle, .fa-calendar-check-o-active, .fa-calendar-check-o-warn, .fa-calendar-times-o, .fa-exclamation-circle {
+  //padding-right: 10px;
+}
+.legendIcon {
+  padding-right: 5px;
+  padding-left: 15px;
+}
+.fa-plus-square, .fa-minus-square { padding-right: 10px; }
+.alertTask, .fa-exclamation-circle { color: red; }
+.activeTask { color: #0A2F5D;}
+.warnTask { color: #f56e00;}
+.fa-print { color: #007298;font-size:36px; padding-left: 15px; padding-right: 15px; }
+.glyphicon {
+ font-weight: normal !important; 
+}
+.showORhide {
+  color: black;
+  margin-left: 20px;
+  //text-align: center; 
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-problem-form</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Problem Form</name>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"},{"name":"menu_page_one_label","label":"Menu Page One Label","type":"string"},{"name":"menu_page_one_id","label":"Menu Page One ID","type":"string"},{"name":"menu_page_two_label","label":"Menu Page Two Label","type":"string"},{"name":"menu_page_two_id","label":"Menu Page Two ID","type":"string"},{"name":"hide_worklog","label":"Hide Worklog","type":"boolean"},{"name":"hide_buttons","label":"Hide Buttons","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[/* Introduction --------------------- */
+/*		e.g., data.table = $sp.getValue('table'); */
+/* Widget Options ------------------- */
+/*		title               =           */
+/*		hide_header         =           */
+
+(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	/* Server Script Variables --------- */
+	data.hide_task_label = true;
+	data.hide_task_legend = false;
+	
+	//Check first if we have input, otherwise check URL and options for sys_id
+	if (input) {data.sys_id = input.sys_id;}
+	else {	
+		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || options.sys_id;		
+	 }
+	//Validate we have a sys_id else return
+	data.isValid = data.sys_id;
+	console.log("data is valid? " + data.isValid);
+	if (typeof(data.isValid) == undefined) {
+		data.isValid = false;
+		return;
+	}		
+	var currentUser = gs.getUser();
+	data.currentUserID = gs.getUserName();
+	if(currentUser.isMemberOf('SSC-ETS-SMA') ||
+		 currentUser.isMemberOf('IBM-SSM-MAJOR-INCIDENT-MGT') ||
+		 currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT') ||
+		 currentUser.isMemberOf('IBM-SSM-PROBLEM-MGT')){
+		data.canUserEdit = true;
+	} else {
+		data.canUserEdit = false;
+	}
+	
+	// Get Problem data from SSCwidgetScriptInclude by passing record sys_id
+	data.problem = {};
+	var ssc_si = new SSCwidgetScriptInclude();
+	data.problem = ssc_si.getProblem(data.sys_id);
+	
+	data.worklogBuddy_problem = $sp.getWidget('ssc-sp-widget-itsm-worklog-buddy', {table: 'problem', sys_id: data.sys_id, hide_header: true, hide_buttons: false, hide_toggle: false});
+	//data.worklogBuddy_incident = $sp.getWidget('ssc-sp-widget-itsm-worklog-buddy', {table: 'incident', sys_id: data.problem.parent, hide_header: true, hide_buttons: false, hide_toggle: false});
+	
+	if (options.menu_page_one_id) {
+		data.menuItem = [
+		{ 
+		pageID : options.menu_page_one_id,
+		label : options.menu_page_one_label
+		},
+		{ 
+		pageID : options.menu_page_two_id,
+		label : options.menu_page_two_label
+		}	];		
+	}
+	console.log('Test');
+	data.pbmFormModel = {};
+	var grTask = new GlideRecord('problem_task')
+	//var problemTaskForm = $sp.getForm("problem_task");
+			//data.pbmFormView = problemTaskForm._view;
+			//data.pbmFormModel = problemTaskForm._fields;
+			//data.pbmFormModel.problem.value = data.sys_id;
+	data.pbmFormModel = $sp.getFieldsObject(grTask,'problem');
+	data.pbmFormModel.problem.value = data.sys_id;
+	//console.log('pbm model: ' + data.pbmFormModel);
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-05 08:25:18</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>2644d6a4dbfb5bc0544fdd0b5e961932</sys_id>
+        <sys_mod_count>480</sys_mod_count>
+        <sys_name>SSC Problem Form</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_2644d6a4dbfb5bc0544fdd0b5e961932</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-15 18:56:52</sys_updated_on>
+        <template><![CDATA[<!-- This widget first checks that a valid problem sys_id has been provided to server script -->
+<!-- Then will either display record not found panel or Widget Main Panel -->
+<!-- The Widget Main Panel uses bootstrap grid for a responsive layoutout -->
+<!-- There is one main row (Row 1) that contains two columns (A and B) -->
+<!-- Each column contains modules that are either ng-templates or embeded Widgets -->
+<!-- The Widget also contains a hamburger dropdown menu in the Heading Panel -->
+<script>
+  // Move this code to client script.  
+  function SendMail(strid)
+  {
+    var mailBody=document.getElementById(strid);
+    var outlookApp = new ActiveXObject("Outlook.Application");
+    var nameSpace = outlookApp.getNameSpace("MAPI");
+    mailFolder = nameSpace.getDefaultFolder(6);
+    mailItem = mailFolder.Items.add('IPM.Note.FormA');
+    mailItem.Subject = "Problem Executive Summary Report - "; 
+    mailItem.To = "";
+    mailItem.HTMLBody = mailBody.innerHTML;
+    mailItem.display(0);  
+  }
+</script> <!-- Javascript code to email content of Div ID provided in function call -->
+<div ng-if="!data.isValid" class="panel panel-default"> <!-- Panel to display if record not found -->
+  <div class="panel-body wrapper-lg text-center">
+    <!-- ${Record not found} -->
+    <div ng-if="!data.isValid" class="panel panel-default"> <!-- Panel to display if record not found -->
+  <div class="panel-body wrapper-lg text-center">    
+    <h2>
+      State Street Problem Executive Summary Form
+    </h2> <br/> <br/>
+    <p>Click on a problem in the list to display that problem record.</p>
+    <p>*New Display options - Click on the menu icon <span class="glyphicon glyphicon-menu-hamburger" style="line-height: 1.4em"></span> to view new display options.</p>
+    <p>Please keep in mind, SSC employees and contractors must treat all output from ServiceNow as Limited Access. Everyone else must treat it as Confidential.</p>
+  </div>
+</div> <!-- Panel to display if record not found -->
+  </div>
+</div> <!-- Panel to display if record not found -->
+
+<div ng-if="data.isValid" class="panel panel-{{::c.options.color}} b"> <!-- Widget Main Panel -->
+
+  <div id="mainHeading" class="clearfix panel-heading" ng-if="::!c.options.hide_header"> <!-- Heading Panel-->
+    <div> 
+      <h2 class="panel-title"> <!-- Title Panel-->
+        <!-- <span ng-if="!data.menuItem" class="glyphicon glyphicon-menu-hamburger" style="line-height: 1.4em"></span> ng-if="data.menuItem.length > 0" -->
+        <span class="dropdown m-r-xs"> <!-- Hamburger Dropdown -->
+          <span class="dropdown-toggle glyphicon glyphicon-menu-hamburger iconButton" style="line-height: 1.4em" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+          <ul class="dropdown-menu" aria-labelledby="optionsMenu">
+            <li ng-repeat="menuItems in ::data.menuItem">
+              <a ng-href="{{::menuItems.pageID}}&table=problem&sys_id={{::data.sys_id}}">{{::menuItems.label}}</a>
+            </li>
+            <li class="showORhide" ng-click="data.hide_task_legend = !data.hide_task_legend">
+              <span ng-if="data.hide_task_legend">Show Tasks Status Legend</span>
+              <span ng-if="!data.hide_task_legend">Hide Tasks Status Legend</span>
+            </li>
+            <li class="showORhide" onClick="javascript:SendMail('printView');">
+              Send Report in Email
+            </li>
+          </ul>
+        </span> <!-- Hamburger Dropdown -->
+        <span class="itals">
+          ({{data.problem.parent}} / {{data.problem.number}})
+        </span>
+        {{data.problem.short_description}}
+      </h2> <!-- Title Panel-->
+    </div>
+  </div> <!-- Heading Panel-->
+
+  <div id="mainPanelBody" class="panel-body panel-group"> <!-- Main Body Panel -->
+    <div class="row"> <!-- Row 1 -->
+      <div class="col-sm-6"> <!-- Row 1 Column A -->
+
+        <div id="execSummaryModule" class="container-fluid"> <!-- Start of Executive Summary Module -->          
+          <h4 class="moduleTitle" ng-init="es_variable_toggle=true" ng-click="es_variable_toggle = !es_variable_toggle" style="cursor: pointer;">
+            Executive Summary
+            <i class="glyphicon" ng-class="{'glyphicon-chevron-down': es_variable_toggle, 'glyphicon-chevron-right': !es_variable_toggle}"></i>
+          </h4>
+          <div ng-if="es_variable_toggle">
+            <div id="execSummaryRow" class="row"> <!-- Row 1 Column A Nested Row 1 -->
+              <div class="col-xs-6"> <!-- 1A_NRow1 Column A -->
+                <h6 class="m-n text-muted">
+                  Major Incident Type
+                </h6>
+                <div class="fieldValue">
+                  <span ng-class="getMItypeClass()">{{data.problem.parent_inc_mi_type}}</span>
+                </div>                        
+                <h6 class="m-n text-muted">
+                  Problem Application
+                </h6>
+                <div class="fieldValue">
+                  {{data.problem.cmdb_ci}}
+                </div>
+                <h6 class="m-n text-muted">
+                  Problem Owner
+                </h6>
+                <div class="fieldValue">
+                  {{data.problem.assignment_group}}
+                </div>            
+              </div><!-- 1A_NRow1 Column A -->
+              <div class="col-xs-6"> <!-- 1A_NRow2 Column B -->
+                <h6 class="m-n text-muted">
+                  Problem State
+                </h6><div class="fieldValue">
+                {{data.problem.state}} 
+                </div>            
+                <h6 class="m-n text-muted">
+                  Root Cause Owner
+                </h6>
+                <div class="fieldValue">
+                  {{data.problem.u_root_cause_owner}}
+                </div>           
+                <h6 class="m-n text-muted">
+                  Root Cause Category
+                </h6>
+                <div class="fieldValue">
+                  {{data.problem.u_root_cause_category}}
+                </div>            
+              </div> <!-- 1A_NRow2 Column B -->
+              <div class="col-xs-12"> <!-- 1A_NRow2 Column C -->
+                <h6 class="m-n text-muted execSummaryh6">
+                  Problem Executive Summary
+                </h6>
+                <div class="fieldValue timeline-body">
+                  <p>{{data.problem.description}}</p>
+                </div>            
+              </div> <!-- 1A_NRow2 Column C -->
+            </div> <!-- Row 1 Column A Nested Row 1 -->
+          </div> <!-- es_variable_toggle -->
+        </div> <!-- Executive Summary Module -->
+
+      </div> <!-- Row 1 Column A -->
+      <div class="col-sm-6"> <!-- Row 1 Column B -->
+
+        <div id="taskModule" class="container-fluid"> <!-- Problem Task Module -->
+          <h4 class="moduleTitle" ng-init="task_variable_toggle=true" ng-click="task_variable_toggle = !task_variable_toggle" style="cursor: pointer;">
+            Problem Tasks
+            <i class="glyphicon" ng-class="{'glyphicon-chevron-down': task_variable_toggle, 'glyphicon-chevron-right': !task_variable_toggle}"></i>
+
+            <span ng-if="::!c.options.hide_buttons && data.canUserEdit == true" id="addTaskButton" class="pull-right" ng-click="$event.stopPropagation()">
+              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24" class="addTaskButton pull-right" ng-click="newTaskRecord()">
+                <defs><style>.cls-1{fill:#fff;}</style></defs><title>SSC Plus Icon 64x64</title>
+                <polygon class="cls-1" points="2.09 34.18 2.09 31.11 31.05 31.11 31.05 2.15 34.12 2.15 34.12 31.11 62.09 31.11 62.09 34.18 34.12 34.18 34.12 62.15 31.05 62.15 31.05 34.18 2.09 34.18"/></svg>
+            </span><span id="addTasklabel" class="pull-right">addTask</span>
+          </h4>
+          <div ng-if="task_variable_toggle">
+            <div class="well taskType">
+              Causal Determination Tasks
+            </div>
+            <div ng-repeat="problem_task in data.problem.problem_tasks | filter: {'u_problem_task_category' : 'CDT - Causal Determination Task'}">
+              <div class="list-group-item" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle" style="cursor: pointer;">
+                <div> 
+                  <i class="glyphicon" ng-class="{'glyphicon-chevron-down': variable_toggle, 'glyphicon-chevron-right': !variable_toggle}"></i>
+                  <label ng-if="::!data.hide_task_label" class="label" ng-class="getTaskTypeClass(problem_task.task_type)">{{problem_task.task_type}}</label>
+                  <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle" title="Task is Completed"></i>
+                  <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle" title="Task is Past Due"></i>
+                  <i ng-if="problem_task.state_calc == 'Active'" class="glyphicon glyphicon-calendar activeTask" title="Task is In-progress"></i>
+                  <i ng-if="problem_task.state_calc == 'Warn'" class="glyphicon glyphicon-calendar warnTask" title="Task is close to Due Date"></i>
+                  <i ng-if="problem_task.state_calc == 'NoDate' && problem_task.task_type != 'Default'" class="glyphicon glyphicon-calendar alertTask" title="Task does not have a Due Date"></i>
+                  {{problem_task.short_description}}
+                </div>              
+                <div class="task-group" ng-if="variable_toggle"> <!-- Task Detail -->
+                  <br/>
+                  <div>
+                    <div class="task-group-item">
+                      <div class="row task_detail_row"> <!-- Task Detail Row -->
+                        <div class="col-xs-4"> <!-- Row 1 Column A -->                        
+                          <h6 class="m-n text-muted">
+                            Problem Assignment Group
+                          </h6>
+                          <div class="fieldValue">
+                            {{problem_task.assignment_group}}
+                          </div>                        
+                        </div><!-- Row 1 Column A -->
+                        <div class="col-xs-4"> <!-- Row 1 Column B -->
+                          <h6 class="m-n text-muted">
+                            Problem Task State
+                          </h6>
+                          <div class="fieldValue">
+                            {{problem_task.state}} 
+                          </div>                                   
+                        </div> <!-- Row 1 Column B -->
+                        <div class="col-xs-4"> <!-- Row 1 Column C -->
+                          <h6 class="m-n text-muted">
+                            {{problem_task.date_calc_label}}
+                          </h6><div class="fieldValue">
+                          {{problem_task.date_calc | date:'shortDate'}} 
+                          </div>                                   
+                        </div> <!-- Row 1 Column C -->
+                        <div class="col-xs-12"> <!-- Row 1 Column D -->
+                          <h6 class="m-n text-muted execSummaryh6">
+                            Problem Task Description
+                          </h6>
+                          <div class="fieldValue timeline-body">
+                            {{problem_task.description}}
+                          </div>            
+                        </div> <!-- Row 1 Column D -->
+                      </div> <!-- Task Detail Row -->
+                    </div>
+                  </div>
+                </div> <!-- Task Details -->            
+              </div>
+            </div> <!-- Problem Task ng-repeat -->
+            <div class="well taskType">
+              Risk Remediation Tasks
+            </div>
+            <div ng-repeat="problem_task in data.problem.problem_tasks | filter: {'u_problem_task_category' : 'RRT - Risk Remediation Task'}">
+              <div class="list-group-item" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle" style="cursor: pointer;">
+                <div> 
+                  <i class="glyphicon" ng-class="{'glyphicon-chevron-down': variable_toggle, 'glyphicon-chevron-right': !variable_toggle}"></i>
+                  <label ng-if="::!data.hide_task_label" class="label" ng-class="getTaskTypeClass(problem_task.task_type)">{{problem_task.task_type}}</label> 
+                  <i ng-if="problem_task.state_calc == 'Completed'" class="fa fa-check-circle" title="Task is Completed"></i>
+                  <i ng-if="problem_task.state_calc == 'PastDue'" class="fa fa-exclamation-circle" title="Task is Past Due"></i>
+                  <i ng-if="problem_task.state_calc == 'Active'" class="glyphicon glyphicon-calendar activeTask" title="Task is In-progress"></i>
+                  <i ng-if="problem_task.state_calc == 'Warn'" class="glyphicon glyphicon-calendar warnTask" title="Task is close to Due Date"></i>
+                  <i ng-if="problem_task.state_calc == 'NoDate' && problem_task.task_type != 'Default'" class="glyphicon glyphicon-calendar alertTask" title="Task does not have a Due Date"></i>
+                  {{problem_task.short_description}}
+                </div>              
+                <div class="task-group" ng-if="variable_toggle"> <!-- Task Detail -->
+                  <br/>
+                  <div>
+                    <div class="task-group-item">
+                      <div class="row task_detail_row"> <!-- Task Detail Row -->
+                        <div class="col-xs-4"> <!-- Row 1 Column A -->                        
+                          <h6 class="m-n text-muted">
+                            Problem Assignment Group
+                          </h6>
+                          <div class="fieldValue">
+                            {{problem_task.assignment_group}}
+                          </div>                        
+                        </div><!-- Row 1 Column A -->
+                        <div class="col-xs-4"> <!-- Row 1 Column B -->
+                          <h6 class="m-n text-muted">
+                            Problem Task State
+                          </h6>
+                          <div class="fieldValue">
+                            {{problem_task.state}} 
+                          </div>                                   
+                        </div> <!-- Row 1 Column B -->
+                        <div class="col-xs-4"> <!-- Row 1 Column C -->
+                          <h6 class="m-n text-muted">
+                            {{problem_task.date_calc_label}}
+                          </h6><div class="fieldValue">
+                          {{problem_task.date_calc | date:'shortDate'}} 
+                          </div>                                   
+                        </div> <!-- Row 1 Column C -->
+                        <div class="col-xs-12"> <!-- Row 1 Column D -->
+                          <h6 class="m-n text-muted execSummaryh6">
+                            Problem Task Description
+                          </h6>
+                          <div class="fieldValue timeline-body">
+                            {{problem_task.description}}
+                          </div>            
+                        </div> <!-- Row 1 Column D -->
+                      </div> <!-- Task Detail Row -->
+                    </div>
+                  </div>
+                </div> <!-- Task Details -->            
+              </div>
+            </div> <!-- Problem Task ng-repeat -->
+            <div ng-if="data.hide_task_legend == false" class="well taskType">
+              Task Status Legend
+            </div>
+            <div ng-if="data.hide_task_legend == false" class="list-group-item text-center">
+              <i class="legendIcon fa fa-check-circle" title="Task is Completed"></i> Task is Completed
+              <i class="legendIcon fa fa-exclamation-circle" title="Task is Past Due"></i> Task is Past Due
+              <i class="legendIcon glyphicon glyphicon-calendar activeTask" title="Task is In-progress"></i> Task is In-progress
+              <i class="legendIcon glyphicon glyphicon-calendar warnTask" title="Task is close to Due Date"></i> Task is close to Due Date
+              <i class="legendIcon glyphicon glyphicon-calendar alertTask" title="Task does not have a Due Date"></i> Task does not have a Due Date (not applied to default tasks)
+            </div>
+          </div>
+        </div> <!-- Problem Task Module -->
+
+        <div ng-if="::!c.options.hide_worklog" id="worklogModule" class="container-fluid"> <!-- Problem Worklog Module -->          
+          <sp-widget widget="data.worklogBuddy_problem"></sp-widget>          
+        </div> <!-- Problem Worklog Module -->
+
+        <!--        <div id="worklogIModule" class="container-fluid"> <!-- Incident Worklog Module -->          
+        <!--      <sp-widget widget="c.incWorklogWidget" ></sp-widget>
+</div> <!-- Incident Worklog Module -->
+
+      </div> <!-- Row 1 Column B -->
+    </div> <!-- Row 1 -->
+
+    <div class="row"> <!-- Row 2 -->
+      <div class="col-sm-12"> <!-- Row 2 Column A -->
+
+        <div  ng-init="prb_variable_toggle=false" ng-class="ModuleColExpand(prb_variable_toggle)"> <!-- Row 2 Column A-1 -->
+          <div id="problemDetailsModule" class="container-fluid"> <!-- Problem Details Module -->
+            <h4 class="moduleTitle"ng-click="prb_variable_toggle = !prb_variable_toggle" style="cursor: pointer;">
+              Root Cause Analysis
+              <i class="glyphicon" ng-class="{'glyphicon-chevron-down': prb_variable_toggle, 'glyphicon-chevron-right': !prb_variable_toggle}"></i>
+            </h4>
+            <div ng-if="prb_variable_toggle">
+
+              <div id="prbDetailsRow" class="row"> <!-- Row 1 Column A Nested Row 2 -->
+                <div class="col-xs-12"> <!-- 1A_NRow2 Column Zero -->
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Symptom
+                  </h6>
+                  <div class="timeline-body">
+                    <p>
+                      {{data.problem.symptom}}
+                    </p>
+                  </div>
+                </div> <!-- 1A_NRow2 Column Zero -->
+                <div class="col-xs-6"> <!-- 1A_NRow2 Column A -->
+                  <h6 class="m-n text-muted">
+                    Why 1
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_why_1}}
+                  </div>                        
+                  <h6 class="m-n text-muted">
+                    Why 2
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_why_2}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Why 3
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_why_3}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Why 4
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_why_4}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Why 5
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_why_5}}
+                  </div>
+                </div><!-- 1A_NRow2 Column A -->
+                <div class="col-xs-6"> <!-- 1A_NRow2 Column B -->
+                  <h6 class="m-n text-muted">
+                    Response 1
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_response_1}}
+                  </div>                        
+                  <h6 class="m-n text-muted">
+                    Response 2
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_response_2}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Response 3
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_response_3}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Response 4
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_response_4}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Response 5
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.u_response_5}}
+                  </div>
+                </div> <!-- 1A_NRow2 Column B -->
+                <div class="col-xs-12"> <!-- 1A_NRow2 Column C -->                
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Problem Cause
+                  </h6>
+                  <div class="timeline-body">
+                    <p>
+                      {{data.problem.cause}}
+                    </p>
+                  </div>
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Problem Resolution
+                  </h6>
+                  <div class="timeline-body">
+                    <p>
+                      {{data.problem.resolution}}
+                    </p>
+                  </div>
+                </div> <!-- 1A_NRow2 Column C -->
+              </div> <!-- Row 1 Column A Nested Row 1 -->
+
+            </div> <!-- mi_variable_toggle -->
+          </div> <!-- Problem Details Module -->
+        </div> <!-- Row 2 Column A-1 -->
+
+        <div  ng-init="mi_variable_toggle=false" ng-class="ModuleColExpand(mi_variable_toggle)"> <!-- Row 2 Column A-2 -->
+          <div id="majorIncidentModule" class="container-fluid"> <!-- Major Incident Details Module -->
+            <h4 class="moduleTitle" ng-click="mi_variable_toggle = !mi_variable_toggle" style="cursor: pointer;">
+              Major Incident Details
+              <i class="glyphicon" ng-class="{'glyphicon-chevron-down': mi_variable_toggle, 'glyphicon-chevron-right': !mi_variable_toggle}"></i>
+            </h4>
+            <div ng-if="mi_variable_toggle">
+
+              <div id="miDetailsRow" class="row"> <!-- Row 1 Column A Nested Row 2 -->
+                <div class="col-xs-6"> <!-- 1A_NRow2 Column A -->
+                  <h6 class="m-n text-muted">
+                    Incident Number
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent}}
+                  </div>                        
+                  <h6 class="m-n text-muted">
+                    Incident Created
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_created}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Incident Owner
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_owner_group}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Region
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_region}}
+                  </div>
+                </div><!-- 1A_NRow2 Column A -->
+                <div class="col-xs-6"> <!-- 1A_NRow2 Column B -->
+                  <h6 class="m-n text-muted">
+                    Incident State
+                  </h6><div class="fieldValue">
+                  {{data.problem.parent_inc_state}} 
+                  </div>            
+                  <h6 class="m-n text-muted">
+                    Incident Resolved
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_resolved}}
+                  </div>           
+                  <h6 class="m-n text-muted">
+                    Incident Duration
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_duration}}
+                  </div>
+                  <h6 class="m-n text-muted">
+                    Business Unit
+                  </h6>
+                  <div class="fieldValue">
+                    {{data.problem.parent_inc_business_unit}}
+                  </div>
+                </div> <!-- 1A_NRow2 Column B -->
+                <div class="col-xs-12"> <!-- 1A_NRow2 Column C -->
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Incident Short Description
+                  </h6>
+                  <div class="fieldValue timeline-body">
+                    <p>{{data.problem.parent_inc_short_description}}</p>
+                  </div>            
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Incident Description
+                  </h6>
+                  <div class="fieldValue timeline-body">
+                    <p>{{data.problem.parent_inc_description}}</p>
+                  </div>
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Incident Symptom
+                  </h6>
+                  <div class="fieldValue timeline-body">
+                    <p>{{data.problem.parent_inc_symptom}}</p>
+                  </div>
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Incident Cause
+                  </h6>
+                  <div class="fieldValue timeline-body">
+                    <p>{{data.problem.parent_inc_cause}}</p>
+                  </div>
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Incident Resolution
+                  </h6>
+                  <div class="fieldValue timeline-body">
+                    <p>{{data.problem.parent_inc_resolution}}</p>
+                  </div>
+                  <h6 class="m-n text-muted execSummaryh6">
+                    Major Incident Chronology
+                  </h6>
+                  <div class="miChron" ng-repeat="incident_worklog in data.problem.incident_worklogs |  limitTo: 5">
+                    <div class="fieldValue timeline-body">
+                      <p>{{incident_worklog.parent_inc_wklg_description}}</p>
+                      <h6 class="m-n text-muted itals">
+                        {{incident_worklog.parent_inc_wklg_type}} updated on {{incident_worklog.parent_inc_wklg_updated_on}}
+                        by {{incident_worklog.parent_inc_wklg_updated_by}}
+                      </h6>
+                    </div>
+                  </div>                
+                </div> <!-- 1A_NRow2 Column C -->
+              </div> <!-- Row 1 Column A Nested Row 1 -->
+
+            </div> <!-- mi_variable_toggle -->
+          </div> <!-- Major Incident Details Module -->
+        </div> <!-- Row 2 Column A-2 -->
+
+      </div>  <!-- Row 2 Column A -->
+    </div> <!-- Row 2 -->
+
+  </div> <!-- Main Body Panel -->
+</div> <!-- Widget Main Panel -->
+
+<div id="printView" class="hidden">
+  <style>
+    /* Table,th,tr,td Elements ------------------- */
+    table {
+      width: 100%;
+      border-radius: 10px;
+      border-collapse: collapse;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      word-wrap: break-word;
+      text-overflow: ellipsis;
+    }
+    th, td { padding: 10px; }
+    td { color: black; }
+
+    /* Change default bootstrap behaviors -------------*/
+    //	Change Table Row Hover state collor to SSC Color 
+    .table-hover tbody tr:hover td {
+      // background-color: #86BBD1; // SSC Hover Color GEO
+      background-color: #E1ECF2; // SSC Menu Hover MAE
+    }
+
+    /* Table,th,tr,td Classes ------------------------ */
+    .problem_title {
+      background-color:  #0A2F5D; /* SSC Blue */
+      color: white;
+      border: thick solid #0A2F5D; 
+      font-size: 20px;
+    }
+    .problem_title span {
+      font-size: 16px; 
+      font-style: italic;
+    }
+    .moreDetailsRow, .problem_task_cat_header {
+      background-color:  #007298; /* SSC Light Blue */
+      color: white;
+    }
+    .problem_task_cat_header {font-weight: bold; font-size: 16px;}
+    .problem_task_list, .problem_task_list_item, .summaryTblCell {
+      text-align: left;
+      vertical-align: top;
+    }
+    .problem_task_list {padding: 0px;}
+    .itals {font-style: italic;}
+    .addBotmBrdr { border-bottom: thin solid gray; }
+    .addThickBlueBotmBrdr { border-bottom: thick solid #0A2F5D; }
+    .addThickBlueRightBrdr { border-right: thick solid #0A2F5D; }
+    .addThickBlueLeftBrdr { border-left: thick solid #0A2F5D; }
+
+    /* Table,th,tr,td Named Elements --------- */
+    .problem_task_list_item, #incidentDetailTable td, #incidentDetailTable th, #incidentDetailTable tr {
+      padding: 2px 4px 2px 4px;
+    }
+    /* ng-class section --------- */
+    .Major {  
+      color:white;  
+      border-radius: 5px;
+      padding-left: 2px;
+      padding-right: 2px;
+      font-weight: bold;
+    }
+    .Reportable { background: red }
+    .Qualified { background: #f56e00 }
+    .Process { background: #0A2F5D }
+    /* Style for layout of large multi-line text used for --------- */
+    /* showing worklog description i.e. MI chronology */
+    .timeline-body > p {
+      white-space: pre-wrap;
+      overflow-y:scroll;overflow-x:hidden;
+      max-height: 300px;
+    }
+    /* Button style section --------- */
+    button {
+      // background-color:  #007298; /* SSC Light Blue */
+      background-color:  #2F749A; /* SSC Primary Button CAL */
+      border: 1px;
+      color: white;
+      padding: 10px 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      // border-radius: 15px;
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    button:hover {
+      background-color: #E1ECF2; // SSC Hover ColorMAE
+      color: #464646; // SSC Typography
+    }
+    button#pressed { 
+      // background-color: #e4ecf0; color: #0A2F5D;
+      background-color:  #092E5D; /* SSC Selected Button BEN */
+      color: white;
+    }
+    /* ICON styles */
+    .fa-check-circle, .fa-calendar-check-o-active, .fa-calendar-check-o-warn, .fa-calendar-times-o, .fa-exclamation-circle {
+      padding-left: 10px;
+    }
+    .fa-plus-square, .fa-minus-square { padding-right: 10px; }
+    .fa-calendar-times-o, .fa-exclamation-circle { color: red; }
+    .fa-calendar-check-o-active { color: #0A2F5D;}
+    .fa-calendar-check-o-warn { color: #f56e00;}
+    .fa-print { color: #007298;font-size:36px; padding-left: 15px; padding-right: 15px; }
+  </style>
+  <!-- MainRepeatTable -->
+  <table id="MainRepeatTable">
+    <col width="10%"> <col width="40%"> <col width="10%"> <col width="40%">
+    <tr>
+      <th class="problem_title" colspan="4">        
+        <span class="ticket_numbers">
+          ({{data.problem.parent}} / {{data.problem.number}})
+        </span>
+        {{data.problem.short_description}}
+      </th>
+    </tr> <!-- Problem Title Row -->
+    <tr>
+      <td class="addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr summaryTblCell" colspan="2"> 
+        <table> <!-- Summary Table -->
+          <tr>
+            <th>Major Incident Type:</th>
+            <td><span ng-class="getMItypeClass(problem)">{{data.problem.parent_inc_mi_type}}</span></td>
+          </tr>
+          <tr>
+            <th>Problem State:</th>
+            <td>{{data.problem.state}}</td>
+          </tr>
+          <tr>
+            <th>Problem Application:</th>
+            <td>{{data.problem.cmdb_ci}}</td>
+          </tr>
+          <tr>
+            <th>Problem Owner:</th>
+            <td>{{data.problem.assignment_group}}</td>
+          </tr>
+          <tr>
+            <th>Root Cause Owner, Category:</th>
+            <td>{{data.problem.u_root_cause_owner}}, {{data.problem.u_root_cause_category}}</td>
+          </tr>
+          <tr>
+            <th class="addBotmBrdr" colspan="2">Executive Summary:</th>
+          </tr>
+          <td colspan="2"> {{data.problem.description}}
+          </td>
+        </table> <!-- end of summary table  -->
+      </td> <!-- Problem Summary Fields -->
+      <td class="problem_task_list addThickBlueRightBrdr addThickBlueBotmBrdr" colspan="2" width="50%"> 
+        <table class=" table-hover"> <!-- tasks_table -->
+          <tr>
+            <th class="problem_task_cat_header">Causal Determination Tasks</th>
+          </tr><tbody>
+          <tr ng-repeat="problem_task in data.problem.problem_tasks | filter: {'u_problem_task_category' : 'CDT - Causal Determination Task'} | limitTo: 10">            
+            <td class="problem_task_list_item addBotmBrdr">              
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}})
+              <table> <!-- summary table of CDT task -->
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th">Task Number:</td>
+                  <td class="problem_task_list_item">{{problem_task.number}}</td>
+                </tr>
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th" colspan="2">Task Description:</td>
+                </tr>
+                <td class="problem_task_list_item" colspan="2"> {{problem_task.description}}
+                </td>
+              </table> <!-- end of summary table of CDT task -->
+            </td>
+          </tr></tbody>
+          <tr>
+            <th class="problem_task_cat_header">Risk Remediation Tasks</th>
+          </tr><tbody>
+          <tr ng-repeat="problem_task in data.problem.problem_tasks | filter: {'u_problem_task_category' : 'RRT - Risk Remediation Task'} | limitTo: 10">
+            <td class="problem_task_list_item addBotmBrdr">              
+              {{problem_task.short_description}} ({{problem_task.assignment_group}}) ({{problem_task.state}}) ({{problem_task.date_calc | date:'shortDate'}})
+              <table> <!-- summary table of RRT task -->
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th">Task Number:</td>
+                  <td class="problem_task_list_item">{{problem_task.number}}</td>
+                </tr>
+                <tr>
+                  <td class="problem_task_list_item problem_task_list_th" colspan="2">Task Description:</td>
+                </tr>
+                <td class="problem_task_list_item" colspan="2"> {{problem_task.description}}
+                </td>
+              </table> <!-- end of summary table of CDT task -->
+            </td>             
+          </tr></tbody>
+        </table> <!-- end of tasks_table -->
+      </td> <!-- Problem Tasks -->
+    </tr> <!-- Problem Summary Fields and Tasks Row -->
+    <tr >
+      <th class="problem_task_cat_header addThickBlueLeftBrdr addThickBlueRightBrdr" colspan="4">More Incident Details</th>
+    </tr> <!-- More Incident Details Title Row -->
+    <tr class="moreDetailsRow addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr"> 
+      <td colspan="4">
+        <table id="incidentDetailTable"> <!-- Incident Detail Table -->
+          <col width="20%">
+          <col width="30%">
+          <col width="20%">
+          <col width="30%">
+          <tr>
+            <th>Incident Number:</th>
+            <td>{{data.problem.parent}}</td>
+            <th>Incident Created:</th>
+            <td>{{data.problem.parent_inc_created}}</td>
+          </tr>
+          <tr>
+            <th>Incident State:</th>
+            <td>{{data.problem.parent_inc_state}}</td>
+            <th>Incident Resolved:</th>
+            <td>{{data.problem.parent_inc_resolved}}</td>
+          </tr>
+          <tr>
+            <th>Region, Business Unit:</th>
+            <td>{{data.problem.parent_inc_region}}, {{data.parent_inc_business_unit}}</td>
+            <th>Incident Duration:</th>
+            <td>{{data.problem.parent_inc_duration}}</td>                      
+          </tr>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Description:</th>
+          </tr>
+          <td colspan="4">{{data.problem.parent_inc_description}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Symptom:</th>
+          </tr>
+          <td colspan="4" >{{data.problem.parent_inc_symptom}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Cause:</th>
+          </tr>
+          <td colspan="4">{{data.problem.parent_inc_cause}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Incident Resolution:</th>
+          </tr>
+          <td colspan="4">{{data.problem.parent_inc_resolution}}</td>
+          <tr>
+            <th class="addBotmBrdr" colspan="4">Major Incident Chronology:</th>
+          </tr>
+          <td colspan="4">
+            <tr ng-repeat="incident_worklog in data.problem.incident_worklogs |  limitTo: 5"> 
+              <td  id="summary_header_td" colspan="4">
+                <div class="timeline-body">
+                  <p>
+                    {{data.incident_worklog.parent_inc_wklg_description}}
+                  </p> 
+                </div>
+                <p></p><p>
+                <span class="itals">
+                  {{data.incident_worklog.parent_inc_wklg_type}} updated on {{data.incident_worklog.parent_inc_wklg_updated_on}}
+                  by {{data.incident_worklog.parent_inc_wklg_updated_by}}
+                </span>
+                </p>
+              </td>
+            </tr>
+          </td>
+        </table> <!-- end of Incident Detail Table -->
+      </td>
+    </tr> <!-- More Incident Details Row -->
+    <tr class="addThickBlueLeftBrdr"> 
+      <th colspan="4" class="problem_task_cat_header addThickBlueRightBrdr">RCA Details</th>
+    </tr> <!-- RCA Details Title Row -->
+    <tr class="moreDetailsRow addThickBlueLeftBrdr addThickBlueRightBrdr addThickBlueBotmBrdr">
+      <td colspan="4">
+        <table> <!-- rca_table -->
+          <th width="10%">Symptom</th>
+          <td colspan="3">{{data.problem.symptom}}</td>
+          <tr> 
+            <th width="10%"></th>
+            <th>Why</th>
+            <th>Response</th>
+          </tr>
+          <tr class="addBotmBrdr">
+            <th width="10%" rowspan="5">5 Why's</th>
+            <td>{{data.problem.u_why_1}}</td><td>{{data.problem.u_response_1}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{data.problem.u_why_2}}</td><td>{{data.problem.u_response_2}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{data.problem.u_why_3}}</td><td>{{data.problem.u_response_3}}</td>
+          </tr>
+          <tr class="addBotmBrdr">
+            <td>{{data.problem.u_why_4}}</td><td>{{data.problem.u_response_4}}</td>
+          </tr>
+          <tr>
+            <td class="addBotmBrdr">{{data.problem.u_why_5}}</td><td class="addBotmBrdr">{{data.problem.u_response_5}}</td>
+          </tr>
+          <tr>
+            <th>Cause</th>
+            <td colspan="3">{{data.problem.cause}}</td>
+          </tr>
+          <tr>
+            <th>Resolution</th>
+            <td colspan="3">{{data.problem.resolution}}</td>
+          </tr>
+        </table> <!-- end of rca_table -->
+      </td>
+    </tr> <!-- RCA Details Row -->
+    <tr id="spacerow">
+      <td colspan="4"> </td>
+    </tr> <!-- Space Row -->
+  </table> <!-- end of MainRepeatTable-->
+
+</div>
+
+
+]]></template>
+    </sp_widget>
+</record_update>

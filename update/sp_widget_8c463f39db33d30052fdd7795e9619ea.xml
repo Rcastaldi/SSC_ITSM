@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {&#13;
+position: relative;&#13;
+}&#13;
+&#13;
+.panel-heading i {&#13;
+  cursor: pointer;&#13;
+  position: absolute;&#13;
+  padding: 10px;&#13;
+  top: 0px;&#13;
+  right: 0px;  &#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-problem-list</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Problem List</name>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[/* Introduction --------------------- */
+/*		e.g., data.table = $sp.getValue('table'); */
+/* Widget Options ------------------- */
+/*		title               =           */
+/*		hide_header         =           */
+
+(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	/* Server Script Variables --------- */
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-09 12:45:42</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>8c463f39db33d30052fdd7795e9619ea</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>SSC Problem List</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_8c463f39db33d30052fdd7795e9619ea</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-09 12:45:42</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-body"> <!-- Main Panel Body-->
+    <h2>
+      Test
+    </h2>
+  </div> <!-- Main Panel Body -->
+</div>]]></template>
+    </sp_widget>
+</record_update>

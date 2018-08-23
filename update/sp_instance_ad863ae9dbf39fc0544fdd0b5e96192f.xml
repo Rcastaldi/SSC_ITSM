@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>0</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">35873a2ddbf39fc0544fdd0b5e9619d0</sp_column>
+        <sp_widget display_value="SSC iFrame">7a2ee6e1dbf39fc0544fdd0b5e9619f0</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-08 13:28:47</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>ad863ae9dbf39fc0544fdd0b5e96192f</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_instance_ad863ae9dbf39fc0544fdd0b5e96192f</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-08 13:33:14</sys_updated_on>
+        <title/>
+        <url>/notification_preferences.do</url>
+        <widget_parameters><![CDATA[{
+	"url": {
+		"value": "/notification_preferences.do",
+		"displayValue": "/notification_preferences.do"
+	},
+	"width": {
+		"value": "100",
+		"displayValue": "100"
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=ad863ae9dbf39fc0544fdd0b5e96192f"/>
+</record_update>

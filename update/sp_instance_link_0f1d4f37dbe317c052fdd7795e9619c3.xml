@@ -14,26 +14,26 @@
         <roles/>
         <sc_cat_item/>
         <sc_category/>
-        <short_description>Set your work schedule, contacts numbers, and more!</short_description>
+        <short_description>Set your time zone or add a profile picture</short_description>
         <size>md</size>
         <sp_column display_value="2">f312f037db6bd3c052fdd7795e96190e</sp_column>
-        <sp_page display_value="user_profile">edcbce64d710120023c84f80de610305</sp_page>
+        <sp_page display_value="ssc_sp_itsm_user_profile">a67c63d4dbefd780544fdd0b5e9619fe</sp_page>
         <sp_widget display_value="Icon Link">3caa67afcb13020000f8d856634c9c2e</sp_widget>
         <sys_class_name>sp_instance_link</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-03 04:38:07</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>0f1d4f37dbe317c052fdd7795e9619c3</sys_id>
-        <sys_mod_count>4</sys_mod_count>
-        <sys_name>Set up your user profile</sys_name>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>Set up your Service Portal profile</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_link_0f1d4f37dbe317c052fdd7795e9619c3</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-03 04:47:59</sys_updated_on>
-        <title>Set up your user profile</title>
+        <sys_updated_on>2018-08-22 13:40:10</sys_updated_on>
+        <title>Set up your Service Portal profile</title>
         <type>page</type>
         <url/>
         <widget_parameters><![CDATA[{

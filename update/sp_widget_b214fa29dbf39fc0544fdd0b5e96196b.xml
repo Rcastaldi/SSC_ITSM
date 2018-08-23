@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function ($scope, $location, $http, spUtil) {
+	var c = this;
+
+	// Tab Navigation
+	$scope.current_page  = $scope.data.current_page;
+	c.Navigate = function(i) {
+		$scope.current_page = i;
+		c.data.current_page = i;		
+		var link = {};
+		if(i == "profile_page"){
+			link.id = 'ssc_sp_itsm_user_profile';
+		} else if(i == "subscribe_page"){
+			link.id = 'ssc_sp_itsm_notification_preferences';
+		}		
+		$location.search(link);
+	};
+
+	$scope.goToProblemForm = function(instance) {
+		var linkESF = {};
+		linkESF.sys_id = instance.sys_id;
+		linkESF.table = 'problem';
+		linkESF.id = 'ssc_sp_problem_form';
+		$location.search(linkESF);
+	};
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>// Navhub styles
+.sn-navhub-content {
+ padding-botttom: 15px; 
+}
+.sn-navhub-btn:active, selected{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}
+.sn-navhub-btn:hover{
+  border-bottom: 3px solid #bdc0c4; ($color-light) 
+}
+.sn-navhub-btn:default{
+  color: #343d47; ($color-darkest)
+}
+.sn-navhub-btn-active{
+  border-bottom: 3px solid #278efc; ($color-accent)
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ssc-sp-widget-tab-navigation</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Tab Navigation</name>
+        <option_schema>[{"name":"current_page","label":"Current Page","type":"string"}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[// populate the 'data' object
+// e.g., data.table = $sp.getValue('table');
+data.sysUserID = $sp.getParameter("sys_id");
+if (!data.sysUserID)
+         data.sysUserID = gs.getUser().getID();
+var sysUserGR = new GlideRecord("sys_user");
+data.userExists = sysUserGR.get(data.sysUserID) && sysUserGR.canRead();
+
+if (data.userExists) {
+	data.name = sysUserGR.getValue("name");
+	var loggedInSysUserID = gs.getUser().getID();	
+	data.isLoggedInUsersProfile = loggedInSysUserID.equals(data.sysUserID);	
+}
+
+if (options.current_page) {
+		data.current_page = options.current_page;
+}
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-08 13:18:14</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b214fa29dbf39fc0544fdd0b5e96196b</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>SSC Tab Navigation</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_b214fa29dbf39fc0544fdd0b5e96196b</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-08 13:53:44</sys_updated_on>
+        <template><![CDATA[<div>
+  <div ng-if="data.userExists && data.isLoggedInUsersProfile">
+    <div class="sn-navhub">
+      <div class="sn-navhub-content">
+        <div ng-if="current_page == 'profile_page'" class="btn sn-navhub-btn-active sn-navhub-btn_text" ng-click="c.Navigate('profile_page')">User Profile</div>
+        <div ng-if="current_page != 'profile_page'" class="btn sn-navhub-btn sn-navhub-btn_text" ng-click="c.Navigate('profile_page')">User Profile</div>
+        <div ng-if="current_page == 'subscribe_page'" class="btn sn-navhub-btn-active sn-navhub-btn_text" ng-click="c.Navigate('subscribe_page')">My Notification Preferences</div>
+        <div ng-if="current_page != 'subscribe_page'" class="btn sn-navhub-btn sn-navhub-btn_text" ng-click="c.Navigate('subscribe_page')">My Notification Preferences</div>
+        <br/>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

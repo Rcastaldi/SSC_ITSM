@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout) {
+  /* widget controller */
+  var c = this;
+	
+  $scope.orderField = "number";
+	$scope.data.flagToServerScriptToUpdateMiType = false;
+	$scope.data.UpdateMiType_inc = null;
+	$scope.data.UpdateMiType_newVal = null;
+	
+	//UI to watch the data tables and update on change
+	spUtil.recordWatch($scope, "incident", "", function(name, data) {
+		spUtil.update($scope);		
+	});
+	
+	//UI to watch the data tables and update on change
+	spUtil.recordWatch($scope, "problem", "", function(name, data) {
+		spUtil.update($scope);		
+	});
+	
+	// Function to update the new Mitype selected on screen.	
+	$scope.$on("field.change", function(evt, parms) {
+	if (parms.field.name == 'mi_type_select'){
+	//$scope.data.groups = parms.newValue; 
+	//shared.selstartdate = c.data.selstartdate;
+	//shared.selenddate = c.data.selenddate; 
+	//shared.groups = parms.newValue; 
+	console.log(evt);
+	console.log(parms);
+	// $scope.server.update();
+	}
+	});
+// Function to update the new Mitype selected on screen.	
+$scope.saveMitype = function(inc_sys_id,newVal) {
+$scope.data.flagToServerScriptToUpdateMiType = true;
+$scope.data.UpdateMiType_inc = inc_sys_id;
+$scope.data.UpdateMiType_newVal = newVal;
+c.server.update();
+};
+	
+	
+	
+	$scope.changeSort = function(field) {
+		if ($scope.orderField == field) {
+			  $scope.orderReverse = !$scope.orderReverse;
+		} else {
+			$scope.orderField = field;
+		}
+	}
+						 
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.MyTable {
+  border-collapse: collapse;
+  width: 100%;
+  border: 3px grey;
+}
+
+tr {
+  background-color: grey; 
+  color:black; 
+  font-size:12px; 
+  padding: 1px; 
+}
+
+td, th {
+  border: 1px solid black;
+  padding: 2px;        
+}
+
+th {
+  background-color:#B8B8B8;
+  text-align:left;
+	font-family: "Arial","sans-serif";
+  font-weight: bold;
+}
+
+.omi_th {
+  color:red;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+
+}
+
+.omi_td {
+  background-color:#ebbfbb;
+  text-align: center;
+}
+
+.rmi_th {
+  color:#984807;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+}
+
+.rmi_td {
+  background-color:#fff7e6;
+  text-align: center;
+}
+
+.qmi_th {
+  color:#1F497D;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  line-height:1;
+  margin: 0px;
+}
+
+.qmi_td {
+  background-color: #d1e0ff;
+  text-align: center;
+}
+
+.pmi_th {
+  color:brown;
+  background-color:white;
+  font-family: Arial;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+}
+
+.pmi_td {
+  background-color: white;
+  text-align: center;
+}
+
+/* .sub_text {
+  font-size:10px;
+  font-family: Arial;
+  color:#595959;
+  margin: 5px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;}
+ } */
+
+.sub_text {
+        font-size:10px;
+        font-family: Arial;
+        color:#595959;
+        line-height: 5px;
+        margin: 2px 0px 1px 0px; 
+				padding: 2px 0px 1px 0px;
+        font-weight: normal;
+        font-size: 10px;
+      }
+
+.dropdown{
+  text-align: center;
+}
+
+/*.dropdown option:checked {
+  color: red;
+  background: yellow;
+}
+.dropdown option:not(:checked)  {
+  color: red;
+  background: pink;
+}
+.dropdown option:active  {
+  color: blue;
+  background: black;
+}*/
+
+.cardfooter{ 
+  border-top: 1px black;
+  border-bottom: 1px solid black; 
+  padding: 10px 0 10px; 
+  color: black;
+  width: 100%
+    font-family: Arial;
+  font-size: 10px;
+  text-align:left;
+} 
+
+ .popover {
+  font-weight: normal;
+  max-width: 50vw !important;
+  min-width: 800px;
+}
+
+.omi_desc {
+  background-color:#ebbfbb;
+  text-align: center;
+}
+
+.qmi_desc {
+  background-color: #d1e0ff;
+  text-align: center;
+}
+
+.rmi_desc {
+  background-color:#fff7e6;
+  text-align: center;
+}
+
+.pmi_desc {
+  background-color: white;
+  text-align: center;
+}
+
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.qmi_desc, .rmi_desc, .pmi_desc, .timeline-body &gt; p {
+  white-space: pre-line;
+  //overflow-y:scroll;overflow-x:hidden;
+ max-height: 300px;
+ /* .scrollpane {
+  max-height: 70vh;
+  margin: -15px;
+  overflow-y: scroll;*/
+}
+}
+
+.custom-select {
+  position: relative;
+  font-family: Arial;
+  background-color: #B8B8B8;
+  width: 100px;
+  height: 23px;
+}
+
+.def {
+  font-size:10px;
+  font-family: Arial;
+  margin: 2px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;
+  font-weight: normal;
+  color: #686868;
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-daily-risk-review-v1</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Daily Risk Review Version 1</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	
+// To get the name of the server (https://sscorpdev.service-now.com/)
+var instanceURL = gs.getProperty('glide.servlet.uri');
+console.log(instanceURL);
+	
+// To update MiType selected from the dropdown. 
+if (input) {
+		
+	if (input.flagToServerScriptToUpdateMiType == true){
+           // console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
+		var grMiTypeUpdate = new GlideRecord('incident');
+		grMiTypeUpdate.get(input.UpdateMiType_inc);
+		//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
+		grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
+		updateMiType = grMiTypeUpdate.update();
+		if (updateMiType) {
+    console.log(grMiTypeUpdate.getElement('u_mi_type'));
+		} else {console.log("error");}
+	}
+	}
+	
+	
+	var current_gdt = new GlideDateTime().getDate().getValue();				/* to get the current date (yyyy-mm-dd) format */
+	var enddate = new GlideDateTime(current_gdt + " 06:00:00");				/* to get the current date (yyyy-mm-dd hh:mm:ss) format */
+
+	var startdate = new GlideDateTime(enddate);
+	//console.log(startdate);
+	if (enddate.getDayOfWeekLocalTime() == 1) {												/*Checking the condition, if day of the week is Monday, subtracting 3 days from current day to get startdate to be friday */
+		startdate.addDaysLocalTime(-3);
+		//console.log(startdate);
+	} else { 
+		startdate.addDaysLocalTime(-1);																	/*if it is not Monday, subtract 1 day from current day.*/
+	}
+	
+	data.openIncident = [];
+	data.resolvedIncident =[];
+	var grIncident = new GlideRecord('incident');
+	grIncident.addEncodedQuery('u_qs_major_incident=true^state!=7');	/* change to MI=true, state not closed*/
+	//grIncident.addQuery('sys_created_on', ">", startdate);						/* incident created date greater than startdate (defined previously) */	
+	grIncident.query();	
+
+	while (grIncident.next()) {		
+		var openIncidents = {};
+		var resolvedIncidents = {};
+		if(grIncident.state == 6 ){																			/* If state is resolved, get all the information from Problem table as problem ticket is created soon after incident is resolved */
+			if(grIncident.problem_id.sys_created_on > startdate) {
+			resolvedIncidents.number = grIncident.getDisplayValue('number');																				/* Incident number related to Problem */
+			resolvedIncidents.sys_id = grIncident.getUniqueValue();																									/* Sys id related to incident */
+			resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');														/* Problem number of the related incident */
+			resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						/* Description of the problem record. */
+			resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						/* Mi type */
+			resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			/* New Mi type selected from the dropdown */
+			resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				/* Sys id of the related problem record */
+			resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');	/* Root cause category */
+			resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');	/* Root Cause Owner */
+			
+			var problemForm = $sp.getForm("problem", resolvedIncidents.problem_id,'', 'problem');
+			data.pbmFormView = problemForm._view;
+			data.pbmFormModel = problemForm._fields;
+			resolvedIncidents.problem_model = [];	// declaring new array for field model for sp-editable directive
+
+			for (var j = 0; j < data.pbmFormView.length; j++) {
+				if (data.pbmFormView[j].name == 'description')
+					resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				if (data.pbmFormView[j].name == 'u_root_cause_owner')
+					resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				if (data.pbmFormView[j].name == 'u_root_cause_category')
+					resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+			}
+			
+					
+			data.resolvedIncident.push(resolvedIncidents);	
+			}
+		} else if(grIncident.state != 6) {																																				/*If state is not resolved, get all the information from incident table*/
+			openIncidents.number = grIncident.getDisplayValue('number');																						/* Incident number */
+			openIncidents.sys_id = grIncident.getUniqueValue();																											/* Sys id related to incident */
+			openIncidents.problem = grIncident.getDisplayValue('problem_id');																				/* Problem Number */
+			openIncidents.problem_sys_id = grIncident.getValue('problem_id');																				/* Problem Sys id */
+			openIncidents.description = grIncident.getDisplayValue('description');																	/* Incident Description */
+			openIncidents.miType = grIncident.getValue('u_mi_type');																								/* Mi Type */
+			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');																					/* New Mi type selected from the dropdown */
+			openIncidents.problem_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');	/* Root cause category */
+			openIncidents.problem_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');		/* Root cause category */
+			openIncidents.state = grIncident.getDisplayValue('state');
+			
+			/*var incidentForm = $sp.getForm("incident", openIncidents.sys_id,'', 'problem');
+			data.incFormView = incidentForm._view;
+			data.incFormModel = incidentForm._fields;
+			openIncidents.incident_model = [];
+	
+			for (var i = 0; i < data.incFormView.length; i++) {
+				if (data.incFormView[i].name == 'description')
+					openIncidents.incident_model.push(data.incFormModel[data.incFormView[i].name]);
+			} */
+			
+			data.openIncident.push(openIncidents);
+		}
+	}	
+
+})();
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-22 15:44:10</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>8dcbdfcadb40a300544fdd0b5e961922</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>SSC Daily Risk Review Version 1</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_8dcbdfcadb40a300544fdd0b5e961922</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-22 15:44:10</sys_updated_on>
+        <template><![CDATA[<script>
+  // Move this code to client script.
+  function CallPrint(strid)
+  {
+    var prtContent = document.getElementById(strid);
+    var WinPrint = window.open('','','left=0,top=0,width=700,height=500,toolbar=0,scrollbars=0,status=0');
+    WinPrint.document.write(prtContent.innerHTML);
+    WinPrint.document.close();
+    WinPrint.focus();
+    WinPrint.print();
+    WinPrint.close();
+    //prtContent.innerHTML=strOldOne;
+  }
+  function SendMail(strid)
+  {
+    var mailBody=document.getElementById(strid);
+    var outlookApp = new ActiveXObject("Outlook.Application");
+    var nameSpace = outlookApp.getNameSpace("MAPI");
+    mailFolder = nameSpace.getDefaultFolder(6);
+    mailItem = mailFolder.Items.add('IPM.Note.FormA');
+    mailItem.Subject = "Daily IT Operations Risk Review" + " [" + moment(new Date()).format("YYYY/MM/DD") + "]"; 
+    mailItem.To = "";
+    mailItem.HTMLBody = mailBody.innerHTML;
+    mailItem.display(0);  
+  }
+</script> <!-- Javascript code to print or email content of Div ID provided in function call -->
+<div>
+  <div id="printView" class="panel panel-body hidden">
+    <style> 
+      /* CSS Style has to be included inside of print view div to be rendered */ 
+      .MyTable {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      tr {
+        background-color: grey;
+        color:black; 
+        font-size:12px;
+        font-family: "Arial","sans-serif";
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
+        line-height:1;
+      }
+      td, th {
+        border: 1px solid black;
+        padding: 8px;        
+      }
+      th {
+        background-color:#B8B8B8;
+        text-align:left;
+        font-family: "Arial","sans-serif";
+        font-size:12px;
+        font-weight: bold;
+        line-height:1;
+      }
+      .omi_th {
+        color:red;
+        background-color:white;
+        font-family: Arial;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: left;
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
+
+      }
+      .omi_td {
+        background-color:#e6b0aa; 
+        text-align: center;
+      }
+      .rmi_th {
+        color:brown;
+        background-color:white;
+        font-family: Arial;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: left;
+        margin: 0px 0px 0px 0px; 
+				padding: 0px 0px 0px 0px;
+      }
+      .rmi_td {
+        background-color:#fff7e6;
+        text-align: center;
+      }
+      .qmi_th {
+        color:#1f497d;
+        background-color:white;
+        font-family: Arial;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: left;
+        margin: 0px 0px 0px 0px; 
+				padding: 0px 0px 0px 0px;
+      }
+      .qmi_td {
+        background-color: #e6f2ff;
+				text-align: center;
+      }
+      .pmi_th {
+        color:brown;
+        background-color:white;
+        font-family: Arial;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: left;
+        line-height:1;
+  			margin-bottom: 0px;
+      }
+      .pmi_td {
+        background-color: white;
+        text-align: center;
+      }
+      .sub_text {
+        font-family: Arial;
+        color:#595959;
+        line-height: 5px;
+        margin: 2px 0px 0px 0px; 
+        padding: 2px 0px 0px 0px;
+        font-weight: normal;
+        font-size: 10.5px;
+      }
+
+      .def {
+        font-size:10.5px;
+        font-family: Arial;
+        margin: 2px 0px 0px 0px; 
+        padding: 2px 0px 0px 0px;
+        font-weight: normal;
+        color:#686868;
+      }
+
+    </style>
+  <!--  <h1 style="text-align:center; color:blue">Daily IT Operations Risk Review</h1> -->
+    <!-- <pre>Sort by = {{orderField}}</pre> -->    
+    <br/>
+    <br/>
+    <table class="MyTable">
+      <col width="5%">  <col width="5%"> <col width="90%"> 
+      <tr>
+        <th width="5%">SLA Impact</th>
+        <th width="5%">Open Risk</th>
+       <!-- <th width="10%">Inc Number</th> -->
+       <!-- <th width="10%">Number</th> -->
+       <!--  <th width="10%">Root Cause Owner</th> -->
+       <!-- <th width="10%">Root Cause category</th> -->
+        <th width="90%">Description</th>        
+      </tr>  
+      <tr> 
+        <th class = "omi_th" colspan = "5">Open Major Incidents (MI) 
+          <p class = "sub_text">[Discuss current status and any known or upcoming Service Level Impact. Cutoff: 6am EDT]</p>
+        </th> 
+      </tr>
+      <tr ng-repeat = "openIncidents in data.openIncident"> 
+        <td class = "omi_td" style='color:red; font-size: 20px;'>&#x231B;</td> 
+        <td class = "omi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <!-- <td class = "omi_td"> {{openIncidents.number}}  </td> -->
+        <!-- <td class = "omi_td"> {{openIncidents.problem}} </td> -->
+        <!--  <td class = "omi_td"> {{openIncidents.prob_root_cause_owner}} </td> -->
+        <!--   <td class = "omi_td"> {{openIncidents.prob_root_cause_cat}} </td> -->
+        <td class = "omi_td" style="text-align:left"><b><i>({{openIncidents.number}} / {{openIncidents.problem}})</i></b> {{openIncidents.description}}   
+        </td> 
+      </tr>
+      <tr> 
+        <th class = "rmi_th" colspan = "5">Reportable Major Incidents (RMI)
+          <p class = "sub_text">[Discuss Incident details, Service Level Impact and any Open Risk.]</p>
+        </th> 
+      </tr>
+      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> 
+        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+      <!--  <td class = "rmi_td"> {{resolvedIncidents.number}}  </td> -->
+      <!--  <td class = "rmi_td"> {{resolvedIncidents.problem}} </td> -->
+      <!--   <td class = "rmi_td"> {{resolvedIncidents.prob_root_cause_owner}}  </td>  -->
+      <!--   <td class = "rmi_td"> {{resolvedIncidents.prob_root_cause_cat}}  </td>  -->
+        <td class = "rmi_td" style="text-align:left"><b><i>({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})</i></b>
+          {{resolvedIncidents.problem_description}}
+        </td>        
+      </tr>
+      <tr> 
+        <th class="qmi_th" colspan = "5">Qualified Business Impacting Incidents (QMI)
+          <p class = "sub_text">[Discuss Open Risk and any unidentified Service Level Impact.]</p>
+        </th> 
+      </tr>
+      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> 
+        <td class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td> -->
+        <!--    <td class = "qmi_td"> {{resolvedIncidents.prob_root_cause_owner}}  </td>  -->
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.prob_root_cause_cat}}  </td> -->
+        <td class="qmi_td" style="text-align:left"><b><i>({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})</i></b>
+          {{resolvedIncidents.problem_description}}
+        </td>         
+      </tr>
+      <!--  <tr> 
+<th class="pmi_th" colspan = "5"> Process Major Incidents</th> 
+</tr>
+<tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> 
+<td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+<td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+<td class = "pmi_td"> {{resolvedIncidents.number}}  </td> 
+<td class="pmi_td"> {{resolvedIncidents.problem}} </td>
+<td class="pmi_td" style="text-align:left">
+{{resolvedIncidents.problem_description}}
+</td>        
+</tr> -->
+    </table>
+    <h5 class="def" style="color:black"> <b>Definitions </b></h5>
+    <p class="def"> <b> Business Impact:</b> Any IT enterprise Service failure which was either visible to the business or a client, caused business users to apply a nonstandard workaround, or singularly impacted the timeline of a business function.</p>
+    <p class="def"> <b>Open Risk:</b> IT Service partially restored or remediated, leaving residual risk for additional business impact which is likely to recur. (e.g. Running on DR, Running without HA, Code Defect exists, manual workarounds in place)</p>
+    <p class="def"> <b>Reportable Major Incidents (RMI):</b> A Major Incident which resulted in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+    <p class="def"> <b>Qualified Business Impacting Incidents (QMI):</b> A Major Incident with business impact but did not result in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+  
+  </div> <!-- Print View - This is a hidden div that excludes inputs and code -->
+
+  <div id="displayView" class="panel panel-body">    
+    <h1 style="text-align:center; color:blue">Daily IT Operations Risk Review</h1> 
+    <!-- <pre>Sort by = {{orderField}}</pre> -->    
+    <br/>
+    <table class="MyTable">
+      <col width="5%"> <col width="5%">  <col width="10%"> <col width="10%"> <col width="60%"> <col width="10%">
+      <tr>
+        <th width="5%">SLA Impact</th>
+        <th width="5%">Open Risk</th>
+        <!--    <th width="9%">Inc Number</th> -->
+        <!--    <th width="9%">Number</th> -->
+        <th width="10%" ng-hide="!hiderco">Root Cause Owner</th>
+        <th width="10%" ng-hide="!hidercc">Root Cause category</th>
+        <th width="60%">Description</th>
+        <th width="10%"ng-hide="!hidemi">MiType</th>	<!-- To hide the column MiType   -->
+      </tr>  
+      <tr> 
+        <th class = "omi_th" colspan = "6">Open Major Incidents (MI) 
+          <p class = "sub_text">[Discuss current status and any known or upcoming Service Level Impact. Cutoff: 6am EDT]</p>
+        </th> 
+      </tr>
+      <!-- ng-repeat- to loop through a list of objects-->
+      <tr ng-repeat = "openIncidents in data.openIncident | orderBy:orderField:orderReverse"> 
+        <td class = "omi_td" style='color:red; font-size: 20px;'>&#x231B;</td> 
+        <td class = "omi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <!--   <td class = "omi_td"> {{openIncidents.number}}  </td> -->
+        <!--   <td class = "omi_td"> {{openIncidents.problem}} </td> -->
+        <td ng-hide="!hiderco" class = "omi_td"> {{openIncidents.problem_root_cause_owner}} </td>
+        <td ng-hide="!hidercc" class = "omi_td"> {{openIncidents.problem_root_cause_cat}} </td>
+        <td class = "omi_desc" style="text-align:left"><a ng-href="{{::instanceURL}}$sp.do?id=ssc_sp_problem_executive_summary&sys_id={{::openIncidents.problem_sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{openIncidents.problem}}" target="_blank">
+          ({{openIncidents.number}} / {{openIncidents.problem}}) </a> {{openIncidents.description}}
+          <!-- sp-editable - to make a field editable. rest of the code in server script (getform and views)-->
+          <!--<sp-editable-field                            
+                             table="incident" 															
+                             editable-by-user="true"
+                             table-id="openIncidents.sys_id"
+                             field-model="openIncidents.incident_model[0]"
+                             on-change="titleOnChange" 
+                             on-submit="titleOnSubmit">
+          </sp-editable-field>   -->
+        </td>
+        <!-- ng-hide - used to show/hide a column "MiType" -->
+        <td ng-hide="!hidemi" class = "omi_td"> 
+          <select class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
+            <option selected="selected">{{openIncidents.miType}}</option>
+            <option value="RMI">RMI</option>
+            <option value="QMI" >QMI</option>
+            <option value="PMI">PMI</option>
+          </select>
+          <!--Creating a save button using ng-click (which calls saveMitype function in client script)-->
+          <button ng-if="openIncidents.miType_newVal != openIncidents.miType" class="btn" ng-click="saveMitype(openIncidents.sys_id, openIncidents.miType_newVal)"> Save
+          </button>
+
+        </td>
+      </tr>
+      <tr> 
+        <th class = "rmi_th" colspan = "6">Reportable Major Incidents (RMI)
+          <p class = "sub_text">[Discuss Incident details, Service Level Impact and any Open Risk.]</p>
+        </th> 
+      </tr>
+      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> 
+        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <!--     <td class = "rmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--     <td class = "rmi_td"> {{resolvedIncidents.problem}} </td> -->
+        <td ng-hide="!hiderco" class = "rmi_td"> 
+          <!--   {{resolvedIncidents.prob_root_cause_owner}} -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[0]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td ng-hide="!hidercc" class = "rmi_td"> 
+          <!--   {{resolvedIncidents.prob_root_cause_cat}} -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[1]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td class = "rmi_desc" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+          ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+          </a>
+          <!-- {{problem.description}} -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[2]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td>
+        <td ng-hide="!hidemi" class = "rmi_td"> 
+          <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+            <option selected="selected">{{resolvedIncidents.miType}}</option>
+            <option value="RMI">RMI</option>
+            <option value="QMI" >QMI</option>
+            <option value="PMI">PMI</option>
+          </select>
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          </button>
+        </td>
+      </tr>
+      <tr> 
+        <th class="qmi_th" colspan = "6">Qualified Business Impacting Incidents (QMI)
+          <p class = "sub_text">[Discuss Open Risk and any unidentified Service Level Impact.]</p>
+        </th> 
+      </tr>
+      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> 
+        <td class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
+        <td ng-hide="!hiderco" class = "qmi_td">
+          <!--     {{resolvedIncidents.prob_root_cause_owner}} -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[0]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td ng-hide="!hidercc" class = "qmi_td"> 
+          <!--    {{resolvedIncidents.prob_root_cause_cat}}  -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[1]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td class="qmi_desc" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+          ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}}) </a> <!-- {{problem.description}} --> 
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[2]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td ng-hide="!hidemi" class = "qmi_td"> 
+          <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+            <option selected="selected">{{resolvedIncidents.miType}}</option>
+            <option value="RMI">RMI</option>
+            <option value="QMI" >QMI</option>
+            <option value="PMI">PMI</option>
+          </select>
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          </button>
+        </td>
+      </tr>
+      <tr> 
+        <th class="pmi_th" colspan = "6"> Process Major Incidents</th> 
+      </tr>
+      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> 
+        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <!--    <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
+        <td ng-hide="!hiderco" class = "pmi_td"> 
+          <!--     {{resolvedIncidents.prob_root_cause_owner}}  -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[0]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td ng-hide="!hidercc" class = "pmi_td" > 
+          <!--      {{resolvedIncidents.prob_root_cause_cat}}  -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[1]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td> 
+        <td class="pmi_desc" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+          ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+          </a>
+          <!-- {{problem.description}} -->
+          <sp-editable-field 
+                             table="problem" 
+                             editable-by-user="true"
+                             table-id="resolvedIncidents.problem_id"
+                             field-model="resolvedIncidents.problem_model[2]"
+                             on-change="titleOnChange" on-submit="titleOnSubmit">
+          </sp-editable-field>
+        </td>
+        <td ng-hide="!hidemi" class = "pmi_td"> 
+          <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+            <option selected="selected">{{resolvedIncidents.miType}}</option>
+            <option value="RMI">RMI</option>
+            <option value="QMI" >QMI</option>
+            <option value="PMI">PMI</option>
+          </select>
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          </button>
+        </td>
+      </tr>
+    </table>
+     <!-- <pre>{{data.openIncident | json}}</pre> -->
+  </div> <!-- Display View - This is the div that is rendered in the browser -->
+  
+  <div class="cardfooter">
+    <span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidemi"/> Edit Mode</span>
+    <span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hiderco"/> Edit RCO</span>
+    <span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidercc"/> Edit RCC</span>
+    <input type="button" value="Print Report" onClick="javascript:CallPrint('printView');">
+    <input type="button" value="Send Report As Email" onClick="javascript:SendMail('printView');">
+    <select class = "custom-select" field="email_select">
+        <option selected="selected"></option>
+        <option value="6:00">6:00 mins</option>
+        <option value="6:30">6:30 mins</option>
+        <option value="8:00">8:00 mins</option>
+        <option value="8:00">8:30 mins</option>
+        <option value="8:00">Early mins</option>
+        <option value="8:00">Re-write</option>
+        <option value="8:00">Initial Tagging</option>
+        <option value="8:00">Final email</option>
+      </select>
+    <h5> Definitions </h5>
+    <p><span style="font-weight: bold"> Business Impact:</span> Any IT enterprise Service failure which was either visible to the business or a client, caused business users to apply a nonstandard workaround, or singularly impacted the timeline of a business function.</p>
+    <p><span style="font-weight: bold"> Open Risk:</span> IT Service partially restored or remediated, leaving residual risk for additional business impact which is likely to recur. (e.g. Running on DR, Running without HA, Code Defect exists, manual workarounds in place)</p>
+    <p><span style="font-weight: bold"> Reportable Major Incidents (RMI):</span> A Major Incident which resulted in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+    <p><span style="font-weight: bold"> Qualified Business Impacting Incidents (QMI):</span> A Major Incident with business impact but did not result in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+  </div> <!-- Card Footer -->
+  </div> <!-- Main Div -->]]></template>
+    </sp_widget>
+</record_update>

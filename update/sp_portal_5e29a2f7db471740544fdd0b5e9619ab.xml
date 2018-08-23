@@ -34,14 +34,14 @@ $text-muted: #727272;
         <sc_catalog display_value="Service Catalog">e0d08b13c3330100c8b837659bba8fb4</sc_catalog>
         <sc_catalog_page display_value="sc_home">fe87a11147132100ba13a5554ee490b9</sc_catalog_page>
         <sp_chat_queue/>
-        <sp_rectangle_menu display_value="SSC ITSM SP Header">cd3452a0dbdb9740544fdd0b5e96196a</sp_rectangle_menu>
+        <sp_rectangle_menu display_value="IT Service Management">cd3452a0dbdb9740544fdd0b5e96196a</sp_rectangle_menu>
         <sqanda_knowledge_base/>
         <sys_class_name>sp_portal</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:30:24</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>5e29a2f7db471740544fdd0b5e9619ab</sys_id>
-        <sys_mod_count>33</sys_mod_count>
+        <sys_mod_count>34</sys_mod_count>
         <sys_name>State Street IT Service Management</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -49,8 +49,8 @@ $text-muted: #727272;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_portal_5e29a2f7db471740544fdd0b5e9619ab</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-04 06:37:05</sys_updated_on>
-        <theme display_value="Stock">79315153cb33310000f8d856634c9c4b</theme>
+        <sys_updated_on>2018-08-04 22:00:14</sys_updated_on>
+        <theme display_value="State Street Theme">b2934c68db375bc0544fdd0b5e9619ad</theme>
         <title>State Street IT Service Management</title>
         <url_suffix>itsm</url_suffix>
     </sp_portal>

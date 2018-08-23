@@ -24,7 +24,7 @@
         <sys_created_on>2018-07-28 18:37:11</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>7f935fcedba3df80544fdd0b5e961901</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>9</sys_mod_count>
         <sys_name>Open Major Incidents</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -32,7 +32,7 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_link_7f935fcedba3df80544fdd0b5e961901</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-02 17:22:11</sys_updated_on>
+        <sys_updated_on>2018-08-08 12:37:05</sys_updated_on>
         <title>Open Major Incidents</title>
         <type>url</type>
         <url>https://sscorpdev.service-now.com/sp_problem/?id=ssc_sp_open_major_incidents</url>

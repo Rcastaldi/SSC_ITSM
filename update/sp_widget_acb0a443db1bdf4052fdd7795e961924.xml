@@ -1,74 +1,255 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
-        <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout) {
-  /* widget controller */
-  var c = this;
+        <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout, $interval, $log, $uibModal) {
+	/* widget controller */
+	var c = this;
+
 	$scope.orderField = "number";
 	$scope.data.flagToServerScriptToUpdateMiType = false;
 	$scope.data.UpdateMiType_inc = null;
 	$scope.data.UpdateMiType_newVal = null;
-	
 
-
-/*	//UI to watch the data tables and update on change
+	//UI to watch the data tables and update on change if not currently editing record
 	spUtil.recordWatch($scope, "incident", "", function(name, data) {
-		spUtil.update($scope);		
+		if($scope.data.toggleEdit == 'OFF'){
+			spUtil.update($scope);
+		}
 	});
-	
-	$scope.edit = function(instance) {
-		$scope.editingRecord = angular.copy(instance);
-	}
-	
-	$scope.reset = function() {
-		$scope.editingRecord = null;
-	}
-	
-	$scope.save = function() {
-		$scope.writeIncident($scope.editingRecord.sys_id,
-												{'u_mi_type':$scope.editingRecord.u_mi_type});
-		$scope.reset();
-	}
-	
-	$scope.writeIncident = function(sys_id, data) {
-		$http({
-			method: 'PUT',
-			url:'api/now/table/incident/' + sys_id,
-			headers: {'Content-Type' : 'application/json'},
-			data: data
-		});
-	};
-	*/
-	
+
+	//UI to watch the data tables and update on change if not currently editing record
+	spUtil.recordWatch($scope, "problem", "", function(name, data) {
+		if($scope.data.toggleEdit == 'OFF'){
+			spUtil.update($scope);
+		}		
+	});
+
+	// Function to update the new Mitype selected on screen.	
 	$scope.$on("field.change", function(evt, parms) {
-	if (parms.field.name == 'mi_type_select'){
-	//$scope.data.groups = parms.newValue; 
-	//shared.selstartdate = c.data.selstartdate;
-	//shared.selenddate = c.data.selenddate; 
-	//shared.groups = parms.newValue; 
-	console.log(evt);
-	console.log(parms);
-	// $scope.server.update();
-	}
+		console.log('Scope.on field.change fired');
+		if (parms.field.name == 'mi_type_select'){
+			//$scope.data.groups = parms.newValue; 
+			//shared.selstartdate = c.data.selstartdate;
+			//shared.selenddate = c.data.selenddate; 
+			//shared.groups = parms.newValue; 
+			console.log('mi_type_select change detected');
+			console.log(evt);
+			console.log(parms);
+			// $scope.server.update();
+		}
 	});
-	
-$scope.saveMitype = function(inc_sys_id,newVal) {
-$scope.data.flagToServerScriptToUpdateMiType = true;
-$scope.data.UpdateMiType_inc = inc_sys_id;
-$scope.data.UpdateMiType_newVal = newVal;
-c.server.update();
-};
-	
-	
-	
+	// Function to update the new Mitype selected on screen.	
+	$scope.saveMitype = function(inc_sys_id,newVal) {
+		$scope.data.flagToServerScriptToUpdateMiType = true;
+		$scope.data.UpdateMiType_inc = inc_sys_id;
+		$scope.data.UpdateMiType_newVal = newVal;
+		c.server.update();
+	};	
 	$scope.changeSort = function(field) {
 		if ($scope.orderField == field) {
-			  $scope.orderReverse = !$scope.orderReverse;
+			$scope.orderReverse = !$scope.orderReverse;
 		} else {
 			$scope.orderField = field;
 		}
 	}
-						 
+	
+	$scope.saveSelectUpdate = function(p_sys_id, p_newVal, p_field, p_table, p_newVal2) {
+		console.log("saveSelectUpdate function start");
+		console.log(p_sys_id); console.log(p_newVal); console.log(p_field); console.log(p_table);
+		// Push the saved copy to the server.
+		var post = '';
+		if(p_field == 'u_mi_type'){
+			post = { 'u_mi_type': p_newVal};
+		} else if(p_field == 'tagging') {
+			post = { 'u_root_cause_category': p_newVal, 'u_root_cause_owner': p_newVal2 };
+		} else post = '';
+		autosaveHttpPromise = $http.patch("/api/now/table/" + p_table + "/" + p_sys_id, post).then(
+			onFinalizeSaveUpdate,
+			function(data) {
+				console.log("failed");
+				$log.info("Failed save request, resetting savedCopy state");				
+				onFinalizeSaveUpdate(data, true);
+			}
+		);
+		console.log("saveSelectUpdate function end");
+	}
+	function onFinalizeSaveUpdate (args,isErrorCall) {
+		console.log("onFinalizeSaveUpdate");
+		autosaveHttpPromise = null;
+		if(isErrorCall)
+			console.log("Error Call Saving Update");				
+	}
+	
+	/* Real-time ASync Updater by Ryan Castaldi				*/
+	/* Version 2.0 Updated 08/22/2018									*/
+	/* Adpated code for: SSC Daily Risk Review				*/
+	/* Goal is to move this code into a reusable			*/
+	/* Anguler Directive															*/
+
+	/* Variables ------------------------------------- */
+	$scope.data.currentEditRecord = "";
+	$scope.data.currentWorklogCopy = ""
+	$scope.data.mi_worklog = c.data.mi_worklog; //adapted code
+	$scope.showNotification = false;
+	$scope.data.toggleEdit = 'OFF';
+	$scope.data.canUserEdit = c.data.canUserEdit;	
+	var unwatchWorkingCopy; //unmount for the working copy watcher
+	var autosaveHttpPromise;
+	var autosaveTimer, notificationTimer;
+
+	/* Custom Code: SSC Daily Risk Review ------------- */
+	$scope.editDescription = function(p_sys_id, p_field) {
+		$scope.data.currentEditRecord = p_sys_id;
+		$scope.data.currentWorklogCopy = p_field;
+		//console.log(p_sys_id);
+		//c.server.update();
+	}	
+	$scope.toggleEdit = function(toggleP) {
+		$scope.data.toggleEdit = toggleP;
+		c.data.toggleEdit = toggleP;		
+		if(toggleP == 'OFF') {
+			saveMeetingNotes();
+			$scope.data.resolvedIncident.forEach(function(eachRecord){
+				if(eachRecord.problem_id == $scope.data.currentEditRecord){
+					eachRecord.problem_description = $scope.data.currentWorklogCopy;
+					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecord;
+				} 
+			})
+			$scope.data.currentEditRecord = "";
+			//spUtil.update($scope);
+			//c.server.update();			
+		}
+		setupNotesMgmt();
+		//console.log("toggle button clicked " + toggleP);		
+	}
+
+	/* Real-time ASync Updater Version 2.0 Code ------------- */
+
+	//canEditMeetingNotes Starts the looping functions for autosave
+	//added last check that user has access to edit record
+	function canEditMeetingNotes() {
+		if ($scope.data.toggleEdit == 'ON') {
+			//console.log("Setting can edit meeting notes to " + $scope.data.canUserEdit);
+			return $scope.data.canUserEdit; 
+		} else return false;
+	}
+
+	function debounceNotification() {
+		// if the animation is already in Queue, it means auto save triggered again
+		// so we need to show the notification some more time
+
+		if(notificationTimer)
+			$timeout.cancel(notificationTimer);
+
+		notificationTimer = $timeout(function() {
+			$scope.showNotification = false;
+			notificationTimer = undefined;
+		}, 2000);
+	}
+
+	function onFinalizeSaveNotes(args,isErrorCall) {
+		console.log("onFinalizeSaveNotes");
+		autosaveHttpPromise = null;
+		if(autosaveTimer) {
+			$timeout.cancel(autosaveTimer);
+			autosaveTimer = null;
+		}
+
+		if(!isErrorCall) {
+			if(!notificationTimer) {
+				$scope.showNotification = true;
+				debounceNotification();
+			}
+			else
+				console.log("Error Call")
+				debounceNotification();
+		}
+		/*
+		case #1. before http call returns , user has typed more data.
+		case #2. Due to network errors , we may not updated the notes content at backend.
+
+		So if we call the "saveMeetingNotes" again, the above 2 cases get solved.
+		we are giving some time . so that we don't hamper the browser.
+		*/
+		autosaveTimer = $timeout(function() {
+			saveMeetingNotes();
+		}, 1000, false);
+	}
+
+	function saveMeetingNotes() {
+		//console.log("save meeting notes");
+		// Concurrent update.  Don't save.
+		if ($scope.editor.concurrentUpdate)
+		{
+			console.log("Concurrent update.  Don't save.");
+			return;}
+		// already saving is in-progress, go back.
+		if(autosaveHttpPromise)
+			{
+			console.log("already saving is in-progress, go back.");
+			return;}
+
+		// No changes, don't save.
+		if ($scope.editor.savedCopy == $scope.editor.workingCopy)
+			{
+			console.log("No changes, don't save.");
+			return;}
+
+		var prevSaved = $scope.editor.savedCopy;
+		$scope.editor.savedCopy = $scope.editor.workingCopy;
+		$scope.data.currentWorklogCopy = $scope.editor.workingCopy;
+		// Push the saved copy to the server.
+		var post = {'description': $scope.editor.savedCopy};
+		$scope.data.currentRecordID = $scope.data.currentEditRecord;
+		autosaveHttpPromise = $http.patch("/api/now/table/" + $scope.data.table + "/" + $scope.data.currentRecordID, post).then(
+			onFinalizeSaveNotes,
+			function(data) {
+				$log.info("Failed save request, resetting savedCopy state");
+				$scope.editor.savedCopy = prevSaved;
+				//$scope.data.mi_worklog = c.data.mi_worklog;
+				onFinalizeSaveNotes(data, true);
+			}
+		);
+	}
+
+	function resetMeetingNotes() {
+		//console.log("resetMeetingNotes");
+		$scope.editor = {			
+			'workingCopy': $scope.data.currentWorklogCopy,
+			'savedCopy':  $scope.data.currentWorklogCopy,
+			'concurrentUpdate': false,
+			'autosave': true
+		};
+	}
+
+	function setupNotesMgmt() {
+		// If it's changed to a state where we can now edit the notes.
+		//console.log("setupNotesMgmt");
+		if (canEditMeetingNotes()) {
+			console.log("setupNotesMgmt - " + canEditMeetingNotes());
+			$scope.editor.savedCopy = $scope.editor.workingCopy = $scope.data.currentWorklogCopy; //Custom
+			//if (!unwatchWorkingCopy)
+			//	unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
+		} else {
+		
+			if(autosaveTimer) {
+				$timeout.cancel(autosaveTimer);
+				autosaveTimer = null;
+			}
+
+			//if (unwatchWorkingCopy) {
+			//	unwatchWorkingCopy();
+			//	unwatchWorkingCopy = null;
+			//}
+		}
+	}
+
+	resetMeetingNotes(); 
+	setupNotesMgmt();
+	$scope.canEditMeetingNotes = canEditMeetingNotes;
+	$scope.saveMeetingNotes = saveMeetingNotes;
+	/* End of Real-time ASync Updater Version 2.0 Code ------------- */
+
 }]]></client_script>
         <controller_as>c</controller_as>
         <css>.MyTable {
@@ -86,13 +267,14 @@ tr {
 
 td, th {
   border: 1px solid black;
-  padding: 2px;        
+  padding: 10px;        
 }
 
 th {
-  font: arial ;
-  background-color:grey;
-
+  background-color:#B8B8B8;
+  text-align:left;
+	font-family: "Arial","sans-serif";
+  font-weight: bold;
 }
 
 .omi_th {
@@ -102,10 +284,13 @@ th {
   font-size: 15px;
   font-weight: bold;
   text-align: left;
+  line-height:1;
+  margin: 0px;
+
 }
 
 .omi_td {
-  background-color:#e6b0aa;
+  background-color:#ebbfbb;
   text-align: center;
 }
 
@@ -116,10 +301,12 @@ th {
   font-size: 15px;
   font-weight: bold;
   text-align: left;
+  line-height:1;
+  margin: 0px;
 }
 
 .rmi_td {
-  background-color:#f9e79f;
+  background-color:#fff7e6;
   text-align: center;
 }
 
@@ -129,11 +316,13 @@ th {
   font-family: "Arial","sans-serif";
   font-size: 15px;
   font-weight: bold;
+  line-height:1;
+  margin: 0px;
 }
 
 .qmi_td {
-  background-color: white;
-
+  background-color: #d1e0ff;
+  text-align: center;
 }
 
 .pmi_th {
@@ -143,23 +332,39 @@ th {
   font-size: 15px;
   font-weight: bold;
   text-align: left;
+  line-height:1;
+  margin: 0px;
 }
 
 .pmi_td {
-  background-color: #d7bde2;
+  background-color: white;
   text-align: center;
 }
 
- .sub_text {
-  color:black;
+/* .sub_text {
   font-size:10px;
- }
+  font-family: Arial;
+  color:#595959;
+  margin: 5px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;}
+ } */
+
+.sub_text {
+        font-size:10px;
+        font-family: Arial;
+        color:#595959;
+        line-height: 5px;
+        margin: 2px 0px 1px 0px; 
+				padding: 2px 0px 1px 0px;
+        font-weight: normal;
+        font-size: 10px;
+      }
 
 .dropdown{
   text-align: center;
 }
 
-.dropdown option:checked {
+/*.dropdown option:checked {
   color: red;
   background: yellow;
 }
@@ -170,7 +375,7 @@ th {
 .dropdown option:active  {
   color: blue;
   background: black;
-}
+}*/
 
 .cardfooter{ 
   border-top: 1px black;
@@ -183,13 +388,88 @@ th {
   text-align:left;
 } 
 
-.sp-editable-field .popover {
+ .popover {
   font-weight: normal;
   max-width: 50vw !important;
-  min-width: 1000px;
+  min-width: 800px;
 }
 
-</css>
+.omi_desc {
+  background-color:#ebbfbb;
+  text-align: center;
+}
+
+.qmi_desc {
+  background-color: #d1e0ff;
+  text-align: center;
+}
+
+.rmi_desc {
+  background-color:#fff7e6;
+  text-align: center;
+}
+
+.pmi_desc {
+  background-color: white;
+  text-align: center;
+}
+
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.timeline-body &gt; p {
+  white-space: pre-line;
+  overflow-y:auto;
+  overflow-x:hidden;
+ max-height: 300px;
+ /* .scrollpane {
+  max-height: 70vh;
+  margin: -15px;
+  overflow-y: scroll;*/
+}
+}
+
+.custom-select {
+  position: relative;
+  font-family: Arial;
+  background-color: #B8B8B8;
+  width: 100px;
+  height: 23px;
+}
+
+.def {
+  font-size:10px;
+  font-family: Arial;
+  margin: 2px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;
+  font-weight: normal;
+  color: #686868;
+}
+/* Real-time ASync Updater Version 2.0 CSS Code ------------- */
+.editButton {
+ margin: 0;
+  margin-top: 0px; //-7px previos setting
+  margin-right: 10px; //-7px previos setting
+}
+.notes_txt {
+  width: 100%;
+  height: 250px;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+     box-sizing: border-box;         /* Opera/IE 8+ */
+}
+.fade-in-out {
+	-webkit-transition: opacity .3s linear;
+	-moz-transition: opacity .3s linear;
+	-o-transition: opacity .3s linear;
+	-ms-transition: opacity .3s linear;
+	transition: opacity .3s linear;
+	opacity: 1;
+	filter: alpha(opacity = 100);
+}
+.fade-in-out.ng-hide {
+	opacity: 0;
+	filter: alpha(opacity = 0);
+}</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -204,185 +484,176 @@ th {
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
-  /* populate the 'data' object */
-  /* e.g., data.table = $sp.getValue('table'); */
-	
-		
-var instanceURL = gs.getProperty('glide.servlet.uri');
-console.log(instanceURL);
-	
-	//var myparm = getParmVal('sys_myparm');
-	//console.log(myparm);
-
-	
-if (input) {
-		
-	if (input.flagToServerScriptToUpdateMiType == true){
-           // console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
-		var grMiTypeUpdate = new GlideRecord('incident');
-		grMiTypeUpdate.get(input.UpdateMiType_inc);
-		//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
-		grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
-		updateMiType = grMiTypeUpdate.update();
-		if (updateMiType) {
-    console.log(grMiTypeUpdate.getElement('u_mi_type'));
-		} else {console.log("error");}
-	}
-	}
-	
-	var current_gdt = new GlideDateTime().getDate().getValue();
-	var enddate = new GlideDateTime(current_gdt + " 06:00:00");
-
-	var startdate = new GlideDateTime(enddate);
-	//console.log(startdate);
-	if (enddate.getDayOfWeekLocalTime() == 1) {
-		startdate.addDaysLocalTime(-3);
-		//console.log(startdate);
-	} else { 
-		startdate.addDaysLocalTime(-1);
-	}
-
-	
+	/* Server Script Variables --------- */
+	data.table = 'problem';
 	data.openIncident = [];
-	data.resolvedIncident =[];
+	data.resolvedIncident = [];
+	data.rcoList = [];
+	data.rccList = [];
+	data.flagToServerScriptToUpdateMiType = false;
+	data.toggleEdit = 'OFF';
+	data.canUserEdit = false;
+	data.currentEditRecord = "";
+	data.currentWorklogCopy = "";
+	var currentUser = gs.getUser();
+	data.currentUserID = gs.getUserName();
+	if(currentUser.isMemberOf('SSC-ETS-SMA') ||
+		 currentUser.isMemberOf('IBM-SSM-MAJOR-INCIDENT-MGT') ||
+		 currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT') ||
+		 currentUser.isMemberOf('IBM-SSM-PROBLEM-MGT')){
+		data.canUserEdit = true;
+	} else {
+		data.canUserEdit = false;
+	}
+	
+	//Root Cause Owner List
+	var rcoGr = new GlideRecord('sys_choice');
+	rcoGr.addEncodedQuery('element=u_root_cause_owner^inactive=false');
+	rcoGr.setLimit(100);
+	rcoGr.orderBy('sequence');
+	rcoGr.query();
+	while ( rcoGr.next() ) {
+		//console.log(rcoGr.getDisplayValue('label'));
+		var rcoOpt = {};
+		rcoOpt.label = rcoGr.getDisplayValue('label');
+		rcoOpt.value = rcoGr.getValue('value');
+		data.rcoList.push(rcoOpt);
+	}
+	
+	//Root Cause Category List
+	var rccGr = new GlideRecord('sys_choice');
+	rccGr.addEncodedQuery('element=u_root_cause_category^inactive=false');
+	rccGr.setLimit(100);
+	rccGr.orderBy('sequence');
+	rccGr.query();
+	while ( rccGr.next() ) {
+		//console.log(rccGr.getDisplayValue('label'));
+		var rccOpt = {};
+		rccOpt.label = rccGr.getDisplayValue('label');
+		rccOpt.value = rccGr.getValue('value');
+		data.rccList.push(rccOpt);
+	}
+	
+	// To get the name of the server (https://sscorpdev.service-now.com/)
+	var instanceURL = gs.getProperty('glide.servlet.uri');	
+
+	// To update MiType selected from the dropdown. 
+	if (input) {
+		
+		if (input.flagToServerScriptToUpdateMiType == true){
+			console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
+			var grMiTypeUpdate = new GlideRecord('incident');
+			grMiTypeUpdate.get(input.UpdateMiType_inc);
+			//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
+			grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
+			updateMiType = grMiTypeUpdate.update();
+			if (updateMiType) {
+				console.log(grMiTypeUpdate.getElement('u_mi_type'));
+			} else {console.log("error");}
+		}
+	}
+
+	/* to get the current date (yyyy-mm-dd) format */
+	var current_gdt = new GlideDateTime().getDate().getValue();
+	/* to get the current date (yyyy-mm-dd hh:mm:ss) format */
+	var enddate = new GlideDateTime(current_gdt + " 06:00:00");
+	var startdate = new GlideDateTime(enddate);
+	
+	/* Checking the condition, if day of the week is Monday,
+	** subtracting 3 days from current day to get startdate to be friday
+	** if it is not Monday, subtract 1 day from current day. */
+	if (enddate.getDayOfWeekLocalTime() == 1) {
+		startdate.addDaysLocalTime(-3);		
+	} else {		
+		startdate.addDaysLocalTime(-1);
+	}	
+	
+	/* Main GlideRecord query and while loop  */
+	/* Querying data based on major incidents */	
+	/* Incident number related to Problem     */
+	/* Sys id related to incident             */
+	/* Problem number of the related incident */
+	/* Description of the problem record.     */
+	/* Mi type                                */
+	/* New Mi type selected from the dropdown */
+	/* Sys id of the related problem record   */
+	/* Root cause category                    */
+	/* Root Cause Owner                       */
+	/* If state is resolved, get all the 
+	information from Problem table as problem 
+	ticket is created soon after incident is 
+	resolved */
+	/*If state is not resolved, get all the 
+	information from incident table*/
 	var grIncident = new GlideRecord('incident');
-	// change to MI=true, state not closed
-	grIncident.addEncodedQuery('u_qs_major_incident=true^state!=7');
+	grIncident.addEncodedQuery('u_qs_major_incident=true^state!=7');	/* change to MI=true, state not closed */
+	/* incident created date greater than startdate (defined previously) */
+	//grIncident.addQuery('sys_created_on', ">", startdate);
 	grIncident.query();	
 
 	while (grIncident.next()) {		
 		var openIncidents = {};
 		var resolvedIncidents = {};
-		if(grIncident.state == 6 ){
-			//console.log(grIncident.problem_id.short_description);
-			resolvedIncidents.number = grIncident.getDisplayValue('number');
-			resolvedIncidents.sys_id = grIncident.getUniqueValue();
-			resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');
-			resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');
-			resolvedIncidents.miType = grIncident.getValue('u_mi_type');
-			resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');
-			resolvedIncidents.problem_id = grIncident.getValue('problem_id');
-			
-			var problemForm = $sp.getForm("problem", resolvedIncidents.problem_id,'', 'problem');
-			data.pbmFormView = problemForm._view;
-			data.pbmFormModel = problemForm._fields;
-			resolvedIncidents.problem_model = [];	// declaring new array for field model for sp-editable directive
+		if(grIncident.state == 6 ){																			
+			if(grIncident.problem_id.sys_created_on > startdate) {
+				var rco = '';
+				resolvedIncidents.number = grIncident.getDisplayValue('number');																				
+				resolvedIncidents.sys_id = grIncident.getUniqueValue();																									
+				resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');														
+				resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						
+				resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						
+				resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			
+				resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				
+				resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+				resolvedIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+				resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
+				resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
+				//resolvedIncidents.prob_root_cause_cat_newVal.label = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+				//resolvedIncidents.prob_root_cause_cat_newVal.value = grIncident.getValue('problem_id.u_root_cause_category');
+				//resolvedIncidents.prob_root_cause_owner_newVal = [];
+				//data.rcoList.forEach(function(eachRCO){
+				//	if(eachRCO.label == resolvedIncidents.prob_root_cause_owner)
+				//		rco = eachRCO.value;
+				//	resolvedIncidents.prob_root_cause_owner_newVal.push(eachRCO);
+				//});
+				
+				//resolvedIncidents.prob_root_cause_owner_newVal.push({
+				//	'label' : grIncident.getDisplayValue('problem_id.u_root_cause_owner'),
+				//	'value' : rco
+				//});
 
-			for (var j = 0; j < data.pbmFormView.length; j++) {
-				if (data.pbmFormView[j].name == 'description')
-					resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				//var problemForm = $sp.getForm("problem", resolvedIncidents.problem_id,'', 'problem');
+				//data.pbmFormView = problemForm._view;
+				//data.pbmFormModel = problemForm._fields;
+				// declaring new array for field model for sp-editable directive
+				//resolvedIncidents.problem_model = [];	
+
+				//for (var j = 0; j < data.pbmFormView.length; j++) {
+				//	if (data.pbmFormView[j].name == 'description')
+				//		resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				//	if (data.pbmFormView[j].name == 'u_root_cause_owner')
+				//		resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				//	if (data.pbmFormView[j].name == 'u_root_cause_category')
+				//		resolvedIncidents.problem_model.push(data.pbmFormModel[data.pbmFormView[j].name]);
+				//}
+
+
+				data.resolvedIncident.push(resolvedIncidents);	
 			}
-			
-			data.resolvedIncident.push(resolvedIncidents);			
 		} else if(grIncident.state != 6) {
-			openIncidents.number = grIncident.getDisplayValue('number');
-			openIncidents.sys_id = grIncident.getUniqueValue();
-			openIncidents.problem = grIncident.getDisplayValue('problem_id');
-			openIncidents.problem_sys_id = grIncident.getValue('problem_id');
-			openIncidents.description = grIncident.getDisplayValue('description');
-			openIncidents.miType = grIncident.getValue('u_mi_type');
-			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');
+			openIncidents.number = grIncident.getDisplayValue('number');																						
+			openIncidents.sys_id = grIncident.getUniqueValue(); /* Sys id related to incident */
+			openIncidents.problem = grIncident.getDisplayValue('problem_id');																				
+			openIncidents.problem_sys_id = grIncident.getValue('problem_id');																				
+			openIncidents.description = grIncident.getDisplayValue('description');																	
+			openIncidents.miType = grIncident.getValue('u_mi_type');																								
+			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');																					
+			openIncidents.problem_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');	
+			openIncidents.problem_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');		
+			openIncidents.state = grIncident.getDisplayValue('state');
 			data.openIncident.push(openIncidents);
 		}
-	}	
-
-	/* if (input) {
-		
-	if (input.flagToServerScriptToUpdateMiType == true){
-           // console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
-		var grMiTypeUpdate = new GlideRecord('incident');
-		grMiTypeUpdate.get(input.UpdateMiType_inc);
-		//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
-		grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
-		updateMiType = grMiTypeUpdate.update();
-		if (updateMiType) {
-    console.log(grMiTypeUpdate.getElement('u_mi_type'));
-		} else {console.log("error");}
-	}
-	}
-	//New Query
-	var current_gdt = new GlideDateTime().getDate().getValue();
-	var enddate = new GlideDateTime(current_gdt + " 06:00:00");
-
-	var startdate = new GlideDateTime(enddate);
-	//console.log(startdate);
-	if (enddate.getDayOfWeekLocalTime() == 1) {
-		startdate.addDaysLocalTime(-3);
-		//console.log(startdate);
-	} else { 
-		startdate.addDaysLocalTime(-1);
-	}
-
-data.incidents = [];
-var gri = new GlideRecord('incident');
-//var queryString = "active=true^u_qs_major_incident=true^state!=6^ORstate!=7^sys_created_on>javascript:gs.dateGenerate('2018-07-16','06:00:00')";
-gri.addQuery('active',true);			
-//gri.addQuery('sys_created_on', ">", startdate);		// created on should be greater than yest 6 am
-gri.addQuery('state','NOT IN','6,7');				// state should not be in closed or resolved		
-//q1.addOrCondition('resolved_at', '>', enddate);					// but resolved time should be greater than today 6am 
-gri.addQuery('u_qs_major_incident',true);
-gri.query();
-	
-while (gri.next()) {	
-	var incident = {};
-	incident.number = gri.getDisplayValue('number');
-	incident.sys_id = gri.getDisplayValue("sys_id");
-	//console.log(incident.sys_id);
-	incident.description = gri.getDisplayValue('description');
-	incident.mitype = gri.getValue('u_mi_type');
-	
-	var incidentForm = $sp.getForm("incident", incident.sys_id,'','problem');
-	data.incFormView = incidentForm._view;
-	data.incFormModel = incidentForm._fields;
-	incident.model = [];
-	
-	for (var i = 0; i < data.incFormView.length; i++) {
-		if (data.incFormView[i].name == 'description')
-			incident.model.push(data.incFormModel[data.incFormView[i].name]);
-	}
-	data.incidents.push(incident);
-}
-
-	
-	data.problems = [];
-	var gr = new GlideRecord('problem');
-	gr.addActiveQuery();
-	gr.setLimit(20);
-	gr.orderByDesc('sys_updated_on');
-	gr.addQuery('u_opened_by_group', 'IN','5408d3a8db200b40047dd7795e9619b5');
-	gr.query();
-	
-while (gr.next()) {
-	var problem = {};
-	problem.number = gr.getDisplayValue('number');
-	problem.sys_id = gr.getValue('sys_id');
-	problem.description = gr.getDisplayValue('description');
-	var inc_gr = new GlideRecord('incident');
-	inc_gr.addQuery('problem_id', gr.getUniqueValue());
-	inc_gr.setLimit(20);
-	inc_gr.orderBy('sys_updated_on');
-	inc_gr.query();
-	while (inc_gr.next()) {
-	problem.mitype = inc_gr.getValue('u_mi_type');
-	problem.mitype_newVal = inc_gr.getValue('u_mi_type');
-	problem.inc_number = inc_gr.getValue('number');
-	problem.inc_sys_id = inc_gr.getUniqueValue();
-	}
-	
-	
-	var problemForm = $sp.getForm("problem", problem.sys_id,'', 'problem');
-	data.pbmFormView = problemForm._view;
-	data.pbmFormModel = problemForm._fields;
-	problem.model = [];	
-	
-	for (var j = 0; j < data.pbmFormView.length; j++) {
-		if (data.pbmFormView[j].name == 'description')
-		problem.model.push(data.pbmFormModel[data.pbmFormView[j].name]);
-	}
-	data.problems.push(problem);
-} */
-	
-	
+	}		
 	
 })();
 ]]></script>
@@ -392,15 +663,15 @@ while (gr.next()) {
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>308</sys_mod_count>
+        <sys_mod_count>627</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
-        <sys_updated_by>e654242</sys_updated_by>
-        <sys_updated_on>2018-08-02 21:14:23</sys_updated_on>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-22 23:41:17</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
@@ -421,7 +692,7 @@ while (gr.next()) {
     var nameSpace = outlookApp.getNameSpace("MAPI");
     mailFolder = nameSpace.getDefaultFolder(6);
     mailItem = mailFolder.Items.add('IPM.Note.FormA');
-    mailItem.Subject = "Daily IT Operations Risk Review";
+    mailItem.Subject = "Daily IT Operations Risk Review" + " [" + moment(new Date()).format("YYYY/MM/DD") + "]"; 
     mailItem.To = "";
     mailItem.HTMLBody = mailBody.innerHTML;
     mailItem.display(0);  
@@ -438,23 +709,34 @@ while (gr.next()) {
       tr {
         background-color: grey;
         color:black; 
-        font-size:12px;         
+        font-size:12px;
+        font-family: "Arial","sans-serif";
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
+        line-height:1;
       }
       td, th {
         border: 1px solid black;
         padding: 8px;        
       }
       th {
-        font: arial ;
-        background-color:grey; 
+        background-color:#B8B8B8;
+        text-align:left;
+        font-family: "Arial","sans-serif";
+        font-size:12px;
+        font-weight: bold;
+        line-height:1;
       }
       .omi_th {
         color:red;
         background-color:white;
         font-family: Arial;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
         text-align: left;
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
+
       }
       .omi_td {
         background-color:#e6b0aa; 
@@ -464,63 +746,92 @@ while (gr.next()) {
         color:brown;
         background-color:white;
         font-family: Arial;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
         text-align: left;
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
       }
       .rmi_td {
-        background-color:#f9e79f;
+        background-color:#fff7e6;
         text-align: center;
       }
       .qmi_th {
         color:#1f497d;
         background-color:white;
         font-family: Arial;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
         text-align: left;
+        margin: 0px 0px 0px 0px; 
+        padding: 0px 0px 0px 0px;
       }
       .qmi_td {
-        background-color: white;
-
+        background-color: #e6f2ff;
+        text-align: center;
       }
       .pmi_th {
         color:brown;
         background-color:white;
         font-family: Arial;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
         text-align: left;
+        line-height:1;
+        margin-bottom: 0px;
       }
       .pmi_td {
-        background-color: #d7bde2;
+        background-color: white;
         text-align: center;
       }
+      .sub_text {
+        font-family: Arial;
+        color:#595959;
+        line-height: 5px;
+        margin: 2px 0px 0px 0px; 
+        padding: 2px 0px 0px 0px;
+        font-weight: normal;
+        font-size: 10.5px;
+      }
+
+      .def {
+        font-size:10.5px;
+        font-family: Arial;
+        margin: 2px 0px 0px 0px; 
+        padding: 2px 0px 0px 0px;
+        font-weight: normal;
+        color:#686868;
+      }
+
     </style>
-    <h1 style="text-align:center; color:blue">Displaying Major Incidents</h1>
+    <!--  <h1 style="text-align:center; color:blue">Daily IT Operations Risk Review</h1> -->
     <!-- <pre>Sort by = {{orderField}}</pre> -->    
     <br/>
     <br/>
     <table class="MyTable">
-      <col width="10%"> <col width="10%"> <col width="80%">
+      <col width="5%">  <col width="5%"> <col width="90%"> 
       <tr>
-        <th width="10%">SLA Impact</th>
-        <th width="10%">Open Risk</th>
-       <!-- <th width="10%"><button ng-click="changeSort('inc_number')">Inc Number</button></th> -->
-       <!-- <th width="10%">Number</th> -->
-        <th width="80%"><button ng-click="changeSort('description')">Description</button></th>        
+        <th width="5%">SLA Impact</th>
+        <th width="5%">Open Risk</th>
+        <!-- <th width="10%">Inc Number</th> -->
+        <!-- <th width="10%">Number</th> -->
+        <!--  <th width="10%">Root Cause Owner</th> -->
+        <!-- <th width="10%">Root Cause category</th> -->
+        <th width="90%">Description</th>        
       </tr>  
       <tr> 
         <th class = "omi_th" colspan = "5">Open Major Incidents (MI) 
           <p class = "sub_text">[Discuss current status and any known or upcoming Service Level Impact. Cutoff: 6am EDT]</p>
         </th> 
       </tr>
-      <tr ng-repeat = "openIncidents in data.openIncident | orderBy:orderField:orderReverse"> 
+      <tr ng-repeat = "openIncidents in data.openIncident"> 
         <td class = "omi_td" style='color:red; font-size: 20px;'>&#x231B;</td> 
         <td class = "omi_td" style='color:red; font-size: 20px;'>&#10004;</td>
         <!-- <td class = "omi_td"> {{openIncidents.number}}  </td> -->
         <!-- <td class = "omi_td"> {{openIncidents.problem}} </td> -->
-        <td class = "omi_td" style="text-align:left">({{openIncidents.number}} / {{openIncidents.problem}}) {{openIncidents.description}}   
+        <!--  <td class = "omi_td"> {{openIncidents.prob_root_cause_owner}} </td> -->
+        <!--   <td class = "omi_td"> {{openIncidents.prob_root_cause_cat}} </td> -->
+        <td class = "omi_td" style="text-align:left"><b><i>({{openIncidents.number}} / {{openIncidents.problem}})</i></b> {{openIncidents.description}}   
         </td> 
       </tr>
       <tr> 
@@ -531,9 +842,11 @@ while (gr.next()) {
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> 
         <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
         <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-      <!--  <td class = "rmi_td"> {{resolvedIncidents.number}}  </td> -->
-      <!--  <td class = "rmi_td"> {{resolvedIncidents.problem}} </td> -->
-        <td class = "rmi_td" style="text-align:left">({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+        <!--  <td class = "rmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--  <td class = "rmi_td"> {{resolvedIncidents.problem}} </td> -->
+        <!--   <td class = "rmi_td"> {{resolvedIncidents.prob_root_cause_owner}}  </td>  -->
+        <!--   <td class = "rmi_td"> {{resolvedIncidents.prob_root_cause_cat}}  </td>  -->
+        <td class = "rmi_td" style="text-align:left"><b><i>({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})</i></b>
           {{resolvedIncidents.problem_description}}
         </td>        
       </tr>
@@ -545,70 +858,63 @@ while (gr.next()) {
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> 
         <td class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
         <td class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-     <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
-     <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td> -->
-        <td class="qmi_td" style="text-align:left">({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td> -->
+        <!--    <td class = "qmi_td"> {{resolvedIncidents.prob_root_cause_owner}}  </td>  -->
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.prob_root_cause_cat}}  </td> -->
+        <td class="qmi_td" style="text-align:left"><b><i>({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})</i></b>
           {{resolvedIncidents.problem_description}}
         </td>         
       </tr>
-     <!--  <tr> 
-        <th class="pmi_th" colspan = "5"> Process Major Incidents</th> 
-      </tr>
-      <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> 
-        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
-        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
-        <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> 
-        <td class="pmi_td"> {{resolvedIncidents.problem}} </td>
-        <td class="pmi_td" style="text-align:left">
-          {{resolvedIncidents.problem_description}}
-        </td>        
-      </tr> -->
+      <!--  <tr> 
+<th class="pmi_th" colspan = "5"> Process Major Incidents</th> 
+</tr>
+<tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> 
+<td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+<td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+<td class = "pmi_td"> {{resolvedIncidents.number}}  </td> 
+<td class="pmi_td"> {{resolvedIncidents.problem}} </td>
+<td class="pmi_td" style="text-align:left">
+{{resolvedIncidents.problem_description}}
+</td>        
+</tr> -->
     </table>
-    <h5> Definitions </h5>
-    <p><span style="font-weight: bold"> Business Impact:</span> Any IT enterprise Service failure which was either visible to the business or a client, caused business users to apply a nonstandard workaround, or singularly impacted the timeline of a business function.</p>
-    <p><span style="font-weight: bold"> Open Risk:</span> IT Service partially restored or remediated, leaving residual risk for additional business impact which is likely to recur. (e.g. Running on DR, Running without HA, Code Defect exists, manual workarounds in place)</p>
-    <p><span style="font-weight: bold"> Reportable Major Incidents (RMI):</span> A Major Incident which resulted in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
-    <p><span style="font-weight: bold"> Qualified Business Impacting Incidents (QMI):</span> A Major Incident with business impact but did not result in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
-  
+    <h5 class="def" style="color:black"> <b>Definitions </b></h5>
+    <p class="def"> <b> Business Impact:</b> Any IT enterprise Service failure which was either visible to the business or a client, caused business users to apply a nonstandard workaround, or singularly impacted the timeline of a business function.</p>
+    <p class="def"> <b>Open Risk:</b> IT Service partially restored or remediated, leaving residual risk for additional business impact which is likely to recur. (e.g. Running on DR, Running without HA, Code Defect exists, manual workarounds in place)</p>
+    <p class="def"> <b>Reportable Major Incidents (RMI):</b> A Major Incident which resulted in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+    <p class="def"> <b>Qualified Business Impacting Incidents (QMI):</b> A Major Incident with business impact but did not result in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
+
   </div> <!-- Print View - This is a hidden div that excludes inputs and code -->
 
   <div id="displayView" class="panel panel-body">    
-    <h1 style="text-align:center; color:blue">Displaying Major Incidents</h1>
-    <!-- <pre>Sort by = {{orderField}}</pre> -->    
-    <br/>
+    <h1 class="text-center">Daily IT Operations Risk Review</h1>        
     <br/>
     <table class="MyTable">
-      <col width="10%"> <col width="10%"> <col width="70%"> <col width="10%">
+      <col width="5%"> <col width="5%">  <col width="10%"> <col width="10%"> <col width="60%"> <col width="10%">
       <tr>
-        <th width="10%">SLA Impact</th>
-        <th width="10%">Open Risk</th>
-    <!--    <th width="9%"><button ng-click="changeSort('inc_number')">Inc Number</button></th> -->
-    <!--    <th width="9%">Number</th> -->
-        <th width="70%">Description</th>
-        <th width="10%"ng-hide="!hidemi">MiType</th>
+        <th width="5%">SLA Impact</th>
+        <th width="5%">Open Risk</th>        
+        <th width="10%" ng-hide="!hidemi">Root Cause Owner</th>
+        <th width="10%" ng-hide="!hidemi">Root Cause category</th>
+        <th width="60%">Description</th>
+        <th width="10%" ng-hide="!hidemi">MiType</th>	<!-- To hide the column MiType   -->
       </tr>  
       <tr> 
         <th class = "omi_th" colspan = "6">Open Major Incidents (MI) 
           <p class = "sub_text">[Discuss current status and any known or upcoming Service Level Impact. Cutoff: 6am EDT]</p>
         </th> 
       </tr>
+      <!-- ng-repeat- to loop through a list of objects-->
       <tr ng-repeat = "openIncidents in data.openIncident | orderBy:orderField:orderReverse"> 
         <td class = "omi_td" style='color:red; font-size: 20px;'>&#x231B;</td> 
         <td class = "omi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-     <!--   <td class = "omi_td"> {{openIncidents.number}}  </td> -->
-     <!--   <td class = "omi_td"> {{openIncidents.problem}} </td> -->
-        <td class = "omi_td" style="text-align:left"><a ng-href="{{::instanceURL}}$sp.do?id=ssc_sp_problem_executive_summary&sys_id={{::openIncidents.problem_sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{openIncidents.problem}}" target="_blank">
-            ({{openIncidents.number}} / {{openIncidents.problem}})
-      </a> {{openIncidents.description}}
-         <!-- <sp-editable-field                            
-table="incident" 
-editable-by-user="true"
-table-id="incident.sys_id"
-field-model="incident.model[0]"
-on-change="titleOnChange" 
-on-submit="titleOnSubmit">
-</sp-editable-field> -->
+        <td ng-hide="!hidemi" class = "omi_td"> {{openIncidents.problem_root_cause_owner}} </td>
+        <td ng-hide="!hidemi" class = "omi_td"> {{openIncidents.problem_root_cause_cat}} </td>
+        <td class = "omi_desc" style="text-align:left"><a ng-href="{{::instanceURL}}$sp.do?id=ssc_sp_problem_executive_summary&sys_id={{::openIncidents.problem_sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{openIncidents.problem}}" target="_blank">
+          ({{openIncidents.number}} / {{openIncidents.problem}}) </a> {{openIncidents.description}}          
         </td>
+        <!-- ng-hide - used to show/hide a column "MiType" -->
         <td ng-hide="!hidemi" class = "omi_td"> 
           <select class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
             <option selected="selected">{{openIncidents.miType}}</option>
@@ -616,9 +922,8 @@ on-submit="titleOnSubmit">
             <option value="QMI" >QMI</option>
             <option value="PMI">PMI</option>
           </select>
-          <button ng-if="openIncidents.miType_newVal != openIncidents.miType" class="btn" ng-click="saveMitype(openIncidents.sys_id, openIncidents.miType_newVal)"> Save
-          </button>
-
+          <button ng-if="openIncidents.miType_newVal != openIncidents.miType" class="btn" ng-click="saveSelectUpdate(openIncidents.sys_id, openIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+          </button>          
         </td>
       </tr>
       <tr> 
@@ -628,20 +933,53 @@ on-submit="titleOnSubmit">
       </tr>
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> 
         <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-   <!--     <td class = "rmi_td"> {{resolvedIncidents.number}}  </td> -->
-   <!--     <td class = "rmi_td"> {{resolvedIncidents.problem}} </td> -->
-        <td class = "rmi_td" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
-      ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
-      </a>
-          <!-- {{problem.description}} -->
-          <sp-editable-field 
-                             table="problem" 
-                             editable-by-user="true"
-                             table-id="resolvedIncidents.problem_id"
-                             field-model="resolvedIncidents.problem_model[0]"
-                             on-change="titleOnChange" on-submit="titleOnSubmit">
-          </sp-editable-field>
+        <td class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>        
+        <td ng-hide="!hidemi" class = "rmi_td"> 
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown" 
+                    name="root_cause_owners[]" 
+                    field="root_cause_owner"                                       
+                    ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                    ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+            </select>
+          </div> 
+        </td> 
+        <td ng-hide="!hidemi" class = "rmi_td"> 
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown js-example-basic-multiple" 
+                    name="root_cause_categorys[]" 
+                    field="root_cause_category"                    
+                    ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                    ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+            </select>
+          </div>
+        </td> 
+        <td class = "rmi_desc" style="text-align:left">                   
+          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+            <textarea class="notes_txt"  ng-model="editor.workingCopy"></textarea>
+            <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF')" class="btn btn-default" value="${Done Editing}"/>                        
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out" ng-show="showNotification"> ${Meeting notes saved} </span>
+          </div>                                 
+          <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+            <!-- Edit Button -->
+            <button type="button" 
+                    class="editButton btn btn-default pull-left" 
+                    ng-if="data.toggleEdit == 'OFF' && 
+                           data.canUserEdit == true &&
+                           hidemi"
+                    ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+              <span class="glyphicon glyphicon-edit">
+              </span> 
+            </button>
+            <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+              ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+            </a>
+            {{resolvedIncidents.problem_description}}            
+          </div>
         </td>
         <td ng-hide="!hidemi" class = "rmi_td"> 
           <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
@@ -650,7 +988,11 @@ on-submit="titleOnSubmit">
             <option value="QMI" >QMI</option>
             <option value="PMI">PMI</option>
           </select>
-          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+          </button>
+          <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                         resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                  class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
           </button>
         </td>
       </tr>
@@ -662,19 +1004,54 @@ on-submit="titleOnSubmit">
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> 
         <td class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
         <td class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-     <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
-     <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
-        <td class="qmi_td" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
-      ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
-      </a>
-          <!-- {{problem.description}} -->
-          <sp-editable-field 
-                             table="problem" 
-                             editable-by-user="true"
-                             table-id="resolvedIncidents.problem_id"
-                             field-model="resolvedIncidents.problem_model[0]"
-                             on-change="titleOnChange" on-submit="titleOnSubmit">
-          </sp-editable-field>
+        <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
+        <td ng-hide="!hidemi" class = "qmi_td">
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown" 
+                    name="root_cause_owners[]" 
+                    field="root_cause_owner"                                       
+                    ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                    ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+            </select>
+          </div>          
+        </td> 
+        <td ng-hide="!hidemi" class = "qmi_td">
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown js-example-basic-multiple" 
+                    name="root_cause_categorys[]" 
+                    field="root_cause_category"                    
+                    ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                    ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+            </select>
+          </div>
+        </td>
+        <td class="qmi_desc" style="text-align:left">
+          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+            <textarea class="notes_txt"  ng-model="editor.workingCopy"></textarea>
+            <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF')" class="btn btn-default" value="${Done Editing}"/>                        
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out" ng-show="showNotification"> ${Meeting notes saved} </span>
+          </div>                                 
+          <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+            <!-- Edit Button -->
+            <button type="button" 
+                    class="editButton btn btn-default pull-left" 
+                    ng-if="data.toggleEdit == 'OFF' && 
+                           data.canUserEdit == true &&
+                           hidemi"
+                    ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+              <span class="glyphicon glyphicon-edit">
+              </span> 
+            </button>
+            <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+              ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+            </a>
+            {{resolvedIncidents.problem_description}}            
+          </div>
         </td> 
         <td ng-hide="!hidemi" class = "qmi_td"> 
           <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
@@ -683,7 +1060,11 @@ on-submit="titleOnSubmit">
             <option value="QMI" >QMI</option>
             <option value="PMI">PMI</option>
           </select>
-          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+          </button>
+          <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                         resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                  class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
           </button>
         </td>
       </tr>
@@ -693,19 +1074,54 @@ on-submit="titleOnSubmit">
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> 
         <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
         <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
-    <!--    <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> -->
-     <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
-        <td class="pmi_td" style="text-align:left"><a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
-      ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
-      </a>
-          <!-- {{problem.description}} -->
-          <sp-editable-field 
-                             table="problem" 
-                             editable-by-user="true"
-                             table-id="resolvedIncidents.problem_id"
-                             field-model="resolvedIncidents.problem_model[0]"
-                             on-change="titleOnChange" on-submit="titleOnSubmit">
-          </sp-editable-field>
+        <!--    <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> -->
+        <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
+        <td ng-hide="!hidemi" class = "pmi_td"> 
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown" 
+                    name="root_cause_owners[]" 
+                    field="root_cause_owner"                                       
+                    ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                    ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+            </select>
+          </div> 
+        </td> 
+        <td ng-hide="!hidemi" class = "pmi_td" > 
+          <div class="select2-container">
+            <select 
+                    type="text" 
+                    class="dropdown js-example-basic-multiple" 
+                    name="root_cause_categorys[]" 
+                    field="root_cause_category"                    
+                    ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                    ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+            </select>
+          </div>
+        </td> 
+        <td class="pmi_desc" style="text-align:left">
+          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+            <textarea class="notes_txt"  ng-model="editor.workingCopy"></textarea>
+            <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF')" class="btn btn-default" value="${Done Editing}"/>                        
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out" ng-show="showNotification"> ${Meeting notes saved} </span>
+          </div>                                 
+          <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+            <!-- Edit Button -->
+            <button type="button" 
+                    class="editButton btn btn-default pull-left" 
+                    ng-if="data.toggleEdit == 'OFF' && 
+                           data.canUserEdit == true &&
+                           hidemi"
+                    ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+              <span class="glyphicon glyphicon-edit">
+              </span> 
+            </button>
+            <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+              ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+            </a>
+            {{resolvedIncidents.problem_description}}            
+          </div>
         </td>
         <td ng-hide="!hidemi" class = "pmi_td"> 
           <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
@@ -714,24 +1130,41 @@ on-submit="titleOnSubmit">
             <option value="QMI" >QMI</option>
             <option value="PMI">PMI</option>
           </select>
-          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveMitype(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal)"> Save
+          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+          </button>
+          <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                         resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                  class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
           </button>
         </td>
       </tr>
     </table>
+    <!-- <pre>{{data.openIncident | json}}</pre> -->
   </div> <!-- Display View - This is the div that is rendered in the browser -->
-  
+
   <div class="cardfooter">
     <span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidemi"/> Edit Mode</span>
+    <!-- <span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hiderco"/> Edit RCO</span>
+<span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidercc"/> Edit RCC</span> -->
     <input type="button" value="Print Report" onClick="javascript:CallPrint('printView');">
     <input type="button" value="Send Report As Email" onClick="javascript:SendMail('printView');">
+    <select class = "custom-select" field="email_select">
+      <option selected="selected"></option>
+      <option value="6:00">6:00 mins</option>
+      <option value="6:30">6:30 mins</option>
+      <option value="8:00">8:00 mins</option>
+      <option value="8:00">8:30 mins</option>
+      <option value="8:00">Early mins</option>
+      <option value="8:00">Re-write</option>
+      <option value="8:00">Initial Tagging</option>
+      <option value="8:00">Final email</option>
+    </select>
     <h5> Definitions </h5>
     <p><span style="font-weight: bold"> Business Impact:</span> Any IT enterprise Service failure which was either visible to the business or a client, caused business users to apply a nonstandard workaround, or singularly impacted the timeline of a business function.</p>
     <p><span style="font-weight: bold"> Open Risk:</span> IT Service partially restored or remediated, leaving residual risk for additional business impact which is likely to recur. (e.g. Running on DR, Running without HA, Code Defect exists, manual workarounds in place)</p>
     <p><span style="font-weight: bold"> Reportable Major Incidents (RMI):</span> A Major Incident which resulted in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
     <p><span style="font-weight: bold"> Qualified Business Impacting Incidents (QMI):</span> A Major Incident with business impact but did not result in a formal contractual client or regulatory Service Level Agreement (SLA) breach.</p>
   </div> <!-- Card Footer -->
-
 </div> <!-- Main Div -->]]></template>
     </sp_widget>
 </record_update>

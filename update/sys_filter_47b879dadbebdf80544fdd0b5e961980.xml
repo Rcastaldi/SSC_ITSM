@@ -6,7 +6,7 @@
             <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </filter>
         <group/>
-        <last_used>2018-08-03 04:42:30</last_used>
+        <last_used>2018-08-23 00:24:22</last_used>
         <mobile>true</mobile>
         <roles/>
         <sys_class_name>sys_filter</sys_class_name>
@@ -16,7 +16,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>47b879dadbebdf80544fdd0b5e961980</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>mobile</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -24,7 +24,7 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sys_filter_47b879dadbebdf80544fdd0b5e961980</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-03 04:42:30</sys_updated_on>
+        <sys_updated_on>2018-08-23 00:24:22</sys_updated_on>
         <table>sp_page</table>
         <title>mobile</title>
         <user display_value="Ryan Castaldi [SSC]">92678fe5dbf08300047dd7795e961975</user>

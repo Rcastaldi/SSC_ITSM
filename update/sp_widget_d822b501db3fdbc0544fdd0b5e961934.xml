@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, $location) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.openProfile = function(user) {
+		$location.search("id=user_profile&sys_id=" + user.sys_id); 
+	};
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {&#13;
+position: relative;&#13;
+}&#13;
+.panel-heading i {&#13;
+  cursor: pointer;&#13;
+  position: absolute;&#13;
+  padding: 10px;&#13;
+  top: 0px;&#13;
+  right: 0px;  &#13;
+}&#13;
+.row.info-row:hover {&#13;
+	background-color: #f0f0f0;&#13;
+}&#13;
+.memberTitle {&#13;
+  padding-left: 10px ;&#13;
+  text-align: center;&#13;
+}&#13;
+a.widget-button {&#13;
+    float: right;&#13;
+    clear: both;&#13;
+    margin: 10px 0;&#13;
+    border-radius: 3px;&#13;
+    background-color: #B9B9B9;&#13;
+    color: #fff;&#13;
+    padding: 3px 10px;&#13;
+    font-weight: 100;&#13;
+}&#13;
+ &#13;
+a.widget-button:hover {&#13;
+	background-color: #428bca;&#13;
+}&#13;
+&#13;
+.row.info-row&gt;div {&#13;
+	cursor: pointer;&#13;
+  padding-top: 9px;&#13;
+  &#13;
+}&#13;
+&#13;
+.team_header {&#13;
+	font-size: 15px;&#13;
+	margin: 10px 0 5px 0;&#13;
+	color: #428BCA;&#13;
+}&#13;
+&#13;
+.more_link {&#13;
+	font-size: 90%;&#13;
+    padding: 10px;&#13;
+}&#13;
+&#13;
+.hide-element {&#13;
+	visibility: hidden;&#13;
+}&#13;
+&#13;
+.fa-2x {&#13;
+  font-size: 1.5em;&#13;
+  margin-top: -3px;&#13;
+}&#13;
+&#13;
+.body {&#13;
+line-height: 1.5;&#13;
+text-align:center;&#13;
+}&#13;
+&#13;
+.col-xs-1 {&#13;
+  float:none;&#13;
+}&#13;
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-information</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC ITSM Information</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	data.teamMembers = [];
+	var team = [
+		{ uLabel:'ITSM Program Owner',
+			eID:'e397137',
+			sOrder: 1	},
+		{			uLabel:'ServiceNow Platform Owner',
+			eID:'e300744',
+			sOrder: 2		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e408504',
+			sOrder: 3		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e407134',
+			sOrder: 4		},
+		{			uLabel:'ServiceNow Platform Team',
+			eID:'e589078',
+			sOrder: 5		}	];	
+
+	data.stringOfUserIDs = "e397137, e300744, e408504, e407134, e589078";
+
+	var teamGR = new GlideRecord("sys_user");
+	teamGR.addActiveQuery();
+	teamGR.addQuery('user_name', "IN", data.stringOfUserIDs);
+	teamGR.query();
+	while(teamGR.next()) {
+		team.forEach(function(forEaUser, i, a){
+			if (teamGR.getValue('user_name').equals(forEaUser.eID))
+			data.teamMembers.push(buildUser(teamGR, a[i].uLabel, a[i].sOrder));
+		})
+	}
+/*
+	data.team.forEach(function(forEaUser){
+			console.log(forEaUser.first_name);
+		})
+	*/
+	function buildUser(userGR, uLabel, order) {
+		return {
+			sOrder: order || "",
+			uLabel: uLabel || "",
+			email: userGR.getValue("email") || "",
+			eID: userGR.getValue("user_name"),
+			first_name: userGR.getValue("first_name"),
+			last_name: userGR.getValue("last_name"),
+			name: userGR.getValue("name"),
+			phone: userGR.getValue("phone") || "",
+			schedule: userGR.getValue("schedule") || "",
+			sys_id: userGR.getValue("sys_id")
+		}
+	}
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e654242</sys_created_by>
+        <sys_created_on>2018-08-06 19:26:54</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>d822b501db3fdbc0544fdd0b5e961934</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>SSC ITSM Information</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_d822b501db3fdbc0544fdd0b5e961934</sys_update_name>
+        <sys_updated_by>e654242</sys_updated_by>
+        <sys_updated_on>2018-08-06 19:31:22</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">  
+  <div class="panel-heading" ng-if="::!c.options.itsm_info_hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-body"> <!-- Main Panel Body-->
+
+    <div class="row info-row" ng-repeat="member in data.teamMembers | orderBy:'sOrder' " ng-click="openProfile(member)">
+      <h4 class="memberTitle" ng-if="member.eID != 'e407134' && member.eID != 'e589078'">{{member['uLabel']}}</h4>		
+      <div style=text-align:center> 
+        <div ng-click="openProfile(member)">{{member['name']}}</div>
+        <sn-avatar class="avatar-medium" primary="member.sys_id" show-presence="false" />
+        <div style="margin:10px 5px 2px 5px; ">
+          <a href="tel:{{member.phone}}" ng-class="{'hide-element': !member.phone}" class="col-xs-1">
+            <fa name="phone" size="2" ></fa>
+          </a>
+          <a href="mailto:{{member.email}}" ng-class="{'hide-element': !member.email}" class="col-xs-1">
+            <fa name="envelope" size="2"></fa>
+          </a>
+        </div>
+      </div>    
+    </div>
+
+  </div> <!-- Main Panel Body -->
+</div> <!-- Main Panel -->]]></template>
+    </sp_widget>
+</record_update>

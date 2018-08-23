@@ -30,6 +30,10 @@ position: relative;
 font-weight: bold;
   font-size: large;
   vertical-align: center;
+}
+
+.info-row {
+  vertical-align: center;
 }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -41,7 +45,7 @@ font-weight: bold;
         <internal>false</internal>
         <link/>
         <name>State Street Towers</name>
-        <option_schema>[{"name":"tower_hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <option_schema>[{"name":"tower_hide_header","label":"Hide Header","type":"boolean"},{"name":"example_sys_id","label":"Example sys_id","type":"string"}]</option_schema>
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
@@ -53,9 +57,9 @@ font-weight: bold;
 	//data.options = options;
 	//data.input =  input;
 	
-	if (input) {data.sys_id = input.s || input.sys_id;}
+	if (input) {data.sys_id = options.example_sys_id || input.s || input.sys_id;}
 	else {
-		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || 'ae609114db2bd780544fdd0b5e961953';	
+		data.sys_id = options.example_sys_id || $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id");	
 	}
 	if (!data.sys_id) {
 		data.welcomeMessage = true;
@@ -100,6 +104,7 @@ font-weight: bold;
 		towerLevelRosterMembers.order = grTowerLevelRosterMembers.getDisplayValue('order');
 		towerLevelRosterMembers.roster = grTowerLevelRosterMembers.getValue('roster');
 		towerLevelRosterMembers.name = grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_name');
+		towerLevelRosterMembers.member = grTowerLevelRosterMembers.getValue('member');
 		towerLevelRosterMembers.contact = 
 			grTowerLevelRosterMembers.getDisplayValue('member') || 
 			grTowerLevelRosterMembers.getDisplayValue('x_ibmss_ssc_towers_group') ||
@@ -132,7 +137,7 @@ font-weight: bold;
         <sys_created_on>2018-07-23 20:57:19</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>7bb30664db6f1b80544fdd0b5e961989</sys_id>
-        <sys_mod_count>153</sys_mod_count>
+        <sys_mod_count>168</sys_mod_count>
         <sys_name>State Street Towers</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -140,7 +145,7 @@ font-weight: bold;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_7bb30664db6f1b80544fdd0b5e961989</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-30 19:35:20</sys_updated_on>
+        <sys_updated_on>2018-08-08 23:29:42</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.tower_hide_header">
     <h4 class="panel-title">      
@@ -156,7 +161,6 @@ font-weight: bold;
             <h4 class="text-center">
               IT-to-IT Esclation Matrix - Select a Tower level on the left to view escalation information
             </h4>
-
           </div>
           <div ng-if="data.fields.length > 0">
             <div class="row">
@@ -173,8 +177,7 @@ font-weight: bold;
             </div>
           </div> 
         </div> 
-        <div class="panel-body" ng-if="data.welcomeMessage == false"> 
-          <!-- Tower Level Rosters -->
+        <div class="panel-body" ng-if="data.welcomeMessage == false">  <!-- Tower Level Rosters -->          
           <h4 class="section-title">
             Tower Level Rosters
           </h4>
@@ -184,16 +187,39 @@ font-weight: bold;
                 <div> 
                   <i class="glyphicon" ng-class="{'glyphicon-chevron-down': variable_toggle, 'glyphicon-chevron-right': !variable_toggle}"></i>
                   <span class="list-item-order">{{TowerLevelRosters.order}}</span> - {{TowerLevelRosters.name}}
-                </div>
-                <!-- Tower Level Roster Members -->
-                <div class="list-group" ng-if="variable_toggle"> 
+                </div>                
+                <div class="list-group" ng-if="variable_toggle"> <!-- Tower Level Roster Members -->
                   <br/>
                   <div ng-repeat="TowerLevelRosterMembers in data.TowerLevelRosterMember | filter: {'roster': TowerLevelRosters.sys_id }">
                     <div class="list-group-item">
                       <div>                          
-                        <span class="list-item-order">{{TowerLevelRosterMembers.order}}</span> - {{TowerLevelRosterMembers.name}}
-                        <div class="list-group-item">
+                        <ng-container ng-if="!TowerLevelRosterMembers.member"><span class="list-item-order">{{TowerLevelRosterMembers.order}}</span> - {{TowerLevelRosterMembers.name}}</ng-container>
+                        <div ng-if="!TowerLevelRosterMembers.member" class="list-group-item">
                           {{TowerLevelRosterMembers.contact}} - {{TowerLevelRosterMembers.contact_number}} - {{TowerLevelRosterMembers.contact_email}}
+                        </div>                        
+                        <div class="row info-row" ng-if="TowerLevelRosterMembers.member" ng-click="openProfile(member)">
+                          <div class="col-xs-1">
+                            <span class="list-item-order">{{TowerLevelRosterMembers.order}}</span>
+                          </div>
+                          <div class="col-xs-2">        
+                            <span class="navbar-avatar">
+                              <sn-avatar class="avatar-small-medium" primary="TowerLevelRosterMembers.member" show-presence="false" />
+                            </span>
+                          </div>      
+                          <div class="col-xs-6" ng-click="openProfile(TowerLevelRosterMembers.member)">
+                            <h6 class="m-n text-muted ">{{TowerLevelRosterMembers.name}}</h6>
+                            {{TowerLevelRosterMembers.contact}}
+                          </div>
+                          <div class="col-xs-1 align-bottom" ng-class="{'hide-element': !TowerLevelRosterMembers.contact_number}">
+                            <a href="tel:{{TowerLevelRosterMembers.contact_number}}">
+                              <fa name="phone" size="2"></fa>
+                            </a>
+                          </div>
+                          <div class="col-xs-1 align-bottom" ng-class="{'hide-element': !TowerLevelRosterMembers.contact_email}" style="text-align: right;">
+                            <a href="mailto:{{TowerLevelRosterMembers.contact_email}}">
+                              <fa name="envelope" size="2"></fa>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -203,12 +229,9 @@ font-weight: bold;
             </div>
           </div> <!-- Each Tower Level Roster -->
         </div><!-- Tower Level Rosters -->
-
-      </div> <!-- Main Panel Body -->
-      <!--
-      <pre>Options - {{data.options | json}}</pre>
-      <pre>Input - {{data.input | json}}</pre>
-			-->
-    </div>]]></template>
+      </div> 
+    </div>
+  </div><!-- Main Panel Body -->
+</div>]]></template>
     </sp_widget>
 </record_update>

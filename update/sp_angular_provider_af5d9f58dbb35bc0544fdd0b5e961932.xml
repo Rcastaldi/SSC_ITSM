@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>sscDropdownTree</name>
+        <script><![CDATA[/*! RESOURCE: /scripts/app.$sp/directive.spDropdownTree.js */
+
+
+function () {
+
+
+ return {
+
+
+ restrict: 'E',
+
+
+ scope: {items: '='},
+
+
+ replace: true,
+
+
+ template: '<ul class="dropdown-menu">' +
+
+
+ '<li ng-repeat="mi in items" style="min-width: 20em;" ng-class="{\'dropdown-submenu\': mi.type == \'menu\', \'dropdown-menu-line\':$index < items.length - 1}" ng-include="getURL()">' +
+
+
+ '</ul>',
+
+
+ link : function(scope, element, attrs, controller) {
+
+
+ scope.getURL = function() {
+
+
+ return 'sscDropdownTreeTemplate';
+
+
+ }
+
+
+ }
+
+
+ }
+
+
+ };
+
+
+ (function($) {
+
+
+ $("body").on( "click", "a.menu_trigger", function(e) {
+
+
+ var current = $(this).next();
+
+
+ var grandparent = $(this).parent().parent();
+
+
+ if ($(this).hasClass('left-caret') || $(this).hasClass('right-caret'))
+
+
+ $(this).toggleClass('right-caret left-caret');
+
+
+ grandparent.find('.left-caret').not(this).toggleClass('right-caret left-caret');
+
+
+ current.toggle();
+
+
+ $(".dropdown-menu").each(function(i, elem) {
+
+
+ var elemClosest = $(elem).closest('.dropdown');
+
+
+ var currentClosest = current.closest('.dropdown');
+
+
+ if (!elem.contains(current[0]) && elem != current[0] && (!currentClosest.length || !elemClosest.length || elemClosest[0] == currentClosest[0]))
+
+
+ $(elem).hide();
+
+
+ })
+
+
+ e.stopPropagation();
+
+
+ });
+
+
+ $("body").on( "click", "a:not(.menu_trigger)", function() {
+
+
+ var root=$(this).closest('.dropdown');
+
+
+ root.find('.left-caret').toggleClass('right-caret left-caret');
+
+
+ });
+
+
+ })(jQuery);
+
+
+ ;
+
+]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-04 19:07:53</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>af5d9f58dbb35bc0544fdd0b5e961932</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>sscDropdownTree</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_angular_provider_af5d9f58dbb35bc0544fdd0b5e961932</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-04 19:52:12</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+</record_update>

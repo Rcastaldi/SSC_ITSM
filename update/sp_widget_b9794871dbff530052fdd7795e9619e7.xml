@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $location ) {
+  /* widget controller */
+  var c = this;
+	$scope.data.flagToServerScriptToCreateNewWorklog = false;
+	$scope.data.currentEditRecord = "";
+	
+	$scope.$on("$locationChangeSuccess", function(name, data) {
+	var searchObject = $location.search();
+	$scope.data.sys_id = searchObject.sys_id || searchObject.sl_sys_id;
+	$scope.data.table = searchObject.table || searchObject.sl_table;
+	spUtil.update($scope);	
+	});
+	
+	$scope.createWorklog = function(meeting) {
+		$scope.data.flagToServerScriptToCreateNewWorklog = true;
+		c.data.flagToServerScriptToCreateNewWorklog = true;		
+		$scope.data.newWorklogDescription = meeting;
+		$scope.data.newWorklogType = "MEETING-NOTES";
+		c.server.update();
+	}
+	
+	$scope.editWorklog = function(p_sys_id) {
+		data.currentEditRecord = p_sys_id;
+		//console.log(p_sys_id);
+		//c.server.update();
+	}
+	
+	
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel-body, .b {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.panel {
+position: relative;
+}
+.panel-heading i {
+  cursor: pointer;
+  position: absolute;
+  padding: 10px;
+  top: 0px;
+  right: 0px;  
+}
+.list-group-item {
+  //padding: 5px;
+  word-wrap: break-word;
+}
+.list-group-item:hover {
+  // background-color: #86BBD1; // SSC Hover Color GEO
+  background-color: #E1ECF2; // SSC Menu Hover MAE
+}
+.worklogDetail {
+ padding-right: 0;
+  padding-left: 0;
+  border: 0;
+}
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.timeline-body &gt; p {
+  white-space: pre-wrap;
+  overflow-y:auto;overflow-x:hidden;
+  max-height: 300px;
+}
+/* Text Section ------------ */
+.fieldValue {
+  padding-bottom: 10px;
+}
+.itals {font-style: italic;}
+.execSummaryLabel {
+  border-bottom: 1px solid; 
+}
+.label-primary {
+  color:white;
+  background: #0A2F5D
+    padding: 10px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.createNotes {
+  width: 100%;
+}
+.glyphicon-info-sign {padding-right: 2px;}
+.buttonGroup {
+ padding-top: 20px; 
+}
+.editButton {
+ margin: 0;
+  margin-top: -7px;
+  margin-right: -7px;
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>glyph,color,size</field_list>
+        <has_preview>true</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link/>
+        <name>Copy of SSC Worklog Buddy</name>
+        <option_schema>[{"name":"hide_header","label":"Hide Header","type":"boolean"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[/* Introduction --------------------- */
+/*		e.g., data.table = $sp.getValue('table'); */
+/* Widget Options ------------------- */
+/*		title               =           */
+/*		hide_header         =           */
+
+(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	/* Server Script Variables --------- */
+	// Flags used to decide if we need to show convencience
+	// buttons to make meeting notes for 6:30, 8:00, and 8:30 meetings
+	// sure hope the times dont change, or maybe replace with options <-ToDo->
+	data.meetingNotesSixThirtyFound = false;
+	data.meetingNotesEightFound = false;
+	data.meetingNotesEightThirtyFound = false;
+	var newWorkLogSysId;
+	data.toggleEdit = 'OFF';
+	data.canUserEdit = false;
+	var currentUser = gs.getUser(); 
+	if(currentUser.isMemberOf('SSC-ETS-SMA') ||
+		 currentUser.isMemberOf('IBM-SSM-MAJOR-INCIDENT-MGT') ||
+		 currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT') ||
+		 currentUser.isMemberOf('IBM-SSM-PROBLEM-MGT')){
+		data.canUserEdit = true;
+	} else {
+		data.canUserEdit = false;
+	}
+	
+	//Check first if we have input, otherwise check URL and options for sys_id
+	if (input) {
+		if (input.flagToServerScriptToCreateNewWorklog == true){
+			//console.log("I should create a " + input.newWorklogType +" record for " + input.sys_id);
+			//console.log(input.newWorklogDescription);
+			var grNewWorklog = new GlideRecord(input.table);
+			grNewWorklog.initialize();
+			grNewWorklog.parent = input.sys_id;
+			grNewWorklog.u_choice_1 = input.newWorklogType; 
+			grNewWorklog.short_description = input.newWorklogDescription; 
+			newMiWorkLogSysId = grNewWorklog.insert();
+			console.log("I created " + newWorkLogSysId);
+			data.sys_id = input.sys_id;
+			data.table = input.table;
+		} else {
+			data.table = input.table;
+			data.sys_id = input.sys_id;
+			data.view = input.view;
+			data.query = input.query;
+		}
+	}
+	else {
+
+		data.table = $sp.getParameter("t") || $sp.getParameter("table") || $sp.getParameter("sl_table") || options.table;
+		data.sys_id = $sp.getParameter("sys_id") || $sp.getParameter("sl_sys_id") || options.sys_id;
+		data.view = $sp.getParameter("v") || $sp.getParameter("view") || options.view || 'problem';  // problem is default
+		data.query = $sp.getParameter("query") || options.query;
+	}
+	//Validate we have a sys_id else return
+	data.isValid = data.sys_id;
+	if (!data.isValid)
+		return;
+
+	if(data.table == 'problem' || data.table == 'incident')
+		data.table = "u_" + data.table + "_worklog";
+
+	// Get Worklog data from SSCwidgetScriptInclude by passing record sys_id and table
+	data.worklog = [];
+	var ssc_si = new SSCwidgetScriptInclude();
+	data.worklog = ssc_si.getWorklog(data.sys_id, data.table);
+
+	//Check if meeting notes exist else set flag for buttons to create
+	data.worklog.forEach(function(worklog){
+		if(worklog.type.toString() == 'MEETING-NOTES'){
+			if(worklog.short_description.toString() == 'Daily 6:30 Meeting Notes') {
+				data.meetingNotesSixThirtyFound = true;
+			} else if(worklog.short_description.toString() == 'Daily 8:00 Meeting Notes') {
+				data.meetingNotesEightFound = true;
+			} else if(worklog.short_description.toString() == 'Daily 8:30 Meeting Notes')
+				data.meetingNotesEightThirtyFound = true;		
+		} 
+	})
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-08 19:31:11</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b9794871dbff530052fdd7795e9619e7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Copy of SSC Worklog Buddy</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_b9794871dbff530052fdd7795e9619e7</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-08 19:31:11</sys_updated_on>
+        <template><![CDATA[<div ng-if="data.isValid" class="panel panel-{{::c.options.color}} b">
+  <div class="panel-heading" ng-if="::!c.options.hide_header">
+    <h4 class="panel-title">      
+      <span ng-if="c.options.glyph">
+        <fa name="{{::c.options.glyph}}" />
+      </span>{{::c.options.title}}</h4>  	
+  </div> <!-- Heading Title Panel-->
+  <div class="panel-group"> <!-- Main Panel Body-->
+
+    <div class="row"> <!-- Row 1 -->
+      <div class="col-xs-12"> <!-- Row 1 Column A -->      
+        <div ng-repeat="worklogs in data.worklog"> <!-- Worklog ng-repeat -->
+
+          <div class="list-group-item" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle" style="cursor: pointer;">
+            <div> 
+              <span ng-click="$event.stopPropagation()">
+                <button type="button" class="editButton btn btn-default pull-right" ng-click="variable_toggle=true; editWorklog(worklogs.sys_id)"> <!-- Edit Button -->
+                  <span class="glyphicon glyphicon-edit">
+                  </span> 
+                </button><!-- Edit Button -->
+              </span>
+              <i class="glyphicon" ng-class="{'glyphicon-chevron-down': variable_toggle, 'glyphicon-chevron-right': !variable_toggle}"></i>
+              <label class="label label-primary">{{worklogs.type}}</label>               
+              {{worklogs.short_description}}
+            </div>              
+            <div class="list-group" ng-if="variable_toggle"> <!-- Worklog Detail -->
+              <br/>
+              <div>
+                <div class="list-group-item worklogDetail">
+                  <div class="row task_detail_row"> <!-- Worklog Detail Row -->
+                    <div class="col-xs-4"> <!-- Row 1 Column A -->                        
+                      <h6 class="m-n text-muted">
+                        Worklog Number
+                      </h6>
+                      <div class="fieldValue">
+                        {{worklogs.number}}
+                      </div>                        
+                    </div><!-- Row 1 Column A -->
+                    <div class="col-xs-4"> <!-- Row 1 Column B -->
+                      <h6 class="m-n text-muted">
+                        Updated By
+                      </h6>
+                      <div class="fieldValue">
+                        {{worklogs.sys_updated_by}} 
+                      </div>                                   
+                    </div> <!-- Row 1 Column B -->
+                    <div class="col-xs-4"> <!-- Row 1 Column C -->
+                      <h6 class="m-n text-muted">
+                        Updated On
+                      </h6><div class="fieldValue">
+                      {{worklogs.sys_updated_on | date:'shortDate'}} 
+                      </div>                                   
+                    </div> <!-- Row 1 Column C -->
+                    <div class="col-xs-12"> <!-- Row 1 Column D -->
+                      <h6 class="m-n text-muted execSummaryh6">
+                        Worklog Description
+                      </h6>
+                      
+                      <div class="fieldValue timeline-body">
+                        <p>
+                          {{worklogs.description}}
+                        </p>
+                      </div>            
+                    </div> <!-- Row 1 Column D -->
+                  </div> <!-- Task Detail Row -->
+                </div>
+              </div>
+            </div> <!-- Worklog Details -->            
+          </div>
+        </div> <!-- Worklog ng-repeat -->        
+      </div> <!-- Row 1 Column A -->
+    </div> <!-- Row 1 -->
+    <div ng-if="data.canUserEdit == true" class="list-group buttonGroup">
+      <button ng-if="data.meetingNotesSixThirtyFound == false" ng-click="createWorklog('Daily 6:30 Meeting Notes')" type="button" class="list-group-item">
+        <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 6:30 Meeting Notes not found - Click to Create
+      </button>
+      <button ng-if="data.meetingNotesEightFound == false" ng-click="createWorklog('Daily 8:00 Meeting Notes')" type="button" class="list-group-item">
+        <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 8:00 Meeting Notes not found - Click to Create</button>
+      <button ng-if="data.meetingNotesEightThirtyFound == false" ng-click="createWorklog('Daily 8:30 Meeting Notes')" type="button" class="list-group-item">
+        <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 8:30 Meeting Notes not found - Click to Create</button>
+    </div>    
+  </div> <!-- Main Panel Body -->  
+</div>
+]]></template>
+    </sp_widget>
+</record_update>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_ng_template">
+    <sp_ng_template action="INSERT_OR_UPDATE">
+        <id>avatar-center-view.html</id>
+        <sp_widget display_value="SSC ITSM Information">beb41517db2753c052fdd7795e96190d</sp_widget>
+        <sys_class_name>sp_ng_template</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-08 03:11:55</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>9539a021db7b5fc0544fdd0b5e961983</sys_id>
+        <sys_mod_count>23</sys_mod_count>
+        <sys_name>avatar-center-view.html</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_ng_template_9539a021db7b5fc0544fdd0b5e961983</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-13 02:28:10</sys_updated_on>
+        <template><![CDATA[<div class="panel-body centerAll container-fluid"> <!-- Main Panel Body-->
+  <div class="row info-row" ng-repeat="member in data.teamMembers | orderBy:'sOrder' " ng-click="openProfile(member)">
+    <div class="col-xs-12 text-center">
+    <h5 class="title-label" ng-if="member.eID != 'e407134' && member.eID != 'e589078'">{{member['uLabel']}}</h5>
+    </div>
+    <div class="memberTitle">  
+      <div ng-click="openProfile(member)" class="col-xs-12 memberName">{{member['name']}}</div>
+      <div class="col-xs-12">
+      <sn-avatar style=text-align:center class="avatar-medium" primary="member.sys_id" show-presence="false" />
+      </div>
+      <div class="col-xs-12" style="margin:0px 5px 2px 5px;">
+        <div class="col-xs-6 text-right">
+        <a href="tel:{{member.phone}}" ng-class="{'hide-element': !member.phone}">
+          <fa name="phone" size="2" ></fa></a>
+        </div>
+        <div class="col-xs-6 text-left">
+        <a href="mailto:{{member.email}}" ng-class="{'hide-element': !member.email}">
+          <fa name="envelope" size="2"></fa></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Main Panel Body -->]]></template>
+    </sp_ng_template>
+</record_update>

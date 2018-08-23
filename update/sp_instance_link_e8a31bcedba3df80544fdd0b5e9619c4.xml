@@ -24,7 +24,7 @@
         <sys_created_on>2018-07-28 18:37:14</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>e8a31bcedba3df80544fdd0b5e9619c4</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>12</sys_mod_count>
         <sys_name>Daily IT Operations Risk Assessment Dashboard</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -32,10 +32,10 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_link_e8a31bcedba3df80544fdd0b5e9619c4</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-03 04:44:04</sys_updated_on>
+        <sys_updated_on>2018-08-21 20:43:28</sys_updated_on>
         <title>Daily IT Operations Risk Assessment Dashboard</title>
         <type>url</type>
-        <url>https://sscorpdev.service-now.com/sp_problem/?id=ssc_sp_itsm_mi_daily_risk_review</url>
+        <url>/sp_problem/?id=ssc_sp_itsm_mi_daily_risk_review</url>
         <widget_parameters><![CDATA[{
 	"link_template": {
 		"value": "Circle Icon",

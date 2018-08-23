@@ -45,12 +45,14 @@ h5 {
 }
 .towersCol {
  background-image: url('State%20Street%20Towers.jpg');
-  background-position: center center;
+  background-position: center center ;
+  //background-position: 10% 10%;
+  background-origin: border-box;
   background-size: cover;
   background-repeat: no-repeat;
   background-color: white;
-  margin-top: -20px;
-  margin-bottom: -10px;
+	  margin-top: -20px;
+  margin-bottom: 0px;
   min-height: 25vh;
   height: 100%;
   width: 100%;
@@ -73,7 +75,7 @@ hr {
         <sys_created_on>2018-08-03 19:57:24</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>c98f5e88db7357c052fdd7795e961939</sys_id>
-        <sys_mod_count>27</sys_mod_count>
+        <sys_mod_count>57</sys_mod_count>
         <sys_name/>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -81,7 +83,7 @@ hr {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_c98f5e88db7357c052fdd7795e961939</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-03 20:44:10</sys_updated_on>
+        <sys_updated_on>2018-08-13 02:17:48</sys_updated_on>
         <title/>
         <url/>
         <widget_parameters><![CDATA[{

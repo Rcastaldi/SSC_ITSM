@@ -20,7 +20,7 @@
         <sc_category/>
         <short_description/>
         <sp_page display_value="ssc_sp_itsm_home">5f20318cdb535740544fdd0b5e961902</sp_page>
-        <sp_rectangle_menu display_value="SSC ITSM SP Header">cd3452a0dbdb9740544fdd0b5e96196a</sp_rectangle_menu>
+        <sp_rectangle_menu display_value="IT Service Management">cd3452a0dbdb9740544fdd0b5e96196a</sp_rectangle_menu>
         <sp_rectangle_menu_item/>
         <sys_class_name>sp_rectangle_menu_item</sys_class_name>
         <sys_created_by>e448614</sys_created_by>

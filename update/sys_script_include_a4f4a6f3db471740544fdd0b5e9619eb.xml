@@ -3,12 +3,12 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>public</access>
         <active>true</active>
-        <api_name>x_ibmss_ssc_itsm.widgetScriptInclude</api_name>
+        <api_name>x_ibmss_ssc_itsm.SSCwidgetScriptInclude</api_name>
         <client_callable>false</client_callable>
         <description/>
-        <name>widgetScriptInclude</name>
-        <script><![CDATA[var widgetScriptInclude = Class.create();
-widgetScriptInclude.prototype = {
+        <name>SSCwidgetScriptInclude</name>
+        <script><![CDATA[var SSCwidgetScriptInclude = Class.create();
+SSCwidgetScriptInclude.prototype = {
 	initialize: function() {
 	},
 
@@ -71,22 +71,228 @@ widgetScriptInclude.prototype = {
 		return results;
 	},
 
+	getProblem: function(prb_sys_id) {
+		//var results = [];
+		var gr = new GlideRecord('problem');
+		gr.addActiveQuery();
+		// Add filter for opened by group = IBM-SSM-PROBLEM-MGT by group sys_id
+		//gr.addQuery('u_opened_by_group', 'IN','5408d3a8db200b40047dd7795e9619b5');
+		//gr.addQuery('sys_id', 'baec204adb0f070081ee15ce3b96197f');
+		gr.get('sys_id', prb_sys_id);
+		//gr.setLimit(10);
+		//gr.orderByDesc('sys_created_on');
+		//gr.query();
 
-	type: 'widgetScriptInclude'
+		// Perform loop through each record returned by main problem query
+		//while(gr.next()) {
+		// Create multi-dimensional array variable local to function
+		// for storing fields for each record
+		var problem = {'problem_tasks':[], 'incident_worklogs':[]};
+		var gdtProblemCreated = new GlideDateTime(gr.getDisplayValue('sys_created_on'));
+		problem.number = gr.getDisplayValue('number');
+		problem.sys_created_on = gr.getDisplayValue('sys_created_on');
+		problem.short_description = gr.getDisplayValue('short_description');
+		problem.sys_id = gr.getUniqueValue();
+		problem.sys_updated_on = gr.getValue('sys_updated_on');
+		problem.priority = gr.getDisplayValue('priority');
+		problem.assignment_group = gr.getDisplayValue('assignment_group');
+		problem.description = gr.getValue('description');
+		problem.parent = gr.getDisplayValue('parent');
+		problem.parent_id = gr.getValue('parent');
+		problem.state = gr.getDisplayValue('state');
+		problem.u_root_cause_category = gr.getDisplayValue('u_root_cause_category');
+		problem.u_root_cause_owner = gr.getDisplayValue('u_root_cause_owner');
+		problem.cmdb_ci = gr.getDisplayValue('cmdb_ci');
+		problem.symptom = gr.getDisplayValue('u_symptom');
+		problem.cause = gr.getDisplayValue('u_root_cause');
+		problem.resolution = gr.getDisplayValue('u_permanent_resolution');
+		problem.u_why_1 = gr.getDisplayValue('u_why_1');
+		problem.u_why_2 = gr.getDisplayValue('u_why_2');
+		problem.u_why_3 = gr.getDisplayValue('u_why_3');
+		problem.u_why_4 = gr.getDisplayValue('u_why_4');
+		problem.u_why_5 = gr.getDisplayValue('u_why_5');
+		problem.u_response_1 = gr.getDisplayValue('u_response_1');
+		problem.u_response_2 = gr.getDisplayValue('u_response_2');
+		problem.u_response_3 = gr.getDisplayValue('u_response_3');
+		problem.u_response_4 = gr.getDisplayValue('u_response_4');
+		problem.u_response_5 = gr.getDisplayValue('u_response_5');
+		console.log(problem.number);
+		// New query joining problem_task on problem field to problem sys_id
+		var gr2 = new GlideRecord('problem_task');
+		gr2.addQuery('problem', gr.getUniqueValue());
+		gr2.setLimit(50);
+		gr2.orderBy('order');
+		gr2.query();
+		// Perform loop through each record returned by problem task query
+		while(gr2.next()) {
+			// local function array variable for storing each problem task fields
+			var problem_task = {};
+			// local function date variable for formatting date
+			//var task_due_date = new GlideDateTime(gr2.getValue('due_date'));
+			var task_work_end_date = new GlideDateTime(gr2.getValue('work_end'));
+			var task_due_date = gr2.getValue('due_date');
+			var gdtTaskCreated = new GlideDateTime(gr2.getValue('sys_created_on'));
+			problem_task.number = gr2.getDisplayValue('number');
+			problem_task.short_description = gr2.getDisplayValue('short_description');
+			problem_task.sys_id = gr2.getUniqueValue();
+			problem_task.sys_updated_on = gr2.getValue('sys_updated_on');
+			problem_task.assignment_group = gr2.getDisplayValue('assignment_group');
+			problem_task.description = gr2.getValue('description');
+			problem_task.parent = gr2.getDisplayValue('problem');
+			problem_task.state = gr2.getDisplayValue('state');
+			// Logic for calculating current state of task and provide due or end date
+			if (gr2.getDisplayValue('state') == "Closed" ||  gr2.getDisplayValue('state') == "Not Required") {
+				problem_task.state_calc = "Completed";
+				problem_task.date_calc = task_work_end_date.getNumericValue();
+				problem_task.date_calc_label = "Task Completed";
+			} 
+			else if (!task_due_date) {
+				problem_task.state_calc = "NoDate";
+				problem_task.date_calc = "Due date not set";					
+			}
+			else {
+				task_due_date = new GlideDateTime(task_due_date);
+				var gdt1 = new GlideDateTime().getLocalDate().getDisplayValueInternal();
+				gdt1 = new GlideDateTime(gdt1 + " 00:00:00");
+				var gdt2 = task_due_date.getDate();
+				gdt2 = new GlideDateTime(gdt2 + " 00:00:00");
+				var dur = GlideDateTime.subtract(gdt1, gdt2);
+				var when_to_warn = new GlideDateTime();
+
+				when_to_warn.addDaysLocalTime(7);			
+
+				// logic to replace null value if target date is empty
+				if (task_due_date.getNumericValue() == 0) {
+					problem_task.state_calc = "NoDate";
+					problem_task.date_calc = "Due date not set";
+				} 
+				else if (gdt2.before(gdt1)){
+					problem_task.state_calc = "PastDue";
+					problem_task.date_calc = task_due_date.getNumericValue();
+				}
+				else if (gdt2.before(when_to_warn)){
+					problem_task.state_calc = "Warn";
+					problem_task.date_calc = task_due_date.getNumericValue();
+				}
+				else {
+					problem_task.state_calc = "Active";
+					problem_task.date_calc = task_due_date.getNumericValue();
+					problem_task.date_test = when_to_warn.getDisplayValue();
+				}
+			}
+			problem_task.date_calc_label = problem_task.date_calc_label || "Due Date";
+			problem_task.u_problem_task_category = gr2.getDisplayValue('u_problem_task_category');			
+			//Compare task and problem created date to determine if default task				
+			var compareCreated = new GlideDateTime.subtract(gdtProblemCreated, gdtTaskCreated);
+			//compareCreated.subtract(gdtProblemCreated, gdtTaskCreated);			
+			//console.log("compareCreated: " );
+			//console.log(compareCreated.getNumericValue() );
+			//console.log(compareCreated.getDisplayValueInternal() );			
+			if ( compareCreated.getNumericValue() < 10000) {
+				problem_task.task_type = "Default";
+			} else {problem_task.task_type = "Custom";}
+			// Push each problem task to local function array
+			problem.problem_tasks.push(problem_task);
+		}
+		// New query joining incident on parent to problem sys_id
+		var gr3 = new GlideRecord('incident');
+		gr3.addQuery('sys_id', problem.parent_id);
+		//gr3.addQuery('problem_id', gr.getUniqueValue());
+		gr3.setLimit(1);
+		gr3.orderByDesc('sys_updated_on');
+		gr3.query();
+		// Perform loop through incident or incidents returned by query
+		while(gr3.next()) {
+			problem.parent_inc_problem_id = gr3.getValue('problem_id');
+			if(problem.parent_inc_problem_id != problem.sys_id) {
+				data.inc_related_to_diff_problem = true;
+			}
+			problem.parent_inc_problem = gr3.getDisplayValue('problem_id');
+			problem.parent_inc_number = gr3.getDisplayValue('number');
+			problem.parent_inc_short_description = gr3.getDisplayValue('short_description');
+			problem.parent_inc_description = gr3.getValue('description');
+			problem.parent_inc_mi_type = gr3.getDisplayValue('u_mi_type');
+			problem.parent_inc_symptom = gr3.getDisplayValue('u_symptom');
+			problem.parent_inc_cause = gr3.getDisplayValue('u_cause');
+			problem.parent_inc_resolution = gr3.getDisplayValue('close_notes');
+			problem.parent_inc_owner_group = gr3.getDisplayValue('assignment_group');
+			problem.parent_inc_created = gr3.getDisplayValue('sys_created_on');
+			problem.parent_inc_duration = gr3.getDisplayValue('calendar_duration');
+			problem.parent_inc_region = gr3.u_region.getDisplayValue();
+			problem.parent_inc_business_unit = gr3.u_business_unit.getDisplayValue();
+			problem.parent_inc_resolved = gr3.getDisplayValue('resolved_at');
+			problem.parent_inc_state = gr3.getDisplayValue('state');
+			// New query joining incident worklog on parent to incident sys_id
+			// and contains CHRONOLOGY to return MI Timeline
+			var gr4 = new GlideRecord('u_incident_worklog');
+			gr4.addQuery('parent', gr3.getUniqueValue());
+			gr4.addQuery('u_choice_1','CONTAINS', 'CHRONOLOGY');
+			gr4.setLimit(10);
+			gr4.orderByDesc('sys_updated_on');
+			gr4.query();
+			// Perform loop through worklog or worklogs returned by query
+			while(gr4.next()) {
+				// // local function array variable for storing each incident worklog record
+				var incident_worklog = {};
+				incident_worklog.parent_inc_wklg_number = gr4.getDisplayValue('number');
+				incident_worklog.parent_inc_wklg_short_description = gr4.getDisplayValue('short_description');
+				incident_worklog.parent_inc_wklg_description = gr4.getValue('description');
+				incident_worklog.parent_inc_wklg_type = gr4.getDisplayValue('u_choice_1');
+				incident_worklog.parent_inc_wklg_updated_on = gr4.getDisplayValue('sys_updated_on');
+				incident_worklog.parent_inc_wklg_updated_by = gr4.getDisplayValue('sys_updated_by');
+				//Push each incident worklog to local function array
+				problem.incident_worklogs.push(incident_worklog);
+			}
+		}
+		return problem;
+		// Push local function array to data array
+		//results.push(problem);
+		//}
+		//return results;
+	},
+
+	getWorklog: function(p_sys_id, p_table) {
+		//console.log('p_table: ' + p_table);
+		//console.log('p_sys_id: ' + p_sys_id);
+		var results = [];
+		var grWorklog = new GlideRecord(p_table);
+		grWorklog.addQuery('parent', p_sys_id);
+		grWorklog.setLimit(100);
+		grWorklog.orderByDesc('sys_updated_on');
+		grWorklog.query();
+		// Perform loop through worklog or worklogs returned by query
+		while(grWorklog.next()) {
+			// // local function array variable for storing each incident worklog record
+			var worklog = {};
+			worklog.number = grWorklog.getDisplayValue('number');
+			worklog.sys_id = grWorklog.getUniqueValue();
+			worklog.short_description = grWorklog.getDisplayValue('short_description');
+			worklog.description = grWorklog.getValue('description');
+			worklog.type = grWorklog.getDisplayValue('u_choice_1');
+			worklog.sys_updated_on = grWorklog.getDisplayValue('sys_updated_on');
+			worklog.sys_updated_by = grWorklog.getDisplayValue('sys_updated_by');			
+			worklog.sys_created_by = grWorklog.getDisplayValue('sys_created_by');
+			//Push each incident worklog to local function array
+			results.push(worklog);
+		}
+		return results;
+	},
+
+	type: 'SSCwidgetScriptInclude'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:13:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>a4f4a6f3db471740544fdd0b5e9619eb</sys_id>
-        <sys_mod_count>1</sys_mod_count>
-        <sys_name>widgetScriptInclude</sys_name>
+        <sys_mod_count>50</sys_mod_count>
+        <sys_name>SSCwidgetScriptInclude</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sys_script_include_a4f4a6f3db471740544fdd0b5e9619eb</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-11 03:26:52</sys_updated_on>
+        <sys_updated_on>2018-08-15 16:11:51</sys_updated_on>
     </sys_script_include>
 </record_update>

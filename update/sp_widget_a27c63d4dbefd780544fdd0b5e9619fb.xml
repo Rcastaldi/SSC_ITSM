@@ -2,7 +2,7 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <client_script><![CDATA[function ($scope, $element, $window, $location, $rootScope, $timeout, snAttachmentHandler, $http, spUtil, userPreferences,$filter, i18n) {
-
+	var c = this;
 	// Many of these fields are more configuration-type fields than profile fields. We still want to display
 	// these to a user who is configuring their 'settings', but we shouldn't show them on a user profile page.
 	// We need to handle this better.
@@ -24,9 +24,9 @@
 
 	$scope.attachFiles = function(files) {
 		var file = files.files[0];
-		
+
 		var validImage = false;
-		
+
 		switch(file.type) {
 			case 'image/jpeg':
 			case 'image/png':
@@ -40,12 +40,12 @@
 			default:
 				break;
 		}
-		
+
 		if(!validImage) {
 			alert(file.name + " " + i18n.getMessage("isn't a recognized image file format"));
 			return;
 		}
-		
+
 		snAttachmentHandler.create("live_profile", $scope.data.liveProfileID).uploadAttachment(file, {
 			sysparm_fieldname: "photo"
 		}).then(function(response) {
@@ -79,14 +79,14 @@
 	$scope.openUserProfile = function($event, userID) {
 		$event.stopPropagation();
 		$event.preventDefault();
-		$location.search("id=user_profile&sys_id=" + userID);
+		$location.search("id=ssc_sp_itsm_user_profile&sys_id=" + userID);
 	}
 
 	$scope.getSysUserModelFields = function() {
 		return $scope.data.sysUserModelList
-						.filter(function(field) {
-							return $scope.displayField("sys_user", field.name)
-						});
+			.filter(function(field) {
+			return $scope.displayField("sys_user", field.name)
+		});
 	}
 
 	$scope.data.userPreferencesChanged = false;
@@ -129,8 +129,8 @@
 	//set the user preference value
 	$scope.setUserPreferenceValue = function(userProperty) {
 		userPreferences.setPreference(userProperty.key, userProperty.value).then(function() {
-				 $scope.data.userPreferencesChanged = true;
-	 });
+			$scope.data.userPreferencesChanged = true;
+		});
 	};
 
 	$scope.toggle = function(e, userProperty) {
@@ -141,7 +141,7 @@
 	}
 
 	$scope.reloadPage = function() {
-			$window.location.reload(true);
+		$window.location.reload(true);
 	};
 
 	$scope.teamExists = function() {
@@ -279,6 +279,7 @@ if (data.userExists) {
 		data.teamData.direct_reports.push(buildUser(directReportGR));
 
 	data.teamWidget = $sp.getWidget('sp-my-team', {glyph: 'user', color: 'primary'});
+	//data.notificationPreferences = $sp.getWidget('ssc-sp-widget-iframe', {url: '/notification_preferences.do', width: '100'});
 
 	//get state preferences
 	data.preferencesEnabled = getPreferencesEnabled();
@@ -329,7 +330,7 @@ function getPreferencesEnabled(){
         <sys_created_on>2018-07-23 09:56:25</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>a27c63d4dbefd780544fdd0b5e9619fb</sys_id>
-        <sys_mod_count>16</sys_mod_count>
+        <sys_mod_count>32</sys_mod_count>
         <sys_name>SSC Enhanced User Profile</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -337,125 +338,129 @@ function getPreferencesEnabled(){
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_a27c63d4dbefd780544fdd0b5e9619fb</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-23 16:21:44</sys_updated_on>
+        <sys_updated_on>2018-08-08 13:56:46</sys_updated_on>
         <template><![CDATA[<div>
-  <div ng-if="data.userExists">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-12 col-sm-4 text-center">
-            <div class="row">
-              <div class="avatar-extra-large avatar-container" style="cursor:default;">
-                <div class="avatar soloAvatar bottom">
-                  <div class="sub-avatar mia" ng-style="avatarPicture"><i class="fa fa-user"></i></div>
+  <div ng-if="data.userExists">    
+    <div>    
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-4 text-center">
+              <div class="row">
+                <div class="avatar-extra-large avatar-container" style="cursor:default;">
+                  <div class="avatar soloAvatar bottom">
+                    <div class="sub-avatar mia" ng-style="avatarPicture"><i class="fa fa-user"></i></div>
+                  </div>
                 </div>
               </div>
+              <div class="row">
+                <button ng-if="::connectEnabled()" ng-click="openConnectConversation()" type="button"
+                        class="btn btn-primary send-message"><span class="glyphicon glyphicon-comment pad-right"></span>${Message}</button>
+                <!-- file upload -->
+                <span ng-if="::data.isLoggedInUsersProfile">
+                  <input ng-show="false" type="file" accept="image/jpeg,image/png,image/bmp,image/x-windows-bmp,image/gif,image/x-icon,image/svg+xml" ng-file-select="attachFiles({files: $files})" />
+                  <button ng-click="uploadNewProfilePicture($event)"
+                          ng-keypress="uploadNewProfilePicture($event)" type="button"
+                          class="btn btn-default send-message">${Upload Picture}</button>
+                </span>
+              </div>
             </div>
-            <div class="row">
-              <button ng-if="::connectEnabled()" ng-click="openConnectConversation()" type="button"
-                      class="btn btn-primary send-message"><span class="glyphicon glyphicon-comment pad-right"></span>${Message}</button>
-              <!-- file upload -->
-              <span ng-if="::data.isLoggedInUsersProfile">
-                <input ng-show="false" type="file" accept="image/jpeg,image/png,image/bmp,image/x-windows-bmp,image/gif,image/x-icon,image/svg+xml" ng-file-select="attachFiles({files: $files})" />
-                <button ng-click="uploadNewProfilePicture($event)"
-                        ng-keypress="uploadNewProfilePicture($event)" type="button"
-                        class="btn btn-default send-message">${Upload Picture}</button>
-              </span>
+            <div class="col-xs-12 col-sm-8">
+              <h2>{{data.name}}</h2>
+              <h4 ng-if="::(displayField('sys_user', 'title', true) || displayField('sys_user', 'company', true))">
+                <sp-editable-field ng-if="::displayField('sys_user', 'title', true)" editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.title" on-change="titleOnChange" on-submit="titleOnSubmit"></sp-editable-field>
+                <span ng-if="::(displayField('sys_user', 'company', true) && displayField('sys_user', 'title', true))">at</span>
+                <span ng-if="::(displayField('sys_user', 'company', true) && !displayField('sys_user', 'title', true))">Works at</span>
+                <sp-editable-field ng-if="::displayField('sys_user', 'company', true)" editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.company"></sp-editable-field>
+              </h4>
+              <p ng-if="::displayField('sys_user', 'department', true)"><strong class="pad-right">${Department}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.department"></sp-editable-field></p>
+              <p ng-if="::displayField('sys_user', 'location', true)"><strong class="pad-right">${Location}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.location"></sp-editable-field></p>
+              <p ng-if="::(data.liveProfileID && displayField('live_profile', 'short_description', true))"><strong class="pad-right">${Bio}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="live_profile" table-id="data.liveProfileID" field-model="data.liveProfileModel.short_description"></sp-editable-field></p>
             </div>
-          </div>
-          <div class="col-xs-12 col-sm-8">
-            <h2>{{data.name}}</h2>
-            <h4 ng-if="::(displayField('sys_user', 'title', true) || displayField('sys_user', 'company', true))">
-              <sp-editable-field ng-if="::displayField('sys_user', 'title', true)" editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.title" on-change="titleOnChange" on-submit="titleOnSubmit"></sp-editable-field>
-              <span ng-if="::(displayField('sys_user', 'company', true) && displayField('sys_user', 'title', true))">at</span>
-              <span ng-if="::(displayField('sys_user', 'company', true) && !displayField('sys_user', 'title', true))">Works at</span>
-              <sp-editable-field ng-if="::displayField('sys_user', 'company', true)" editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.company"></sp-editable-field>
-            </h4>
-            <p ng-if="::displayField('sys_user', 'department', true)"><strong class="pad-right">${Department}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.department"></sp-editable-field></p>
-            <p ng-if="::displayField('sys_user', 'location', true)"><strong class="pad-right">${Location}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="sys_user" table-id="data.sysUserID" field-model="data.sysUserModel.location"></sp-editable-field></p>
-            <p ng-if="::(data.liveProfileID && displayField('live_profile', 'short_description', true))"><strong class="pad-right">${Bio}</strong><sp-editable-field editable-by-user="data.isLoggedInUsersProfile" table="live_profile" table-id="data.liveProfileID" field-model="data.liveProfileModel.short_description"></sp-editable-field></p>
           </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div ng-class="{'col-md-6': teamExists(), 'col-md-12': !teamExists()}" class="col-sm-12 col-xs-12">
-        <div class="panel panel-primary b" ng-if="getSysUserModelFields().length > 0">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <i class="fa fa-info-circle m-r-sm"></i>${About}
-            </h4>
-          </div>
-          <div class="body padder-xs">
-            <div class="list-group">
-              <div ng-repeat="fieldModel in getSysUserModelFields()">
-                <div class="list-group-item">
-                  <div>
-                    <sp-editable-field block="true" table="sys_user" editable-by-user="data.isLoggedInUsersProfile" table-id="data.sysUserID" field-model="fieldModel"></sp-editable-field>
+      <div class="row">
+        <div ng-class="{'col-md-6': teamExists(), 'col-md-12': !teamExists()}" class="col-sm-12 col-xs-12">
+          <div class="panel panel-primary b" ng-if="getSysUserModelFields().length > 0">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <i class="fa fa-info-circle m-r-sm"></i>${About}
+              </h4>
+            </div>
+            <div class="body padder-xs">
+              <div class="list-group">
+                <div ng-repeat="fieldModel in getSysUserModelFields()">
+                  <div class="list-group-item">
+                    <div>
+                      <sp-editable-field block="true" table="sys_user" editable-by-user="data.isLoggedInUsersProfile" table-id="data.sysUserID" field-model="fieldModel"></sp-editable-field>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <div ng-if="teamExists()" class="col-md-6 col-sm-12 col-xs-12">
+          <sp-widget widget="data.teamWidget"></sp-widget>
+        </div>
       </div>
-      <div ng-if="teamExists()" class="col-md-6 col-sm-12 col-xs-12">
-        <sp-widget widget="data.teamWidget"></sp-widget>
-      </div>
-    </div>
-    <div class="row" ng-if="data.preferencesEnabled.preferencesPanelEnabled">
-      <div class="col-sm-12 col-xs-12">
-        <div class="panel panel-primary b">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <i class="fa fa-cog m-r-sm"></i>${User preferences}
-            </h4>
-          </div>
-          <div class="body padder-xs">
-             <div class="list-group">
-               <!--
-               <div class="list-group-item">
-                <label for="accessibility-enabled">${Accessibility enabled} </label>
-                <div class="input-switch">
-                   <input type="checkbox"
-                          ng-change="setUserPreferenceValue(data.userPreferences.accessibility)"
-                          ng-model="data.userPreferences.accessibility.value"
-                          name="accessibility-enabled" id="accessibility-enabled"  />
-                   <label class="switch" for="accessibility-enabled" tabindex="0" ng-click="toggle($event, data.userPreferences.accessibility)"></label>
-                 </div>
-              </div>
-							-->
-               <div class="list-group-item" ng-if="data.preferencesEnabled.timezoneEnabled">
-                <label for="time_zone">${Time zone}</label>
-                <select id="time_zone_picker_select" class="form-control "
+      <div class="row" ng-if="data.preferencesEnabled.preferencesPanelEnabled">
+        <div class="col-sm-12 col-xs-12">
+          <div class="panel panel-primary b">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <i class="fa fa-cog m-r-sm"></i>${User preferences}
+              </h4>
+            </div>
+            <div class="body padder-xs">
+              <div class="list-group">
+                <!--
+<div class="list-group-item">
+<label for="accessibility-enabled">${Accessibility enabled} </label>
+<div class="input-switch">
+<input type="checkbox"
+ng-change="setUserPreferenceValue(data.userPreferences.accessibility)"
+ng-model="data.userPreferences.accessibility.value"
+name="accessibility-enabled" id="accessibility-enabled"  />
+<label class="switch" for="accessibility-enabled" tabindex="0" ng-click="toggle($event, data.userPreferences.accessibility)"></label>
+</div>
+</div>
+-->
+                <div class="list-group-item" ng-if="data.preferencesEnabled.timezoneEnabled">
+                  <label for="time_zone">${Time zone}</label>
+                  <select id="time_zone_picker_select" class="form-control "
                           name="time_zone_picker_select" ng-model="data.listProperties.timezone.current"
                           ng-change="setPreferenceValue('timezone', data.listProperties.timezone.current.value)"
                           ng-options="item as item.label for item in data.listProperties.timezone.list"/>
-              </div>
-             	<div class="list-group-item" ng-if="data.preferencesEnabled.languageEnabled">
-                <label for="time_zone">${Language}</label>
-                <select id="time_zone_picker_select" class="form-control"
+                </div>
+                <div class="list-group-item" ng-if="data.preferencesEnabled.languageEnabled">
+                  <label for="time_zone">${Language}</label>
+                  <select id="time_zone_picker_select" class="form-control"
                           name="time_zone_picker_select" ng-model="data.listProperties.language.current"
                           ng-change="setPreferenceValue('language', data.listProperties.language.current.value)"
                           ng-options="item as item.label for item in data.listProperties.language.list "/>
+                </div>
               </div>
-        	</div>
+            </div>
+            <div class="panel-footer clearfix" ng-if="data.userPreferencesChanged">
+              <a id="refresh-to-see-changes" href="javascript:void(0)"
+                 ng-click="reloadPage()" class="pull-right btn btn-primary"><i class="fa fa-refresh m-r-sm" aria-hidden="true"></i>${Refresh to see changes}</a>
+            </div>
+          </div>
         </div>
-        <div class="panel-footer clearfix" ng-if="data.userPreferencesChanged">
-          <a id="refresh-to-see-changes" href="javascript:void(0)"
-             ng-click="reloadPage()" class="pull-right btn btn-primary"><i class="fa fa-refresh m-r-sm" aria-hidden="true"></i>${Refresh to see changes}</a>
+        <div ng-if="!data.userExists" >
+          <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">${User not found}</h4></div>
+            <div class="panel-body wrapper">
+              <p>${This user does not exist}</p>
+              <p>${Suggestions}:</p>
+              <ul>
+                <li>${Contact your portal administrator}</li>
+              </ul>
+            </div>
+          </div>
         </div>
-    </div>
-  </div>
-  <div ng-if="!data.userExists" >
-    <div class="panel panel-default">
-      <div class="panel-heading"><h4 class="panel-title">${User not found}</h4></div>
-      <div class="panel-body wrapper">
-        <p>${This user does not exist}</p>
-        <p>${Suggestions}:</p>
-        <ul>
-          <li>${Contact your portal administrator}</li>
-        </ul>
       </div>
     </div>
   </div>

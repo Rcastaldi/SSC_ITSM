@@ -269,7 +269,10 @@ position: relative;
 
 	data.displayWelcomeMessage = false;
 	var currentUser = gs.getUser(); 
-	if(currentUser.isMemberOf('SSC-ETS-SMA') || currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT')){
+	if(currentUser.isMemberOf('SSC-ETS-SMA') ||
+		 currentUser.isMemberOf('IBM-SSM-MAJOR-INCIDENT-MGT') ||
+		 currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT') ||
+		currentUser.isMemberOf('IBM-SSM-PROBLEM-MGT')){
 		data.canUserEdit = true;
 	} else {
 		data.canUserEdit = false;
@@ -331,7 +334,7 @@ console.log("UserEdit " + data.canUserEdit);
         <sys_created_on>2018-07-09 06:29:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>f1e63ab3db871740544fdd0b5e96191c</sys_id>
-        <sys_mod_count>63</sys_mod_count>
+        <sys_mod_count>64</sys_mod_count>
         <sys_name>SSC MI Chronology Widget</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -339,7 +342,7 @@ console.log("UserEdit " + data.canUserEdit);
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_f1e63ab3db871740544fdd0b5e96191c</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-26 22:01:25</sys_updated_on>
+        <sys_updated_on>2018-08-08 18:05:01</sys_updated_on>
         <template><![CDATA[<div class="panel panel-{{::c.options.color}} b">
   <div class="panel-heading" ng-if="::!c.options.mi_hide_header">
     <h4 class="panel-title">      
