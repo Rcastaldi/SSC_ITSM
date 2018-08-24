@@ -676,7 +676,7 @@ th {
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>693</sys_mod_count>
+        <sys_mod_count>694</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -684,7 +684,7 @@ th {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-23 23:58:06</sys_updated_on>
+        <sys_updated_on>2018-08-24 00:01:52</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
@@ -1011,7 +1011,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
@@ -1048,8 +1048,8 @@ th {
         </th> 
       </tr> <!-- QMI Section Header -->
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> <!-- QMI Section -->
-        <td class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
-        <td class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "qmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "qmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
         <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
         <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
         <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "qmi_td" colspan=2>
@@ -1112,7 +1112,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
@@ -1147,8 +1147,8 @@ th {
         <th class="pmi_th" colspan = "6"> Process Major Incidents</th> 
       </tr> <!-- PMI Section Header -->
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> <!-- PMI Section -->
-        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
-        <td class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
+        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "pmi_td" style='color:green; font-size: 20px;'>&#x2718;</td>
         <!--    <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> -->
         <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
         <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "pmi_td" colspan=2>
@@ -1211,7 +1211,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
