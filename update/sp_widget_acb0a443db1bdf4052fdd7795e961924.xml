@@ -257,8 +257,8 @@ $scope.$on("field.change", function(evt, parms) {
 		if (canEditMeetingNotes()) {
 			console.log("setupNotesMgmt - " + canEditMeetingNotes());
 			$scope.editor.savedCopy = $scope.editor.workingCopy = $scope.data.currentWorklogCopy; //Custom
-			//if (!unwatchWorkingCopy)
-			//	unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
+			if (!unwatchWorkingCopy)
+				unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
 		} else {
 
 			if(autosaveTimer) {
@@ -266,10 +266,10 @@ $scope.$on("field.change", function(evt, parms) {
 				autosaveTimer = null;
 			}
 
-			//if (unwatchWorkingCopy) {
-			//	unwatchWorkingCopy();
-			//	unwatchWorkingCopy = null;
-			//}
+			if (unwatchWorkingCopy) {
+				unwatchWorkingCopy();
+				unwatchWorkingCopy = null;
+			}
 		}
 	}
 
@@ -676,7 +676,7 @@ th {
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>694</sys_mod_count>
+        <sys_mod_count>697</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -684,7 +684,7 @@ th {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-24 00:01:52</sys_updated_on>
+        <sys_updated_on>2018-08-24 00:15:55</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
@@ -1011,7 +1011,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
@@ -1096,7 +1096,7 @@ th {
                 <option value="PMI">PMI</option>
               </select>
               <div class="saveCol">
-                <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(resolvedIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
+                <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF'); updateAll(resolvedIncidents)" class="editButton btn btn-default" value="${Save}"/>
               </div>              
             </div>
           </div>                                 
@@ -1112,7 +1112,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
@@ -1211,7 +1211,7 @@ th {
               </span> 
             </button> <!-- Edit Button 1 -->
             <!-- Edit Button 2 -->
-            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification" ng-if="resolvedIncidents.problem_id == data.currentEditRecord"> ${Saved} </span>
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
