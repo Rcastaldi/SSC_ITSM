@@ -16,7 +16,7 @@
         <sc_category/>
         <short_description>Coming Soon!</short_description>
         <size>md</size>
-        <sp_column display_value="4">5532b837db6bd3c052fdd7795e961971</sp_column>
+        <sp_column display_value="4">596c6ecbdb846b00544fdd0b5e96191a</sp_column>
         <sp_page/>
         <sp_widget display_value="Icon Link">3caa67afcb13020000f8d856634c9c2e</sp_widget>
         <sys_class_name>sp_instance_link</sys_class_name>
@@ -24,16 +24,16 @@
         <sys_created_on>2018-07-28 18:37:48</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>70c39fcedba3df80544fdd0b5e96199e</sys_id>
-        <sys_mod_count>8</sys_mod_count>
-        <sys_name>Configuration Management</sys_name>
+        <sys_mod_count>12</sys_mod_count>
+        <sys_name>Configuration</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_link_70c39fcedba3df80544fdd0b5e96199e</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-23 14:26:24</sys_updated_on>
-        <title>Configuration Management</title>
+        <sys_updated_on>2018-08-25 14:51:51</sys_updated_on>
+        <title>Configuration</title>
         <type>url</type>
         <url>/cmdb/</url>
         <widget_parameters><![CDATA[{

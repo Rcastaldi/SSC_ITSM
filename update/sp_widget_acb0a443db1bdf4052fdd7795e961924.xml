@@ -528,6 +528,7 @@ th {
         <roles/>
         <script><![CDATA[(function() {
 	/* Server Script Variables --------- */
+	var userTimeZone = gs.getSession().getTimeZoneName();
 	data.table = 'problem';
 	data.openIncident = [];
 	data.resolvedIncident = [];
@@ -599,16 +600,19 @@ th {
 	/* to get the current date (yyyy-mm-dd) format */
 	var current_gdt = new GlideDateTime().getDate().getValue();
 	/* to get the current date (yyyy-mm-dd hh:mm:ss) format */
-	var enddate = new GlideDateTime(current_gdt + " 06:00:00");
+	var enddate = new GlideDateTime(current_gdt + " 011:00:00"); // setting time in GMT
+	if(enddate.isDST()) enddate.add(-(enddate.getDSTOffset()))
+	console.log(userTimeZone);
+	//console.log(enddate.getDisplayValue());
 	var startdate = new GlideDateTime(enddate);
 	
 	/* Checking the condition, if day of the week is Monday,
 	** subtracting 3 days from current day to get startdate to be friday
 	** if it is not Monday, subtract 1 day from current day. */
 	if (enddate.getDayOfWeekLocalTime() == 1) {
-		startdate.addDaysLocalTime(-3);		
+		startdate.addDaysUTC(-3);		
 	} else {		
-		startdate.addDaysLocalTime(-1);
+		startdate.addDaysUTC(-1);
 	}	
 	
 	/* Main GlideRecord query and while loop  */
@@ -638,7 +642,7 @@ th {
 		var openIncidents = {};
 		var resolvedIncidents = {};
 		if(grIncident.state == 6 ){																			
-			if(grIncident.problem_id.sys_created_on > startdate) {
+			if(grIncident.problem_id.sys_created_on > startdate ) {
 				var rco = '';
 				resolvedIncidents.number = grIncident.getDisplayValue('number');																				
 				resolvedIncidents.sys_id = grIncident.getUniqueValue();																									
@@ -676,7 +680,7 @@ th {
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>697</sys_mod_count>
+        <sys_mod_count>703</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -684,7 +688,7 @@ th {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-24 00:15:55</sys_updated_on>
+        <sys_updated_on>2018-08-29 20:35:52</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
