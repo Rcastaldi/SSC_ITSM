@@ -4,7 +4,7 @@
         <css>section.page {
 	//background-color: $sp-homepage-bg;
 }
-section.page, section.body {
+.padding-top, section.page, section.body {
   padding-top: 0px !important;
 }
 .row-no-padding {
@@ -27,14 +27,14 @@ section.page, section.body {
         <id>ssc_sp_itsm_problem_home</id>
         <internal>false</internal>
         <public>false</public>
-        <roles/>
+        <roles>itil</roles>
         <short_description>Problem Management Home Page</short_description>
         <sys_class_name>sp_page</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-01 19:01:28</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>f51fbb1bdb2393c052fdd7795e961953</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>ssc_sp_itsm_problem_home</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -42,7 +42,7 @@ section.page, section.body {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_f51fbb1bdb2393c052fdd7795e961953</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-23 16:56:45</sys_updated_on>
+        <sys_updated_on>2018-09-04 16:37:50</sys_updated_on>
         <title>Problem Home</title>
     </sp_page>
     <sys_translated_text action="delete_multiple" query="documentkey=f51fbb1bdb2393c052fdd7795e961953"/>

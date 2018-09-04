@@ -6,7 +6,9 @@
   min-height: 100%;
   padding-top: 0px !important;
 }
-
+.padding-top {
+  padding-top: 0px !important;
+}
 main {
   background-image: url('State%20Street%20Towers.jpg');
   background-position: center center;
@@ -18,14 +20,14 @@ main {
         <id>ssc_sp_itsm_towers_intro</id>
         <internal>false</internal>
         <public>false</public>
-        <roles/>
-        <short_description/>
+        <roles>itil</roles>
+        <short_description>Application Introduction Page</short_description>
         <sys_class_name>sp_page</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-28 04:57:31</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>7008944adb271f8052fdd7795e96196b</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>ssc_sp_itsm_towers_intro</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -33,7 +35,7 @@ main {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_7008944adb271f8052fdd7795e96196b</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-07-28 05:09:35</sys_updated_on>
+        <sys_updated_on>2018-09-04 16:34:05</sys_updated_on>
         <title>State Street Towers Intro</title>
     </sp_page>
     <sys_translated_text action="delete_multiple" query="documentkey=7008944adb271f8052fdd7795e96196b"/>

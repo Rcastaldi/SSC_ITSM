@@ -5,14 +5,14 @@
         <id>ssc_sp_itsm_user_profile</id>
         <internal>false</internal>
         <public>false</public>
-        <roles/>
+        <roles>itil</roles>
         <short_description>Enhanced User Profile Page with additional features</short_description>
         <sys_class_name>sp_page</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-23 09:56:25</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>a67c63d4dbefd780544fdd0b5e9619fe</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>ssc_sp_itsm_user_profile</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -20,7 +20,7 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_a67c63d4dbefd780544fdd0b5e9619fe</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-08 06:29:26</sys_updated_on>
+        <sys_updated_on>2018-09-04 16:35:35</sys_updated_on>
         <title>State Street User Profile</title>
     </sp_page>
     <sys_translated_text action="delete_multiple" query="documentkey=a67c63d4dbefd780544fdd0b5e9619fe"/>

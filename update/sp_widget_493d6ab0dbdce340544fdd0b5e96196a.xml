@@ -1,0 +1,1067 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout, $interval, $log, $uibModal, $interpolate) {
+	/* widget controller */
+	var c = this;
+
+	$scope.orderField = "number";
+	$scope.data.flagToServerScriptToUpdateMiType = false;
+	$scope.data.UpdateMiType_inc = null;
+	$scope.data.UpdateMiType_newVal = null;
+
+	//UI to watch the data tables and update on change if not currently editing record
+	spUtil.recordWatch($scope, "incident", "u_qs_major_incident=true^state!=7", function(name, data) {
+		if($scope.data.toggleEdit == 'OFF'){
+			spUtil.update($scope);
+		}
+	});
+
+	$scope.onRecordClick = function(item) {			
+			var evt = {};			
+			evt.table = 'problem';
+			evt.sys_id = item;		
+			// put out the selection with simple list "sl_" prefix
+			$location.search('sl_sys_id', evt.sys_id);
+			$location.search('sl_table', evt.table);
+			$location.search('spa', 1); // spa means "I've got this"
+			//$rootScope.$broadcast('$sp.list.click', evt);		
+	};
+	
+	// Function to update the new Mitype selected on screen.	
+	/*
+$scope.$on("field.change", function(evt, parms) {
+		alert('Scope.on field.change fired');
+		if (parms.field.name == 'mi_type_select'){
+			//$scope.data.groups = parms.newValue; 
+			//shared.selstartdate = c.data.selstartdate;
+			//shared.selenddate = c.data.selenddate; 
+			//shared.groups = parms.newValue; 
+			console.log('mi_type_select change detected');
+			console.log(evt);
+			console.log(parms);
+			// $scope.server.update();
+		} else if (parms.field.name == 'root_cause_category'){			
+			console.log('root_cause_category change detected');
+			console.log(evt);
+			console.log(parms);		
+		}
+	});
+	*/
+
+	// Function to update the new Mitype selected on screen.	
+	$scope.saveMitype = function(inc_sys_id,newVal) {
+		$scope.data.flagToServerScriptToUpdateMiType = true;
+		$scope.data.UpdateMiType_inc = inc_sys_id;
+		$scope.data.UpdateMiType_newVal = newVal;
+		c.server.update();
+	};	
+	$scope.changeSort = function(field) {
+		if ($scope.orderField == field) {
+			$scope.orderReverse = !$scope.orderReverse;
+		} else {
+			$scope.orderField = field;
+		}
+	}
+
+	$scope.saveSelectUpdate = function(p_sys_id, p_newVal, p_field, p_table) {
+		console.log("saveSelectUpdate function start");
+		console.log(p_sys_id); console.log(p_newVal); console.log(p_field); console.log(p_table);
+		// Push the saved copy to the server.
+		var post = '';
+		if(p_field == 'u_mi_type'){
+			post = { 'u_mi_type': p_newVal};
+		} else if(p_field == 'u_root_cause_category') {
+			post = { 'u_root_cause_category': p_newVal };
+		} else if(p_field == 'u_root_cause_owner') {
+			post = { 'u_root_cause_owner': p_newVal };
+		} else post = '';
+		autosaveHttpPromise = $http.patch("/api/now/table/" + p_table + "/" + p_sys_id, post).then(
+			onFinalizeSaveUpdate,
+			function(data) {
+				console.log("failed");
+				$log.info("Failed save request, resetting savedCopy state");				
+				onFinalizeSaveUpdate(data, true);
+			}
+		);
+		console.log("saveSelectUpdate function end");
+	}
+	function onFinalizeSaveUpdate (args,isErrorCall) {
+		console.log("onFinalizeSaveUpdate");
+		autosaveHttpPromise = null;
+		updateAllSave = null;
+		if(isErrorCall) {
+			console.log("Error Call Saving Update");
+		} else {
+			console.log("onFinalizeSaveUpdate Completed");
+			$scope.showNotification = true;
+			debounceNotification();
+		}
+	}
+
+	/* Real-time ASync Updater by Ryan Castaldi				*/
+	/* Version 2.0 Updated 08/22/2018									*/
+	/* Adpated code for: SSC Daily Risk Review				*/
+	/* Goal is to move this code into a reusable			*/
+	/* Anguler Directive															*/
+
+	/* Variables ------------------------------------- */
+	$scope.data.currentEditRecord = "";
+	$scope.data.currentWorklogCopy = ""
+	$scope.data.mi_worklog = c.data.mi_worklog; //adapted code
+	$scope.showNotification = false;
+	$scope.data.toggleEdit = 'OFF';
+	$scope.data.canUserEdit = c.data.canUserEdit;
+	$scope.updateRecord = null;
+	var unwatchWorkingCopy; //unmount for the working copy watcher
+	var autosaveHttpPromise;
+	var autosaveTimer, notificationTimer;
+
+	/* Custom Code: SSC Daily Risk Review ------------- */
+	$scope.updateAll = function(instance) {
+		console.log('updateAll function start');
+		var updateRecord = angular.copy(instance);		
+		//console.log($scope.updateRecord);
+		//c.server.update();
+		if(updateRecord.prob_root_cause_cat_newVal != updateRecord.prob_root_cause_cat){
+			console.log('update Root Cause Category Fired');
+			$scope.saveSelectUpdate(updateRecord.problem_id, updateRecord.prob_root_cause_cat_newVal, 'u_root_cause_category', 'problem');
+		}
+		if(updateRecord.prob_root_cause_owner_newVal != updateRecord.prob_root_cause_owner){
+			console.log('updated Root Cause Owner Fired');
+			$scope.saveSelectUpdate(updateRecord.problem_id, updateRecord.prob_root_cause_owner_newVal, 'u_root_cause_owner', 'problem');
+		}
+		if(updateRecord.miType_newVal != updateRecord.miType){
+			console.log('update MI Type Fired');
+			$scope.saveSelectUpdate(updateRecord.sys_id, updateRecord.miType_newVal, 'u_mi_type', 'incident');
+		}
+		console.log('updateAll function end');
+	}
+
+	$scope.editDescription = function(p_sys_id, p_field) {
+		$scope.data.currentEditRecord = p_sys_id;
+		$scope.data.currentWorklogCopy = p_field;
+		//console.log(p_sys_id);
+		//c.server.update();
+	}	
+	$scope.toggleEdit = function(toggleP) {
+		$scope.data.toggleEdit = toggleP;
+		c.data.toggleEdit = toggleP;		
+		if(toggleP == 'OFF') {
+			saveMeetingNotes();
+			$scope.data.resolvedIncident.forEach(function(eachRecord){
+				if(eachRecord.problem_id == $scope.data.currentEditRecord){
+					eachRecord.problem_description = $scope.data.currentWorklogCopy;
+					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecord;
+				} 
+			})
+			$scope.data.currentEditRecord = "";
+			//spUtil.update($scope);
+			//c.server.update();			
+		}
+		setupNotesMgmt();
+		//console.log("toggle button clicked " + toggleP);		
+	}
+
+	/* Real-time ASync Updater Version 2.0 Code ------------- */
+
+	//canEditMeetingNotes Starts the looping functions for autosave
+	//added last check that user has access to edit record
+	function canEditMeetingNotes() {
+		if ($scope.data.toggleEdit == 'ON') {
+			//console.log("Setting can edit meeting notes to " + $scope.data.canUserEdit);
+			return $scope.data.canUserEdit; 
+		} else return false;
+	}
+
+	function debounceNotification() {
+		// if the animation is already in Queue, it means auto save triggered again
+		// so we need to show the notification some more time
+
+		if(notificationTimer)
+			$timeout.cancel(notificationTimer);
+
+		notificationTimer = $timeout(function() {
+			$scope.showNotification = false;
+			notificationTimer = undefined;
+		}, 2000);
+	}
+
+	function onFinalizeSaveNotes(args,isErrorCall) {
+		console.log("onFinalizeSaveNotes");
+		autosaveHttpPromise = null;
+		if(autosaveTimer) {
+			$timeout.cancel(autosaveTimer);
+			autosaveTimer = null;
+		}
+
+		if(!isErrorCall) {
+			if(!notificationTimer) {
+				$scope.showNotification = true;
+				debounceNotification();
+			}
+			else
+				console.log("Error Call")
+				debounceNotification();
+		}
+		/*
+		case #1. before http call returns , user has typed more data.
+		case #2. Due to network errors , we may not updated the notes content at backend.
+
+		So if we call the "saveMeetingNotes" again, the above 2 cases get solved.
+		we are giving some time . so that we don't hamper the browser.
+		*/
+		autosaveTimer = $timeout(function() {
+			saveMeetingNotes();
+		}, 1000, false);
+	}
+
+	function saveMeetingNotes() {
+		//console.log("save meeting notes");
+		// Concurrent update.  Don't save.
+		if ($scope.editor.concurrentUpdate)
+		{
+			console.log("Concurrent update.  Don't save.");
+			return;}
+		// already saving is in-progress, go back.
+		if(autosaveHttpPromise)
+		{
+			console.log("already saving is in-progress, go back.");
+			return;}
+
+		// No changes, don't save.
+		if ($scope.editor.savedCopy == $scope.editor.workingCopy)
+		{
+			console.log("No changes, don't save.");
+			return;}
+
+		var prevSaved = $scope.editor.savedCopy;
+		$scope.editor.savedCopy = $scope.editor.workingCopy;
+		$scope.data.currentWorklogCopy = $scope.editor.workingCopy;
+		// Push the saved copy to the server.
+		var post = {'description': $scope.editor.savedCopy};
+		$scope.data.currentRecordID = $scope.data.currentEditRecord;
+		autosaveHttpPromise = $http.patch("/api/now/table/" + $scope.data.table + "/" + $scope.data.currentRecordID, post).then(
+			onFinalizeSaveNotes,
+			function(data) {
+				$log.info("Failed save request, resetting savedCopy state");
+				$scope.editor.savedCopy = prevSaved;
+				//$scope.data.mi_worklog = c.data.mi_worklog;
+				onFinalizeSaveNotes(data, true);
+			}
+		);
+	}
+
+	function resetMeetingNotes() {
+		//console.log("resetMeetingNotes");
+		$scope.editor = {			
+			'workingCopy': $scope.data.currentWorklogCopy,
+			'savedCopy':  $scope.data.currentWorklogCopy,
+			'concurrentUpdate': false,
+			'autosave': true
+		};
+	}
+
+	function setupNotesMgmt() {
+		// If it's changed to a state where we can now edit the notes.
+		//console.log("setupNotesMgmt");
+		if (canEditMeetingNotes()) {
+			console.log("setupNotesMgmt - " + canEditMeetingNotes());
+			$scope.editor.savedCopy = $scope.editor.workingCopy = $scope.data.currentWorklogCopy; //Custom
+			if (!unwatchWorkingCopy)
+				unwatchWorkingCopy = $scope.$watch('editor.workingCopy',saveMeetingNotes);
+		} else {
+
+			if(autosaveTimer) {
+				$timeout.cancel(autosaveTimer);
+				autosaveTimer = null;
+			}
+
+			if (unwatchWorkingCopy) {
+				unwatchWorkingCopy();
+				unwatchWorkingCopy = null;
+			}
+		}
+	}
+
+	resetMeetingNotes(); 
+	setupNotesMgmt();
+	$scope.canEditMeetingNotes = canEditMeetingNotes;
+	$scope.saveMeetingNotes = saveMeetingNotes;
+	/* End of Real-time ASync Updater Version 2.0 Code ------------- */
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>h6 {
+  padding-top: 10px;
+}
+#cab_meeting_notes_notification {
+  padding: 10px;
+}
+.panel, .panel-body {
+ background-color: #fff; 
+}
+.MyTable {
+  border-collapse: collapse;
+  width: 100%;
+  border: 3px grey;
+}
+.table-hover tbody tr:hover td {
+  // background-color: #86BBD1; // SSC Hover Color GEO
+  background-color: #E1ECF2; // SSC Menu Hover MAE
+}
+tr {
+  background-color: grey; 
+  color:black; 
+  font-size:12px; 
+  padding: 1px; 
+}
+
+td, th {
+  border: 1px solid black;
+  padding: 10px;        
+}
+
+th {
+  background-color:#B8B8B8;
+  text-align:left;
+	font-family: "Arial","sans-serif";
+  font-weight: bold;
+}
+
+.omi_th {
+  color:red;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+
+}
+
+.omi_td {
+  background-color:#ebbfbb;
+  text-align: center;
+}
+
+.rmi_th {
+  color:#984807;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+}
+
+.rmi_td {
+  background-color:#fff7e6;
+  text-align: center;
+}
+
+.qmi_th {
+  color:#1F497D;
+  background-color:white;
+  font-family: "Arial","sans-serif";
+  font-size: 15px;
+  font-weight: bold;
+  line-height:1;
+  margin: 0px;
+}
+
+.qmi_td {
+  background-color: #d1e0ff;
+  text-align: center;
+}
+
+.pmi_th {
+  color:brown;
+  background-color:white;
+  font-family: Arial;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  line-height:1;
+  margin: 0px;
+}
+
+.pmi_td {
+  background-color: white;
+  text-align: center;
+}
+
+/* .sub_text {
+  font-size:10px;
+  font-family: Arial;
+  color:#595959;
+  margin: 5px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;}
+ } */
+
+.sub_text {
+        font-size:10px;
+        font-family: Arial;
+        color:#595959;
+        line-height: 5px;
+        margin: 2px 0px 1px 0px; 
+				padding: 2px 0px 1px 0px;
+        font-weight: normal;
+        font-size: 10px;
+      }
+
+.dropdown{
+  text-align: center;
+}
+
+/*.dropdown option:checked {
+  color: red;
+  background: yellow;
+}
+.dropdown option:not(:checked)  {
+  color: red;
+  background: pink;
+}
+.dropdown option:active  {
+  color: blue;
+  background: black;
+}*/
+
+.cardfooter{ 
+  border-top: 1px black;
+  border-bottom: 1px solid black; 
+  padding: 10px 0 10px; 
+  color: black;
+  width: 100%
+    font-family: Arial;
+  font-size: 10px;
+  text-align:left;
+} 
+
+ .popover {
+  font-weight: normal;
+  max-width: 50vw !important;
+  min-width: 800px;
+}
+
+.omi_desc {
+  background-color:#ebbfbb;
+  text-align: center;
+}
+
+.qmi_desc {
+  background-color: #d1e0ff;
+  text-align: center;
+}
+
+.rmi_desc {
+  background-color:#fff7e6;
+  text-align: left;
+  vertical-align: middle !important;
+}
+
+.pmi_desc {
+  background-color: white;
+  text-align: center;
+}
+
+/* Style for layout of large multi-line text used for --------- */
+/* showing worklog description i.e. MI chronology */
+.timeline-body &gt; p {
+  white-space: pre-line;
+  overflow-y:auto;
+  overflow-x:hidden;
+ max-height: 300px;
+ /* .scrollpane {
+  max-height: 70vh;
+  margin: -15px;
+  overflow-y: scroll;*/
+}
+}
+
+.custom-select {
+  position: relative;
+  font-family: Arial;
+  background-color: #B8B8B8;
+  width: 100px;
+  height: 23px;
+}
+
+.def {
+  font-size:10px;
+  font-family: Arial;
+  margin: 2px 0px 0px 0px; 
+	padding: 2px 0px 0px 0px;
+  font-weight: normal;
+  color: #686868;
+}
+/* Real-time ASync Updater Version 2.0 CSS Code ------------- */
+.editButton {
+ margin: 0;
+  margin-top: 0px; //-7px previos setting
+  margin-right: 10px; //-7px previos setting
+}
+.saveCol {
+  padding-top: 25px;
+  vertical-align: bottom !important;
+}
+.notes_txt {
+  width: 100%;
+  height: 150px;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+     box-sizing: border-box;         /* Opera/IE 8+ */
+}
+.fade-in-out {
+	-webkit-transition: opacity .3s linear;
+	-moz-transition: opacity .3s linear;
+	-o-transition: opacity .3s linear;
+	-ms-transition: opacity .3s linear;
+	transition: opacity .3s linear;
+	opacity: 1;
+	filter: alpha(opacity = 100);
+}
+.fade-in-out.ng-hide {
+	opacity: 0;
+	filter: alpha(opacity = 0);
+}
+#addTasklabel {
+  //align-vertical: bottom;
+  font-weight: 200;
+  padding-right: 4px;
+  padding-top: 2px;
+  display: none;
+}
+#addTaskButton {
+  fill:#fff;
+  cursor: pointer;
+  //border: 1px solid #fff !important;
+  border-radius: 50%;
+  padding: 1px;
+  //align-vertical: bottom;
+  //padding-left: 4px;
+  //padding-right: 4px;
+}
+#addTaskButton:hover {
+  background-color:  #fff; 
+  color: #007298; /* SSC Light Blue */
+  fill: #007298 !important;
+}
+#addTaskButton:hover .cls-1 {
+  fill: #007298 !important;
+}
+#addTaskButton:hover + #addTasklabel {
+  display: inline;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ssc-sp-widget-itsm-daily-risk-list</id>
+        <internal>false</internal>
+        <link/>
+        <name>SSC Daily Risk Review List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* Server Script Variables --------- */
+	var userTimeZone = gs.getSession().getTimeZoneName();
+	data.table = 'problem';
+	data.openIncident = [];
+	data.resolvedIncident = [];
+	data.rcoList = [];
+	data.rccList = [];
+	data.flagToServerScriptToUpdateMiType = false;
+	data.toggleEdit = 'OFF';
+	data.canUserEdit = false;
+	data.currentEditRecord = "";
+	data.currentWorklogCopy = "";
+	var currentUser = gs.getUser();
+	data.currentUserID = gs.getUserName();
+	if(currentUser.isMemberOf('SSC-ETS-SMA') ||
+		 currentUser.isMemberOf('IBM-SSM-MAJOR-INCIDENT-MGT') ||
+		 currentUser.isMemberOf('SSC-ETS-PROBLEM-MGT') ||
+		 currentUser.isMemberOf('IBM-SSM-PROBLEM-MGT')){
+		data.canUserEdit = true;
+	} else {
+		data.canUserEdit = false;
+	}
+	
+	//Root Cause Owner List
+	var rcoGr = new GlideRecord('sys_choice');
+	rcoGr.addEncodedQuery('element=u_root_cause_owner^inactive=false');
+	rcoGr.setLimit(100);
+	rcoGr.orderBy('sequence');
+	rcoGr.query();
+	while ( rcoGr.next() ) {
+		//console.log(rcoGr.getDisplayValue('label'));
+		var rcoOpt = {};
+		rcoOpt.label = rcoGr.getDisplayValue('label');
+		rcoOpt.value = rcoGr.getValue('value');
+		data.rcoList.push(rcoOpt);
+	}
+	
+	//Root Cause Category List
+	var rccGr = new GlideRecord('sys_choice');
+	rccGr.addEncodedQuery('element=u_root_cause_category^inactive=false');
+	rccGr.setLimit(100);
+	rccGr.orderBy('sequence');
+	rccGr.query();
+	while ( rccGr.next() ) {
+		//console.log(rccGr.getDisplayValue('label'));
+		var rccOpt = {};
+		rccOpt.label = rccGr.getDisplayValue('label');
+		rccOpt.value = rccGr.getValue('value');
+		data.rccList.push(rccOpt);
+	}
+	
+	// To get the name of the server (https://sscorpdev.service-now.com/)
+	var instanceURL = gs.getProperty('glide.servlet.uri');	
+
+	// To update MiType selected from the dropdown. 
+	if (input) {
+		
+		if (input.flagToServerScriptToUpdateMiType == true){
+			console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
+			var grMiTypeUpdate = new GlideRecord('incident');
+			grMiTypeUpdate.get(input.UpdateMiType_inc);
+			//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
+			grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
+			updateMiType = grMiTypeUpdate.update();
+			if (updateMiType) {
+				console.log(grMiTypeUpdate.getElement('u_mi_type'));
+			} else {console.log("error");}
+		}
+	}
+
+	/* to get the current date (yyyy-mm-dd) format */
+	var current_gdt = new GlideDateTime().getDate().getValue();
+	/* to get the current date (yyyy-mm-dd hh:mm:ss) format */
+	var enddate = new GlideDateTime(current_gdt + " 011:00:00"); // setting time in GMT
+	if(enddate.isDST()) enddate.add(-(enddate.getDSTOffset()))
+	console.log(userTimeZone);
+	//console.log(enddate.getDisplayValue());
+	var startdate = new GlideDateTime(enddate);
+	
+	/* Checking the condition, if day of the week is Monday,
+	** subtracting 3 days from current day to get startdate to be friday
+	** if it is not Monday, subtract 1 day from current day. */
+	if (enddate.getDayOfWeekLocalTime() == 1) {
+		startdate.addDaysUTC(-3);		
+	} else {		
+		startdate.addDaysUTC(-1);
+	}	
+	
+	/* Main GlideRecord query and while loop  */
+	/* Querying data based on major incidents */	
+	/* Incident number related to Problem     */
+	/* Sys id related to incident             */
+	/* Problem number of the related incident */
+	/* Description of the problem record.     */
+	/* Mi type                                */
+	/* New Mi type selected from the dropdown */
+	/* Sys id of the related problem record   */
+	/* Root cause category                    */
+	/* Root Cause Owner                       */
+	/* If state is resolved, get all the 
+	information from Problem table as problem 
+	ticket is created soon after incident is 
+	resolved */
+	/*If state is not resolved, get all the 
+	information from incident table*/
+	var grIncident = new GlideRecord('incident');
+	grIncident.addEncodedQuery('u_qs_major_incident=true^state!=7');	/* change to MI=true, state not closed */
+	/* incident created date greater than startdate (defined previously) */
+	//grIncident.addQuery('sys_created_on', ">", startdate);
+	grIncident.query();	
+
+	while (grIncident.next()) {		
+		var openIncidents = {};
+		var resolvedIncidents = {};
+		if(grIncident.state == 6 ){																			
+			if(grIncident.problem_id.sys_created_on > startdate ) {
+				var rco = '';
+				resolvedIncidents.number = grIncident.getDisplayValue('number');																				
+				resolvedIncidents.sys_id = grIncident.getUniqueValue();																									
+				resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');														
+				resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						
+				resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						
+				resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			
+				resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				
+				resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+				resolvedIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+				resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
+				resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');				
+				data.resolvedIncident.push(resolvedIncidents);	
+			}
+		} else if(grIncident.state != 6) {
+			openIncidents.number = grIncident.getDisplayValue('number');																						
+			openIncidents.sys_id = grIncident.getUniqueValue(); /* Sys id related to incident */
+			openIncidents.problem = grIncident.getDisplayValue('problem_id');																				
+			openIncidents.problem_sys_id = grIncident.getValue('problem_id');																				
+			openIncidents.description = grIncident.getDisplayValue('description');																	
+			openIncidents.miType = grIncident.getValue('u_mi_type');																								
+			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');																					
+			openIncidents.problem_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');	
+			openIncidents.problem_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');		
+			openIncidents.state = grIncident.getDisplayValue('state');
+			data.openIncident.push(openIncidents);
+		}
+	}		
+	
+})();
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>e448614</sys_created_by>
+        <sys_created_on>2018-08-31 01:24:02</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>493d6ab0dbdce340544fdd0b5e96196a</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>SSC Daily Risk Review List</sys_name>
+        <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
+        <sys_update_name>sp_widget_493d6ab0dbdce340544fdd0b5e96196a</sys_update_name>
+        <sys_updated_by>e448614</sys_updated_by>
+        <sys_updated_on>2018-08-31 17:17:18</sys_updated_on>
+        <template><![CDATA[<div class="row">
+  <div class="col-sm-12"> 
+
+    <div id="displayView" class="panel panel-body"> <!-- Display View - This is the div that is rendered in the browser -->
+
+      <table class="MyTable table-hover"> <!-- My Table -->      
+        <!-- Reportable Major Incidents **************************************** -->      
+        <tr> <!-- RMI Section Header -->
+          <th class = "rmi_th" colspan = "6">Reportable Major Incidents (RMI)
+            <p class = "sub_text">[Discuss Incident details, Service Level Impact and any Open Risk.]</p>
+          </th> 
+        </tr> <!-- RMI Section Header -->
+        <tbody>
+          <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> <!-- RMI Section -->
+            <a href="javascript:void(0)" >        
+              <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class="rmi_td" style="width:100px;">
+                <h6 class="m-n text-muted">
+                  Root Cause Owner
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown" 
+                          name="root_cause_owners[]" 
+                          field="root_cause_owner"                                       
+                          ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                          ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+                  </select>
+                </div>
+                <h6 class="m-n text-muted">
+                  Root Cause Category
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown js-example-basic-multiple" 
+                          name="root_cause_categorys[]" 
+                          field="root_cause_category"                    
+                          ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                          ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+                  </select>
+                </div>
+              </td> 
+              <td class = "rmi_desc" ng-click="onRecordClick(resolvedIncidents.problem_id)">          
+                <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+                  <div class="col-xs-11">
+                    <textarea class="notes_txt" ng-model="editor.workingCopy"></textarea>              
+                  </div>
+                  <div class="col-xs-1 text-center">
+                    <h6 class="m-n text-muted">
+                      MI Type
+                    </h6>
+                    <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                      <option selected="selected">{{resolvedIncidents.miType}}</option>
+                      <option value="RMI">RMI</option>
+                      <option value="QMI" >QMI</option>
+                      <option value="PMI">PMI</option>
+                    </select>
+                    <div class="saveCol">
+                      <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(resolvedIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
+                    </div>              
+                  </div>
+                </div>                                 
+                <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+                  <!-- Edit Button 1 -->
+                  <button type="button" 
+                          class="editButton btn btn-default pull-left" 
+                          ng-if="data.toggleEdit == 'OFF' && 
+                                 data.canUserEdit == true &&
+                                 hidemi"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 1 -->
+                  <!-- Edit Button 2 -->
+                  <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+                  <button type="button" 
+                          class="editButton btn btn-default pull-right" 
+                          ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 2 -->            
+                  <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+                    ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+                  </a>
+                  {{resolvedIncidents.problem_description}}            
+                </div>
+              </td>
+              <td ng-hide="!hidemi" class = "rmi_td"> 
+                <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                  <option selected="selected">{{resolvedIncidents.miType}}</option>
+                  <option value="RMI">RMI</option>
+                  <option value="QMI" >QMI</option>
+                  <option value="PMI">PMI</option>
+                </select>
+                <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+                </button>
+                <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                               resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                        class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
+                </button>
+              </td>
+            </a>
+          </tr> <!-- RMI Section -->
+        </tbody>
+
+        <!-- Qualified Business Impacting Incidents **************************** -->      
+        <tr> <!-- QMI Section Header -->
+          <th class="qmi_th" colspan = "6">Qualified Business Impacting Incidents (QMI)
+            <p class = "sub_text">[Discuss Open Risk and any unidentified Service Level Impact.]</p>
+          </th> 
+        </tr> <!-- QMI Section Header -->
+        <tbody>
+          <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'QMI'}:true | orderBy:orderField"> <!-- QMI Section -->
+            <a  href="javascript:void(0)" >
+              <!--   <td class = "qmi_td"> {{resolvedIncidents.number}}  </td> -->
+              <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
+              <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "qmi_td" colspan=2>
+                <h6 class="m-n text-muted">
+                  Root Cause Owner
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown" 
+                          name="root_cause_owners[]" 
+                          field="root_cause_owner"                                       
+                          ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                          ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+                  </select>
+                </div>
+                <h6 class="m-n text-muted">
+                  Root Cause Category
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown js-example-basic-multiple" 
+                          name="root_cause_categorys[]" 
+                          field="root_cause_category"                    
+                          ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                          ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+                  </select>
+                </div>
+              </td>
+              <td class="qmi_desc" style="text-align:left" ng-click="onRecordClick(resolvedIncidents.problem_id)">
+                <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+                  <div class="col-xs-11">
+                    <textarea class="notes_txt" ng-model="editor.workingCopy"></textarea>              
+                  </div>
+                  <div class="col-xs-1 text-center">
+                    <h6 class="m-n text-muted">
+                      MI Type
+                    </h6>
+                    <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                      <option selected="selected">{{resolvedIncidents.miType}}</option>
+                      <option value="RMI">RMI</option>
+                      <option value="QMI" >QMI</option>
+                      <option value="PMI">PMI</option>
+                    </select>
+                    <div class="saveCol">
+                      <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="toggleEdit('OFF'); updateAll(resolvedIncidents)" class="editButton btn btn-default" value="${Save}"/>
+                    </div>              
+                  </div>
+                </div>                                 
+                <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+                  <!-- Edit Button 1 -->
+                  <button type="button" 
+                          class="editButton btn btn-default pull-left" 
+                          ng-if="data.toggleEdit == 'OFF' && 
+                                 data.canUserEdit == true &&
+                                 hidemi"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 1 -->
+                  <!-- Edit Button 2 -->
+                  <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+                  <button type="button" 
+                          class="editButton btn btn-default pull-right" 
+                          ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 2 -->            
+                  <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+                    ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+                  </a>
+                  {{resolvedIncidents.problem_description}}            
+                </div>
+              </td> 
+              <td ng-hide="!hidemi" class = "qmi_td"> 
+                <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                  <option selected="selected">{{resolvedIncidents.miType}}</option>
+                  <option value="RMI">RMI</option>
+                  <option value="QMI" >QMI</option>
+                  <option value="PMI">PMI</option>
+                </select>
+                <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+                </button>
+                <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                               resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                        class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
+                </button>
+              </td>
+            </a>
+          </tr><!-- QMI Section -->
+        </tbody>
+
+        <!-- Process Major Incidents ******************************************* -->      
+        <tr> <!-- PMI Section Header -->
+          <th class="pmi_th" colspan = "6"> Process Major Incidents</th> 
+        </tr> <!-- PMI Section Header -->
+        <tbody>
+          <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'PMI'}:true | orderBy:orderField"> <!-- PMI Section -->
+            <a  href="javascript:void(0)" >
+              <!--    <td class = "pmi_td"> {{resolvedIncidents.number}}  </td> -->
+              <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
+              <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "pmi_td" colspan=2>
+                <h6 class="m-n text-muted">
+                  Root Cause Owner
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown" 
+                          name="root_cause_owners[]" 
+                          field="root_cause_owner"                                       
+                          ng-model="resolvedIncidents.prob_root_cause_owner_newVal"
+                          ng-options="rcoListS.label as rcoListS.label for rcoListS in data.rcoList">              
+                  </select>
+                </div>
+                <h6 class="m-n text-muted">
+                  Root Cause Category
+                </h6>
+                <div class="select2-container">
+                  <select 
+                          type="text" 
+                          class="dropdown js-example-basic-multiple" 
+                          name="root_cause_categorys[]" 
+                          field="root_cause_category"                    
+                          ng-model="resolvedIncidents.prob_root_cause_cat_newVal"
+                          ng-options="rccListS.label as rccListS.label for rccListS in data.rccList">              
+                  </select>
+                </div>
+              </td>
+              <td class="pmi_desc" style="text-align:left" ng-click="onRecordClick(resolvedIncidents.problem_id)">
+                <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+                  <div class="col-xs-11">
+                    <textarea class="notes_txt" ng-model="editor.workingCopy"></textarea>              
+                  </div>
+                  <div class="col-xs-1 text-center">
+                    <h6 class="m-n text-muted">
+                      MI Type
+                    </h6>
+                    <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                      <option selected="selected">{{resolvedIncidents.miType}}</option>
+                      <option value="RMI">RMI</option>
+                      <option value="QMI" >QMI</option>
+                      <option value="PMI">PMI</option>
+                    </select>
+                    <div class="saveCol">
+                      <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(resolvedIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
+                    </div>              
+                  </div>
+                </div>                                 
+                <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
+                  <!-- Edit Button 1 -->
+                  <button type="button" 
+                          class="editButton btn btn-default pull-left" 
+                          ng-if="data.toggleEdit == 'OFF' && 
+                                 data.canUserEdit == true &&
+                                 hidemi"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 1 -->
+                  <!-- Edit Button 2 -->
+                  <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+                  <button type="button" 
+                          class="editButton btn btn-default pull-right" 
+                          ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
+                          ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    <span class="glyphicon glyphicon-edit">
+                    </span> 
+                  </button> <!-- Edit Button 2 -->            
+                  <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
+                    ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+                  </a>
+                  {{resolvedIncidents.problem_description}}            
+                </div>
+              </td>
+              <td ng-hide="!hidemi" class = "pmi_td"> 
+                <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                  <option selected="selected">{{resolvedIncidents.miType}}</option>
+                  <option value="RMI">RMI</option>
+                  <option value="QMI" >QMI</option>
+                  <option value="PMI">PMI</option>
+                </select>
+                <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
+                </button>
+                <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
+                               resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
+                        class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
+                </button>
+              </td>
+            </a>
+          </tr> <!-- PMI Section -->
+
+        </tbody> <!-- PMI Section --> 
+
+        <!-- Ownership Disputes ******************************************* -->      
+        <tr> <!-- OwnD Section Header -->
+          <th class="pmi_th" colspan = "6" style="color: #464646;">
+            <span id="addTaskButton" class="pull-right" ng-click="$event.stopPropagation()">
+              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24" class="addTaskButton pull-right" ng-click="newTaskRecord()">
+                <defs><style>.cls-1{fill:#464646;}</style></defs><title>SSC Plus Icon 64x64</title>
+                <polygon class="cls-1" points="2.09 34.18 2.09 31.11 31.05 31.11 31.05 2.15 34.12 2.15 34.12 31.11 62.09 31.11 62.09 34.18 34.12 34.18 34.12 62.15 31.05 62.15 31.05 34.18 2.09 34.18"/></svg>
+            </span><span id="addTasklabel" class="pull-right">Add Record to Review</span>
+            Records to Review Ownership</th>          
+        </tr> <!-- PMI Section Header -->
+        <tbody>
+          <tr>
+          <td class = "pmi_td">There are no records to review ownership today.</td>
+          </tr>
+        </tbody>
+      </table> <!-- My Table -->    
+    </div> <!-- Display View - This is the div that is rendered in the browser -->
+
+  </div>
+</div> <!-- Main Div -->]]></template>
+    </sp_widget>
+</record_update>
