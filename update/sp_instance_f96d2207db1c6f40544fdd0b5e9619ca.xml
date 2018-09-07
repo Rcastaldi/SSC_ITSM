@@ -3,56 +3,56 @@
     <sp_instance action="INSERT_OR_UPDATE">
         <active>true</active>
         <class_name/>
-        <color>primary</color>
+        <color>default</color>
         <css/>
         <glyph/>
         <id/>
-        <order>0</order>
+        <order>1</order>
         <roles/>
         <short_description/>
         <size>md</size>
-        <sp_column display_value="3">2839346edb48e300544fdd0b5e96195e</sp_column>
+        <sp_column display_value="2">990438a2db48e300544fdd0b5e961937</sp_column>
         <sp_widget display_value="SSC People Information">19562337db2717c052fdd7795e96191b</sp_widget>
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
-        <sys_created_on>2018-08-23 17:12:35</sys_created_on>
+        <sys_created_on>2018-09-07 01:11:13</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
-        <sys_id>b599786edb48e300544fdd0b5e9619ed</sys_id>
-        <sys_mod_count>2</sys_mod_count>
-        <sys_name>Configuration Management Team</sys_name>
+        <sys_id>f96d2207db1c6f40544fdd0b5e9619ca</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name/>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
-        <sys_update_name>sp_instance_b599786edb48e300544fdd0b5e9619ed</sys_update_name>
+        <sys_update_name>sp_instance_f96d2207db1c6f40544fdd0b5e9619ca</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-09-07 01:28:34</sys_updated_on>
-        <title>Configuration Management Team</title>
+        <sys_updated_on>2018-09-07 01:12:01</sys_updated_on>
+        <title/>
         <url/>
         <widget_parameters><![CDATA[{
 	"hide_header": {
-		"value": "",
-		"displayValue": ""
+		"value": "true",
+		"displayValue": "true"
 	},
 	"panel_heading": {
 		"value": "",
 		"displayValue": ""
 	},
 	"person1_title": {
-		"value": "Process Owner",
-		"displayValue": "Process Owner"
+		"value": "Operational Manager",
+		"displayValue": "Operational Manager"
 	},
 	"person1_employee_id": {
-		"value": "e397137",
-		"displayValue": "e397137"
+		"value": "e315154",
+		"displayValue": "e315154"
 	},
 	"person2_title": {
-		"value": "Process Manager",
-		"displayValue": "Process Manager"
+		"value": "",
+		"displayValue": ""
 	},
 	"person2_employee_id": {
-		"value": "e404960",
-		"displayValue": "e404960"
+		"value": "",
+		"displayValue": ""
 	},
 	"group1_title": {
 		"value": "",
@@ -72,5 +72,5 @@
 	}
 }]]></widget_parameters>
     </sp_instance>
-    <sys_translated_text action="delete_multiple" query="documentkey=b599786edb48e300544fdd0b5e9619ed"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=f96d2207db1c6f40544fdd0b5e9619ca"/>
 </record_update>

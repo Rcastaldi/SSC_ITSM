@@ -21,8 +21,11 @@
   background-color: #fff;
 }
 .portalLinks .panel-heading {
-  background-color: rgba(47, 116, 154, 1);
-  color: #fff;
+  background-color: rgba(217, 237, 247, 1);
+  color: rgba(49, 112, 143, 1);
+}
+.peopleCol .panel {
+ margin-bottom: 0px !important; 
 }</css>
         <id>ssc_sp_itsm_change_home</id>
         <internal>false</internal>
@@ -34,7 +37,7 @@
         <sys_created_on>2018-08-23 04:46:22</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>f68e8e9edbc0270052fdd7795e9619bc</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>6</sys_mod_count>
         <sys_name>ssc_sp_itsm_change_home</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -42,7 +45,7 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_f68e8e9edbc0270052fdd7795e9619bc</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-09-04 16:36:41</sys_updated_on>
+        <sys_updated_on>2018-09-07 01:19:54</sys_updated_on>
         <title>Change Management Service Portal</title>
     </sp_page>
     <sys_translated_text action="delete_multiple" query="documentkey=f68e8e9edbc0270052fdd7795e9619bc"/>
