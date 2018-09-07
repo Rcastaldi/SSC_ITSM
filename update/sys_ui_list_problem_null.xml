@@ -117,22 +117,22 @@
             <relationship/>
             <sum>false</sum>
             <sys_class_name>sys_ui_list</sys_class_name>
-            <sys_created_by>e654242</sys_created_by>
-            <sys_created_on>2018-08-08 14:54:36</sys_created_on>
-            <sys_customer_update>true</sys_customer_update>
+            <sys_created_by>e448614</sys_created_by>
+            <sys_created_on>2018-09-06 22:36:12</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
             <sys_domain>global</sys_domain>
             <sys_domain_path>/</sys_domain_path>
-            <sys_id>2a2a0b21db779fc0544fdd0b5e961997</sys_id>
+            <sys_id>bae9c243db986f40544fdd0b5e9619ae</sys_id>
             <sys_mod_count>0</sys_mod_count>
-            <sys_name>problem</sys_name>
-            <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
+            <sys_name/>
+            <sys_package/>
             <sys_policy/>
             <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
             <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
-            <sys_update_name>sys_ui_list_problem_null</sys_update_name>
-            <sys_updated_by>e654242</sys_updated_by>
-            <sys_updated_on>2018-08-08 14:54:36</sys_updated_on>
-            <sys_user display_value="SUPRIYA NANJUNDASWAMY [SSC]">de28c4cddbaa1b0481ee15ce3b961925</sys_user>
+            <sys_update_name/>
+            <sys_updated_by>e448614</sys_updated_by>
+            <sys_updated_on>2018-09-06 22:36:12</sys_updated_on>
+            <sys_user display_value="Ryan Castaldi [SSC]">92678fe5dbf08300047dd7795e961975</sys_user>
             <view display_value="Default view" name="NULL">Default view</view>
             <view_name/>
         </sys_ui_list>

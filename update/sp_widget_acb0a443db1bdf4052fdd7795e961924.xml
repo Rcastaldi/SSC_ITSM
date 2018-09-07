@@ -4,7 +4,8 @@
         <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout, $interval, $log, $uibModal) {
 	/* widget controller */
 	var c = this;
-
+	var ignoreMe = true; // flag to ignore first date set
+	
 	$scope.orderField = "number";
 	$scope.data.flagToServerScriptToUpdateMiType = false;
 	$scope.data.UpdateMiType_inc = null;
@@ -16,7 +17,14 @@
 			spUtil.update($scope);
 		}
 	});
-
+	$scope.$watch('c.data.reportDate', function(newVal, oldVal) {
+		if(ignoreMe) ignoreMe = !ignoreMe;
+		else {
+			console.log('Report Date Change Detected');
+			console.log(newVal);
+			if(newVal){spUtil.update($scope);}
+		}
+	});
 	// Function to update the new Mitype selected on screen.	
 	/*
 $scope.$on("field.change", function(evt, parms) {
@@ -64,6 +72,8 @@ $scope.$on("field.change", function(evt, parms) {
 			post = { 'u_root_cause_category': p_newVal };
 		} else if(p_field == 'u_root_cause_owner') {
 			post = { 'u_root_cause_owner': p_newVal };
+		} else if(p_field == 'cmdb_ci') {
+			post = { 'cmdb_ci': p_newVal };
 		} else post = '';
 		autosaveHttpPromise = $http.patch("/api/now/table/" + p_table + "/" + p_sys_id, post).then(
 			onFinalizeSaveUpdate,
@@ -96,7 +106,8 @@ $scope.$on("field.change", function(evt, parms) {
 
 	/* Variables ------------------------------------- */
 	$scope.data.currentEditRecord = "";
-	$scope.data.currentWorklogCopy = ""
+	$scope.data.currentWorklogCopy = "";
+	$scope.data.currentTable = "problem";
 	$scope.data.mi_worklog = c.data.mi_worklog; //adapted code
 	$scope.showNotification = false;
 	$scope.data.toggleEdit = 'OFF';
@@ -120,6 +131,10 @@ $scope.$on("field.change", function(evt, parms) {
 			console.log('updated Root Cause Owner Fired');
 			$scope.saveSelectUpdate(updateRecord.problem_id, updateRecord.prob_root_cause_owner_newVal, 'u_root_cause_owner', 'problem');
 		}
+		if(updateRecord.problem_cmdb_ci_newVal.value != updateRecord.problem_cmdb_ci){
+			console.log('update cmdb_ci fired');
+			$scope.saveSelectUpdate(updateRecord.problem_id, updateRecord.problem_cmdb_ci_newVal.value, 'cmdb_ci', 'problem');
+		}
 		if(updateRecord.miType_newVal != updateRecord.miType){
 			console.log('update MI Type Fired');
 			$scope.saveSelectUpdate(updateRecord.sys_id, updateRecord.miType_newVal, 'u_mi_type', 'incident');
@@ -127,9 +142,10 @@ $scope.$on("field.change", function(evt, parms) {
 		console.log('updateAll function end');
 	}
 
-	$scope.editDescription = function(p_sys_id, p_field) {
+	$scope.editDescription = function(p_sys_id, p_field, p_table) {
 		$scope.data.currentEditRecord = p_sys_id;
 		$scope.data.currentWorklogCopy = p_field;
+		$scope.data.currentTable = p_table || 'problem';
 		//console.log(p_sys_id);
 		//c.server.update();
 	}	
@@ -141,6 +157,12 @@ $scope.$on("field.change", function(evt, parms) {
 			$scope.data.resolvedIncident.forEach(function(eachRecord){
 				if(eachRecord.problem_id == $scope.data.currentEditRecord){
 					eachRecord.problem_description = $scope.data.currentWorklogCopy;
+					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecord;
+				} 
+			})
+			$scope.data.openIncident.forEach(function(eachRecord){
+				if(eachRecord.sys_id == $scope.data.currentEditRecord){
+					eachRecord.description = $scope.data.currentWorklogCopy;
 					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecord;
 				} 
 			})
@@ -230,7 +252,7 @@ $scope.$on("field.change", function(evt, parms) {
 		// Push the saved copy to the server.
 		var post = {'description': $scope.editor.savedCopy};
 		$scope.data.currentRecordID = $scope.data.currentEditRecord;
-		autosaveHttpPromise = $http.patch("/api/now/table/" + $scope.data.table + "/" + $scope.data.currentRecordID, post).then(
+		autosaveHttpPromise = $http.patch("/api/now/table/" + $scope.data.currentTable + "/" + $scope.data.currentRecordID, post).then(
 			onFinalizeSaveNotes,
 			function(data) {
 				$log.info("Failed save request, resetting savedCopy state");
@@ -281,7 +303,11 @@ $scope.$on("field.change", function(evt, parms) {
 
 }]]></client_script>
         <controller_as>c</controller_as>
-        <css>h6 {
+        <css>.datePicker {
+width:  150px;
+  text-align: center;
+}
+h6 {
   padding-top: 10px;
 }
 #cab_meeting_notes_notification {
@@ -527,6 +553,7 @@ th {
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
+	console.log('Server Script Running');
 	/* Server Script Variables --------- */
 	var userTimeZone = gs.getSession().getTimeZoneName();
 	data.table = 'problem';
@@ -549,7 +576,7 @@ th {
 	} else {
 		data.canUserEdit = false;
 	}
-	
+
 	//Root Cause Owner List
 	var rcoGr = new GlideRecord('sys_choice');
 	rcoGr.addEncodedQuery('element=u_root_cause_owner^inactive=false');
@@ -563,7 +590,7 @@ th {
 		rcoOpt.value = rcoGr.getValue('value');
 		data.rcoList.push(rcoOpt);
 	}
-	
+
 	//Root Cause Category List
 	var rccGr = new GlideRecord('sys_choice');
 	rccGr.addEncodedQuery('element=u_root_cause_category^inactive=false');
@@ -576,36 +603,26 @@ th {
 		rccOpt.label = rccGr.getDisplayValue('label');
 		rccOpt.value = rccGr.getValue('value');
 		data.rccList.push(rccOpt);
-	}
-	
+	}	
 	// To get the name of the server (https://sscorpdev.service-now.com/)
 	var instanceURL = gs.getProperty('glide.servlet.uri');	
 
-	// To update MiType selected from the dropdown. 
-	if (input) {
-		
-		if (input.flagToServerScriptToUpdateMiType == true){
-			console.log("I should update the MI Type of " + input.UpdateMiType_inc + "to " + input.UpdateMiType_newVal); 
-			var grMiTypeUpdate = new GlideRecord('incident');
-			grMiTypeUpdate.get(input.UpdateMiType_inc);
-			//grMiTypeUpdate.u_mi_type = input.UpdateMiType_newVal;
-			grMiTypeUpdate.setValue('u_mi_type', input.UpdateMiType_newVal);
-			updateMiType = grMiTypeUpdate.update();
-			if (updateMiType) {
-				console.log(grMiTypeUpdate.getElement('u_mi_type'));
-			} else {console.log("error");}
-		}
-	}
-
 	/* to get the current date (yyyy-mm-dd) format */
-	var current_gdt = new GlideDateTime().getDate().getValue();
+	var current_gdt = new GlideDateTime()
+	if (input){
+		if (input.reportDate)	current_gdt = new GlideDateTime(input.reportDate);
+	}
+	current_gdt = current_gdt.getDate().getValue();
+
 	/* to get the current date (yyyy-mm-dd hh:mm:ss) format */
 	var enddate = new GlideDateTime(current_gdt + " 011:00:00"); // setting time in GMT
 	if(enddate.isDST()) enddate.add(-(enddate.getDSTOffset()))
 	console.log(userTimeZone);
-	//console.log(enddate.getDisplayValue());
+	console.log(enddate.getDisplayValue());
+	data.reportDate = enddate.getDate().getDisplayValue();
+	data.reportdDisplay = new GlideDateTime(enddate).getNumericValue();
 	var startdate = new GlideDateTime(enddate);
-	
+	var nextReportDate = new GlideDateTime(enddate).addDaysUTC(1);
 	/* Checking the condition, if day of the week is Monday,
 	** subtracting 3 days from current day to get startdate to be friday
 	** if it is not Monday, subtract 1 day from current day. */
@@ -614,7 +631,7 @@ th {
 	} else {		
 		startdate.addDaysUTC(-1);
 	}	
-	
+console.log(startdate.getDisplayValue());
 	/* Main GlideRecord query and while loop  */
 	/* Querying data based on major incidents */	
 	/* Incident number related to Problem     */
@@ -633,7 +650,7 @@ th {
 	/*If state is not resolved, get all the 
 	information from incident table*/
 	var grIncident = new GlideRecord('incident');
-	grIncident.addEncodedQuery('u_qs_major_incident=true^state!=7');	/* change to MI=true, state not closed */
+	grIncident.addEncodedQuery('u_qs_major_incident=true');	/* change to MI=true, state not closed */
 	/* incident created date greater than startdate (defined previously) */
 	//grIncident.addQuery('sys_created_on', ">", startdate);
 	grIncident.query();	
@@ -641,37 +658,60 @@ th {
 	while (grIncident.next()) {		
 		var openIncidents = {};
 		var resolvedIncidents = {};
-		if(grIncident.state == 6 ){																			
-			if(grIncident.problem_id.sys_created_on > startdate ) {
-				var rco = '';
-				resolvedIncidents.number = grIncident.getDisplayValue('number');																				
-				resolvedIncidents.sys_id = grIncident.getUniqueValue();																									
-				resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');														
-				resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						
-				resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						
-				resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			
-				resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				
-				resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');
-				resolvedIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category');
-				resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
-				resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');				
-				data.resolvedIncident.push(resolvedIncidents);	
-			}
-		} else if(grIncident.state != 6) {
+		if(grIncident.problem_id.sys_created_on > startdate && grIncident.problem_id.sys_created_on < enddate ) {
+			console.log(grIncident.problem_id.getDisplayValue());
+			console.log('created on');
+			console.log(grIncident.problem_id.sys_created_on);
+			console.log('startDate');
+			console.log(startdate.getValue());
+			console.log('endDate');
+			console.log(enddate.getValue());
+			if(grIncident.state == 7) resolvedIncidents.isClosed = true;
+			else resolvedIncidents.isClosed = false;
+			resolvedIncidents.number = grIncident.getDisplayValue('number');																				
+			resolvedIncidents.sys_id = grIncident.getUniqueValue();																									
+			resolvedIncidents.problem = grIncident.getDisplayValue('problem_id.number');
+			resolvedIncidents.problem_cmdb_ci = grIncident.getDisplayValue('problem_id.cmdb_ci.sys_id');
+			resolvedIncidents.problem_cmdb_ci_newVal = grIncident.problem_id.cmdb_ci;
+			resolvedIncidents.problem_cmdb_ci_newVal.displayValue = grIncident.getDisplayValue('problem_id.cmdb_ci');
+			resolvedIncidents.problem_cmdb_ci_newVal.value = grIncident.getDisplayValue('problem_id.cmdb_ci.sys_id');
+			resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						
+			resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						
+			resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			
+			resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				
+			resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+			resolvedIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category');
+			resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
+			resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');				
+			data.resolvedIncident.push(resolvedIncidents);	
+		}	else if( (grIncident.state != 6 &&
+								grIncident.state != 7 &&
+							 grIncident.sys_created_on < enddate)|| 
+							(grIncident.sys_created_on < enddate &&
+							grIncident.resolved_at > enddate )
+							// && grIncident.resolved_at < nextReportDate
+						 ) {
+			if(grIncident.state == 7) openIncidents.isClosed = true;
+			else openIncidents.isClosed = false;
 			openIncidents.number = grIncident.getDisplayValue('number');																						
 			openIncidents.sys_id = grIncident.getUniqueValue(); /* Sys id related to incident */
 			openIncidents.problem = grIncident.getDisplayValue('problem_id');																				
 			openIncidents.problem_sys_id = grIncident.getValue('problem_id');																				
 			openIncidents.description = grIncident.getDisplayValue('description');																	
 			openIncidents.miType = grIncident.getValue('u_mi_type');																								
-			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');																					
-			openIncidents.problem_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');	
-			openIncidents.problem_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');		
+			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');				
 			openIncidents.state = grIncident.getDisplayValue('state');
+			openIncidents.problem_cmdb_ci = grIncident.getDisplayValue('problem_id.cmdb_ci.sys_id') || '';
+			openIncidents.problem_cmdb_ci_newVal = grIncident.problem_id.cmdb_ci || '';
+			openIncidents.problem_cmdb_ci_newVal.displayValue = grIncident.getDisplayValue('problem_id.cmdb_ci') || '';
+			openIncidents.problem_cmdb_ci_newVal.value = grIncident.getDisplayValue('problem_id.cmdb_ci.sys_id') || '';
+			openIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category') || '';
+			openIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category') || '';
+			openIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner') || '';
+			openIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner') || '';
 			data.openIncident.push(openIncidents);
-		}
-	}		
-	
+		}		
+	}
 })();
 ]]></script>
         <servicenow>false</servicenow>
@@ -680,7 +720,7 @@ th {
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>703</sys_mod_count>
+        <sys_mod_count>799</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -688,7 +728,7 @@ th {
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-29 20:35:52</sys_updated_on>
+        <sys_updated_on>2018-09-07 00:41:08</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
@@ -906,7 +946,21 @@ th {
   </div> <!-- Print View - This is a hidden div that excludes inputs and code -->
 
   <div id="displayView" class="panel panel-body"> <!-- Display View - This is the div that is rendered in the browser -->
-    <h1 class="text-center">Daily IT Operations Risk Review</h1>        
+    <div class="pageHeader text-center">
+      <h1>Daily IT Operations Risk Review</h1>
+      <h3 class="displayDate" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle">
+        {{data.reportdDisplay | date:'fullDate'}}
+      <span ng-if="variable_toggle" class="datePicker pull-right">
+        <sp-date-picker
+                        field="selenddate" 
+                        ng-model="c.data.reportDate" 
+                        ng-model-options="{getterSetter: true}" 
+                        sn-disabled="false" 
+                        >
+        </sp-date-picker>
+      </span>
+         </h3>
+    </div>
     <br/>
     <table class="MyTable"> <!-- My Table -->
       <col width="5%"> <col width="5%">  <col width="10%"> <col width="10%"> <col width="60%"> <col width="10%">
@@ -930,20 +984,61 @@ th {
         <td class = "omi_td" style='color:red; font-size: 20px;'>&#10004;</td>
         <td ng-hide="!hidemi" class = "omi_td"> {{openIncidents.problem_root_cause_owner}} </td>
         <td ng-hide="!hidemi" class = "omi_td"> {{openIncidents.problem_root_cause_cat}} </td>
-        <td class = "omi_desc" style="text-align:left"><a ng-href="{{::instanceURL}}$sp.do?id=ssc_sp_problem_executive_summary&sys_id={{::openIncidents.problem_sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{openIncidents.problem}}" target="_blank">
-          ({{openIncidents.number}} / {{openIncidents.problem}}) </a> {{openIncidents.description}}          
+        <td class = "omi_desc" style="text-align:left">
+          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == openIncidents.sys_id">
+            <div class="col-xs-11">
+              <textarea class="notes_txt" ng-model="editor.workingCopy"></textarea>              
+            </div>
+            <div class="col-xs-1 text-center">
+              <h6 class="m-n text-muted">
+                MI Type
+              </h6>
+              <select ng-if="openIncidents.isClosed == false" class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
+                <option selected="selected">{{openIncidents.miType}}</option>
+                <option value="RMI">RMI</option>
+                <option value="QMI" >QMI</option>
+                <option value="PMI">PMI</option>
+              </select>
+              <select ng-if="openIncidents.isClosed == true" disabled class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
+                <option selected="selected">{{openIncidents.miType}}</option>
+                <option value="RMI">RMI</option>
+                <option value="QMI" >QMI</option>
+                <option value="PMI">PMI</option>
+              </select>
+              <div class="saveCol">
+                <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(openIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
+              </div>              
+            </div>
+          </div>                                 
+          <div ng-if="openIncidents.sys_id != data.currentEditRecord" class="fieldValue timeline-body">            
+            <!-- Edit Button 2 -->
+            <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
+            <button type="button" 
+                    class="editButton btn btn-default pull-right" 
+                    ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
+                    ng-click="editDescription(openIncidents.sys_id, openIncidents.description, 'incident'); toggleEdit('ON');">
+              <span class="glyphicon glyphicon-edit">
+              </span> 
+            </button> <!-- Edit Button 2 -->            
+            <a ng-href="{{::instanceURL}}$sp.do?id=ssc_sp_problem_executive_summary&sys_id={{::openIncidents.problem_sys_id}}&sysparm_view=&sysparm_view_forced=true" title="{{openIncidents.problem}}" target="_blank">
+              ({{openIncidents.number}} / {{openIncidents.problem}})
+            </a>
+            {{openIncidents.description}}            
+          </div>
         </td>
-        <!-- ng-hide - used to show/hide a column "MiType" -->
-        <td ng-hide="!hidemi" class = "omi_td"> 
-          <select class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
-            <option selected="selected">{{openIncidents.miType}}</option>
-            <option value="RMI">RMI</option>
-            <option value="QMI" >QMI</option>
-            <option value="PMI">PMI</option>
-          </select>
-          <button ng-if="openIncidents.miType_newVal != openIncidents.miType" class="btn" ng-click="saveSelectUpdate(openIncidents.sys_id, openIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
-          </button>          
-        </td>
+        <!--
+<td ng-if="canEditMeetingNotes() && data.currentEditRecord == openIncidents.sys_id" class = "omi_td"> 
+<select class = "dropdown" ng-model="openIncidents.miType_newVal" field="mi_type_select">
+<option selected="selected">{{openIncidents.miType}}</option>
+<option value="RMI">RMI</option>
+<option value="QMI" >QMI</option>
+<option value="PMI">PMI</option>
+</select>
+<div class="saveCol">
+<input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(openIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
+</div>          
+</td>
+-->
       </tr><!-- Open Major Incidents Section -->
 
       <!-- Reportable Major Incidents **************************************** -->      
@@ -956,6 +1051,17 @@ th {
         <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
         <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>        
         <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "rmi_td" colspan=2>
+          <h6 class="m-n text-muted">
+            Configuration Item 
+          </h6>
+          <sn-record-picker id="app_name" 
+                            field="resolvedIncidents.problem_cmdb_ci_newVal" 
+                            table="'cmdb_ci_service'" 
+                            default-query="'sys_class_name=cmdb_ci_service^u_cmdb_ci_used_for=production^operational_status=1'" 
+                            display-field="'name'" 
+                            value-field="'sys_id'" 
+                            search-fields="'name'"                            
+                            page-size="100" multiple="false"></sn-record-picker>
           <h6 class="m-n text-muted">
             Root Cause Owner
           </h6>
@@ -992,7 +1098,13 @@ th {
               <h6 class="m-n text-muted">
                 MI Type
               </h6>
-              <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+              <select ng-if="resolvedIncidents.isClosed == false" class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                <option selected="selected">{{resolvedIncidents.miType}}</option>
+                <option value="RMI">RMI</option>
+                <option value="QMI" >QMI</option>
+                <option value="PMI">PMI</option>
+              </select>
+              <select ng-if="resolvedIncidents.isClosed == true" disabled class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
                 <option selected="selected">{{resolvedIncidents.miType}}</option>
                 <option value="RMI">RMI</option>
                 <option value="QMI" >QMI</option>
@@ -1058,6 +1170,17 @@ th {
         <!--   <td class="qmi_td"> {{resolvedIncidents.problem}} </td>   -->
         <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "qmi_td" colspan=2>
           <h6 class="m-n text-muted">
+            Configuration Item 
+          </h6>
+          <sn-record-picker id="app_name" 
+                            field="resolvedIncidents.problem_cmdb_ci_newVal" 
+                            table="'cmdb_ci_service'" 
+                            default-query="'sys_class_name=cmdb_ci_service^u_cmdb_ci_used_for=production^operational_status=1'" 
+                            display-field="'name'" 
+                            value-field="'sys_id'" 
+                            search-fields="'name'"                            
+                            page-size="100" multiple="false"></sn-record-picker>
+          <h6 class="m-n text-muted">
             Root Cause Owner
           </h6>
           <div class="select2-container">
@@ -1093,7 +1216,13 @@ th {
               <h6 class="m-n text-muted">
                 MI Type
               </h6>
-              <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+              <select ng-if="resolvedIncidents.isClosed == false" class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                <option selected="selected">{{resolvedIncidents.miType}}</option>
+                <option value="RMI">RMI</option>
+                <option value="QMI" >QMI</option>
+                <option value="PMI">PMI</option>
+              </select>
+              <select ng-if="resolvedIncidents.isClosed == true" disabled class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
                 <option selected="selected">{{resolvedIncidents.miType}}</option>
                 <option value="RMI">RMI</option>
                 <option value="QMI" >QMI</option>
@@ -1157,6 +1286,17 @@ th {
         <!--   <td class="pmi_td"> {{resolvedIncidents.problem}} </td>    -->
         <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "pmi_td" colspan=2>
           <h6 class="m-n text-muted">
+            Configuration Item 
+          </h6>
+          <sn-record-picker id="app_name" 
+                            field="resolvedIncidents.problem_cmdb_ci_newVal" 
+                            table="'cmdb_ci_service'" 
+                            default-query="'sys_class_name=cmdb_ci_service^u_cmdb_ci_used_for=production^operational_status=1'" 
+                            display-field="'name'" 
+                            value-field="'sys_id'" 
+                            search-fields="'name'"                            
+                            page-size="100" multiple="false"></sn-record-picker>
+          <h6 class="m-n text-muted">
             Root Cause Owner
           </h6>
           <div class="select2-container">
@@ -1192,7 +1332,13 @@ th {
               <h6 class="m-n text-muted">
                 MI Type
               </h6>
-              <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+              <select ng-if="resolvedIncidents.isClosed == false" class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
+                <option selected="selected">{{resolvedIncidents.miType}}</option>
+                <option value="RMI">RMI</option>
+                <option value="QMI" >QMI</option>
+                <option value="PMI">PMI</option>
+              </select>
+              <select ng-if="resolvedIncidents.isClosed == true" disabled class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
                 <option selected="selected">{{resolvedIncidents.miType}}</option>
                 <option value="RMI">RMI</option>
                 <option value="QMI" >QMI</option>
