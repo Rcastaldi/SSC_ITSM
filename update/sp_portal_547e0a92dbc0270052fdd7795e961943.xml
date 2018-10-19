@@ -33,6 +33,7 @@ $text-muted: #727272;
         <quick_start_config/>
         <sc_catalog display_value="Service Catalog">e0d08b13c3330100c8b837659bba8fb4</sc_catalog>
         <sc_catalog_page display_value="sc_home">fe87a11147132100ba13a5554ee490b9</sc_catalog_page>
+        <sc_category_page/>
         <sp_chat_queue/>
         <sp_rectangle_menu display_value="Change Management">221f42dedbc0270052fdd7795e961988</sp_rectangle_menu>
         <sqanda_knowledge_base/>
@@ -57,6 +58,7 @@ $text-muted: #727272;
     <sys_translated_text action="delete_multiple" query="documentkey=547e0a92dbc0270052fdd7795e961943"/>
     <sys_attachment action="INSERT_OR_UPDATE">
         <average_image_color>#ffffff</average_image_color>
+        <chunk_size_bytes/>
         <compressed>true</compressed>
         <content_type>image/png</content_type>
         <encryption_context/>

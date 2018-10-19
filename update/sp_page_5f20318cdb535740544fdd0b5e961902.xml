@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_page">
     <sp_page action="INSERT_OR_UPDATE">
+        <category/>
         <css>.padding-top, section.page, section.body {
   padding-top: 0px !important;
 }
@@ -18,6 +19,8 @@
   padding-left: 5px;
   background-color: #fff;
 }</css>
+        <draft>false</draft>
+        <dynamic_title_structure/>
         <id>ssc_sp_itsm_home</id>
         <internal>false</internal>
         <public>false</public>

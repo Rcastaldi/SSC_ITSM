@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
+        <category/>
         <client_script><![CDATA[function($scope, spUtil, $location,  $http, $interval, $timeout, $window, $log, $uibModal, $element ) {
 	/* widget controller */
 	var c = this;
@@ -355,9 +356,7 @@ position: relative;
 	// Flags used to decide if we need to show convencience
 	// buttons to make meeting notes for 6:30, 8:00, and 8:30 meetings
 	// sure hope the times dont change, or maybe replace with options <-ToDo->
-	data.meetingNotesSixThirtyFound = false;
-	data.meetingNotesEightFound = false;
-	data.meetingNotesEightThirtyFound = false;
+	data.meetingNotesFound = false;	
 	var newWorkLogSysId;
 	data.toggleEdit = 'OFF';
 	data.canUserEdit = false;
@@ -433,12 +432,7 @@ position: relative;
 	//Check if meeting notes exist else set flag for buttons to create
 
 	data.worklog.forEach(function(worklog){		
-		if(worklog.short_description.toString() == 'Daily 6:30 Meeting Notes') {
-			data.meetingNotesSixThirtyFound = true;
-		} else if(worklog.short_description.toString() == 'Daily 8:00 Meeting Notes') {
-			data.meetingNotesEightFound = true;
-		} else if(worklog.short_description.toString() == 'Daily 8:30 Meeting Notes')
-			data.meetingNotesEightThirtyFound = true;		 
+		if(worklog.short_description.startsWith('Problem Initiation Meeting Notes')) data.meetingNotesFound = true;			 
 	})
 
 })();]]></script>
@@ -448,7 +442,7 @@ position: relative;
         <sys_created_on>2018-08-06 19:55:49</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>57ebbd49db3fdbc0544fdd0b5e961908</sys_id>
-        <sys_mod_count>275</sys_mod_count>
+        <sys_mod_count>278</sys_mod_count>
         <sys_name>SSC Worklog Buddy</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -456,7 +450,7 @@ position: relative;
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_57ebbd49db3fdbc0544fdd0b5e961908</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-22 19:17:34</sys_updated_on>
+        <sys_updated_on>2018-10-11 17:44:37</sys_updated_on>
         <template><![CDATA[<h4 ng-class="hide_toggle_check()" class="moduleTitle" ng-init="worklog_variable_toggle=c.options.hide_toggle_check" ng-click="worklog_variable_toggle = !worklog_variable_toggle" style="cursor: pointer;">
   {{data.parentRecordClass}} Worklogs
   <i class="glyphicon" ng-class="{'glyphicon-chevron-down': worklog_variable_toggle, 'glyphicon-chevron-right': !worklog_variable_toggle}"></i>
@@ -555,13 +549,9 @@ but then only their own other worklogs.
         </div> <!-- Row 1 Column A -->
       </div> <!-- Row 1 -->
       <div ng-if="data.canUserEdit == true && c.options.hide_buttons == false && data.parentRecordClass == 'Problem' && worklog_variable_toggle" class="list-group buttonGroup">
-        <button ng-if="data.meetingNotesSixThirtyFound == false" ng-click="createWorklog('Daily 6:30 Meeting Notes')" type="button" class="list-group-item">
-          <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 6:30 Meeting Notes not found - Click to Create
+        <button ng-if="data.meetingNotesFound == false" ng-click="createWorklog('Problem Initiation Meeting Notes')" type="button" class="list-group-item">
+          <span class="glyphicon glyphicon-info-sign alert-info"></span>Problem Initiation Meeting Notes not found - Click here to Create
         </button>
-        <button ng-if="data.meetingNotesEightFound == false" ng-click="createWorklog('Daily 8:00 Meeting Notes')" type="button" class="list-group-item">
-          <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 8:00 Meeting Notes not found - Click to Create</button>
-        <button ng-if="data.meetingNotesEightThirtyFound == false" ng-click="createWorklog('Daily 8:30 Meeting Notes')" type="button" class="list-group-item">
-          <span class="glyphicon glyphicon-info-sign alert-info"></span>Daily 8:30 Meeting Notes not found - Click to Create</button>
       </div>    
     </div> <!-- Main Panel Body -->  
   </div>

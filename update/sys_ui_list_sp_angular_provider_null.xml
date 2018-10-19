@@ -4,47 +4,47 @@
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>name</element>
-            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">b08f541bdb4b9340544fdd0b5e961963</list_id>
+            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">2040ba6edb8dabc052fdd7795e961915</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>0</position>
             <sum>false</sum>
-            <sys_created_by>e448614</sys_created_by>
-            <sys_created_on>2018-07-07 06:11:18</sys_created_on>
-            <sys_id>348f541bdb4b9340544fdd0b5e961964</sys_id>
+            <sys_created_by>v534544</sys_created_by>
+            <sys_created_on>2018-10-12 18:53:50</sys_created_on>
+            <sys_id>a840ba6edb8dabc052fdd7795e961915</sys_id>
             <sys_mod_count>0</sys_mod_count>
-            <sys_updated_by>e448614</sys_updated_by>
-            <sys_updated_on>2018-07-07 06:11:18</sys_updated_on>
+            <sys_updated_by>v534544</sys_updated_by>
+            <sys_updated_on>2018-10-12 18:53:50</sys_updated_on>
         </sys_ui_list_element>
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>script</element>
-            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">b08f541bdb4b9340544fdd0b5e961963</list_id>
+            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">2040ba6edb8dabc052fdd7795e961915</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>1</position>
             <sum>false</sum>
-            <sys_created_by>e448614</sys_created_by>
-            <sys_created_on>2018-07-07 06:11:18</sys_created_on>
-            <sys_id>b88f541bdb4b9340544fdd0b5e961964</sys_id>
+            <sys_created_by>v534544</sys_created_by>
+            <sys_created_on>2018-10-12 18:53:50</sys_created_on>
+            <sys_id>2040ba6edb8dabc052fdd7795e961916</sys_id>
             <sys_mod_count>0</sys_mod_count>
-            <sys_updated_by>e448614</sys_updated_by>
-            <sys_updated_on>2018-07-07 06:11:18</sys_updated_on>
+            <sys_updated_by>v534544</sys_updated_by>
+            <sys_updated_on>2018-10-12 18:53:50</sys_updated_on>
         </sys_ui_list_element>
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>type</element>
-            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">b08f541bdb4b9340544fdd0b5e961963</list_id>
+            <list_id display_value="sp_angular_provider" element="NULL" name="sp_angular_provider" parent="NULL" relationship="NULL" sys_domain="global" view="Default view">2040ba6edb8dabc052fdd7795e961915</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>2</position>
             <sum>false</sum>
-            <sys_created_by>e448614</sys_created_by>
-            <sys_created_on>2018-07-07 06:11:18</sys_created_on>
-            <sys_id>3c8f541bdb4b9340544fdd0b5e961964</sys_id>
+            <sys_created_by>v534544</sys_created_by>
+            <sys_created_on>2018-10-12 18:53:50</sys_created_on>
+            <sys_id>a040ba6edb8dabc052fdd7795e961916</sys_id>
             <sys_mod_count>0</sys_mod_count>
-            <sys_updated_by>e448614</sys_updated_by>
-            <sys_updated_on>2018-07-07 06:11:18</sys_updated_on>
+            <sys_updated_by>v534544</sys_updated_by>
+            <sys_updated_on>2018-10-12 18:53:50</sys_updated_on>
         </sys_ui_list_element>
         <sys_ui_list action="INSERT_OR_UPDATE">
             <average_value>false</average_value>

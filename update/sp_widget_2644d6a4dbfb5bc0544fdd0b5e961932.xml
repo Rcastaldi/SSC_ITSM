@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
+        <category/>
         <client_script><![CDATA[function($scope, spUtil, $location, spModal, $uibModal, $rootScope ) {
 	/* widget controller */
 	var c = this;
@@ -144,6 +145,16 @@
 /* Style for layout of large multi-line text used for --------- */
 /* showing worklog description i.e. MI chronology */
 .timeline-body  &gt; p {
+  //padding-top: 5px;
+  //vertical-align: top;
+  white-space: pre-line;
+  overflow-y:auto;
+  overflow-x:hidden;
+  max-height: 300px;
+  margin-bottom: 20px; 
+  display: block;
+}
+.timeline-body  {
   //padding-top: 5px;
   //vertical-align: top;
   white-space: pre-line;
@@ -338,7 +349,7 @@
         <sys_created_on>2018-08-05 08:25:18</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>2644d6a4dbfb5bc0544fdd0b5e961932</sys_id>
-        <sys_mod_count>480</sys_mod_count>
+        <sys_mod_count>483</sys_mod_count>
         <sys_name>SSC Problem Form</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -346,7 +357,7 @@
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_2644d6a4dbfb5bc0544fdd0b5e961932</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-08-15 18:56:52</sys_updated_on>
+        <sys_updated_on>2018-10-03 20:28:28</sys_updated_on>
         <template><![CDATA[<!-- This widget first checks that a valid problem sys_id has been provided to server script -->
 <!-- Then will either display record not found panel or Widget Main Panel -->
 <!-- The Widget Main Panel uses bootstrap grid for a responsive layoutout -->
@@ -417,6 +428,23 @@
     <div class="row"> <!-- Row 1 -->
       <div class="col-sm-6"> <!-- Row 1 Column A -->
 
+        
+
+      </div> <!-- Row 1 Column A -->
+      <div class="col-sm-6"> <!-- Row 1 Column B -->
+
+        
+
+        <!--        <div id="worklogIModule" class="container-fluid"> <!-- Incident Worklog Module -->          
+        <!--      <sp-widget widget="c.incWorklogWidget" ></sp-widget>
+</div> <!-- Incident Worklog Module -->
+
+      </div> <!-- Row 1 Column B -->
+    </div> <!-- Row 1 -->
+
+    <div class="row"> <!-- Row 2 -->
+      <div class="col-sm-12"> <!-- Row 2 Column A -->
+        
         <div id="execSummaryModule" class="container-fluid"> <!-- Start of Executive Summary Module -->          
           <h4 class="moduleTitle" ng-init="es_variable_toggle=true" ng-click="es_variable_toggle = !es_variable_toggle" style="cursor: pointer;">
             Executive Summary
@@ -474,10 +502,7 @@
             </div> <!-- Row 1 Column A Nested Row 1 -->
           </div> <!-- es_variable_toggle -->
         </div> <!-- Executive Summary Module -->
-
-      </div> <!-- Row 1 Column A -->
-      <div class="col-sm-6"> <!-- Row 1 Column B -->
-
+        
         <div id="taskModule" class="container-fluid"> <!-- Problem Task Module -->
           <h4 class="moduleTitle" ng-init="task_variable_toggle=true" ng-click="task_variable_toggle = !task_variable_toggle" style="cursor: pointer;">
             Problem Tasks
@@ -505,7 +530,7 @@
                   <i ng-if="problem_task.state_calc == 'NoDate' && problem_task.task_type != 'Default'" class="glyphicon glyphicon-calendar alertTask" title="Task does not have a Due Date"></i>
                   {{problem_task.short_description}}
                 </div>              
-                <div class="task-group" ng-if="variable_toggle"> <!-- Task Detail -->
+                <div class="task-group" ng-if="variable_toggle" ng-click="$event.stopPropagation()"> <!-- Task Detail -->
                   <br/>
                   <div>
                     <div class="task-group-item">
@@ -562,7 +587,7 @@
                   <i ng-if="problem_task.state_calc == 'NoDate' && problem_task.task_type != 'Default'" class="glyphicon glyphicon-calendar alertTask" title="Task does not have a Due Date"></i>
                   {{problem_task.short_description}}
                 </div>              
-                <div class="task-group" ng-if="variable_toggle"> <!-- Task Detail -->
+                <div class="task-group" ng-if="variable_toggle" ng-click="$event.stopPropagation()"> <!-- Task Detail -->
                   <br/>
                   <div>
                     <div class="task-group-item">
@@ -620,16 +645,6 @@
         <div ng-if="::!c.options.hide_worklog" id="worklogModule" class="container-fluid"> <!-- Problem Worklog Module -->          
           <sp-widget widget="data.worklogBuddy_problem"></sp-widget>          
         </div> <!-- Problem Worklog Module -->
-
-        <!--        <div id="worklogIModule" class="container-fluid"> <!-- Incident Worklog Module -->          
-        <!--      <sp-widget widget="c.incWorklogWidget" ></sp-widget>
-</div> <!-- Incident Worklog Module -->
-
-      </div> <!-- Row 1 Column B -->
-    </div> <!-- Row 1 -->
-
-    <div class="row"> <!-- Row 2 -->
-      <div class="col-sm-12"> <!-- Row 2 Column A -->
 
         <div  ng-init="prb_variable_toggle=false" ng-class="ModuleColExpand(prb_variable_toggle)"> <!-- Row 2 Column A-1 -->
           <div id="problemDetailsModule" class="container-fluid"> <!-- Problem Details Module -->

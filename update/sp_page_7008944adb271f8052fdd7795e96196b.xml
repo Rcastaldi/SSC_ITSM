@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_page">
     <sp_page action="INSERT_OR_UPDATE">
+        <category/>
         <css>main.page, main.body {
   height: 99vh;
   min-height: 100%;
@@ -17,6 +18,8 @@ main {
   background-color: white;
   margin-top: -1rem;
 }</css>
+        <draft>false</draft>
+        <dynamic_title_structure/>
         <id>ssc_sp_itsm_towers_intro</id>
         <internal>false</internal>
         <public>false</public>

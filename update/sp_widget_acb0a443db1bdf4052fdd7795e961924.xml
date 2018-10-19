@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
+        <category/>
         <client_script><![CDATA[function($scope, spUtil, $http, $element, $window, $location, $rootScope, $timeout, $interval, $log, $uibModal) {
 	/* widget controller */
 	var c = this;
@@ -25,41 +26,6 @@
 			if(newVal){spUtil.update($scope);}
 		}
 	});
-	// Function to update the new Mitype selected on screen.	
-	/*
-$scope.$on("field.change", function(evt, parms) {
-		alert('Scope.on field.change fired');
-		if (parms.field.name == 'mi_type_select'){
-			//$scope.data.groups = parms.newValue; 
-			//shared.selstartdate = c.data.selstartdate;
-			//shared.selenddate = c.data.selenddate; 
-			//shared.groups = parms.newValue; 
-			console.log('mi_type_select change detected');
-			console.log(evt);
-			console.log(parms);
-			// $scope.server.update();
-		} else if (parms.field.name == 'root_cause_category'){			
-			console.log('root_cause_category change detected');
-			console.log(evt);
-			console.log(parms);		
-		}
-	});
-	*/
-
-	// Function to update the new Mitype selected on screen.	
-	$scope.saveMitype = function(inc_sys_id,newVal) {
-		$scope.data.flagToServerScriptToUpdateMiType = true;
-		$scope.data.UpdateMiType_inc = inc_sys_id;
-		$scope.data.UpdateMiType_newVal = newVal;
-		c.server.update();
-	};	
-	$scope.changeSort = function(field) {
-		if ($scope.orderField == field) {
-			$scope.orderReverse = !$scope.orderReverse;
-		} else {
-			$scope.orderField = field;
-		}
-	}
 
 	$scope.saveSelectUpdate = function(p_sys_id, p_newVal, p_field, p_table) {
 		console.log("saveSelectUpdate function start");
@@ -106,6 +72,7 @@ $scope.$on("field.change", function(evt, parms) {
 
 	/* Variables ------------------------------------- */
 	$scope.data.currentEditRecord = "";
+	$scope.data.currentEditRecordProblem = "";
 	$scope.data.currentWorklogCopy = "";
 	$scope.data.currentTable = "problem";
 	$scope.data.mi_worklog = c.data.mi_worklog; //adapted code
@@ -142,8 +109,9 @@ $scope.$on("field.change", function(evt, parms) {
 		console.log('updateAll function end');
 	}
 
-	$scope.editDescription = function(p_sys_id, p_field, p_table) {
+	$scope.editDescription = function(p_sys_id, p_field, p_table, p_sys_id2) {
 		$scope.data.currentEditRecord = p_sys_id;
+		$scope.data.currentEditRecordProblem = p_sys_id2;
 		$scope.data.currentWorklogCopy = p_field;
 		$scope.data.currentTable = p_table || 'problem';
 		//console.log(p_sys_id);
@@ -155,9 +123,9 @@ $scope.$on("field.change", function(evt, parms) {
 		if(toggleP == 'OFF') {
 			saveMeetingNotes();
 			$scope.data.resolvedIncident.forEach(function(eachRecord){
-				if(eachRecord.problem_id == $scope.data.currentEditRecord){
+				if(eachRecord.problem_id == $scope.data.currentEditRecordProblem){
 					eachRecord.problem_description = $scope.data.currentWorklogCopy;
-					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecord;
+					$scope.data.recordUpdatedFlag = $scope.data.currentEditRecordProblem;
 				} 
 			})
 			$scope.data.openIncident.forEach(function(eachRecord){
@@ -251,7 +219,9 @@ $scope.$on("field.change", function(evt, parms) {
 		$scope.data.currentWorklogCopy = $scope.editor.workingCopy;
 		// Push the saved copy to the server.
 		var post = {'description': $scope.editor.savedCopy};
-		$scope.data.currentRecordID = $scope.data.currentEditRecord;
+		if ($scope.data.currentTable === 'problem'){
+			$scope.data.currentRecordID = $scope.data.currentEditRecordProblem;
+		} else {$scope.data.currentRecordID = $scope.data.currentEditRecord;}		
 		autosaveHttpPromise = $http.patch("/api/now/table/" + $scope.data.currentTable + "/" + $scope.data.currentRecordID, post).then(
 			onFinalizeSaveNotes,
 			function(data) {
@@ -519,6 +489,13 @@ th {
   padding-top: 25px;
   vertical-align: bottom !important;
 }
+.shortDescription {
+  width: 100%;
+  //height: 150px;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+     box-sizing: border-box;         /* Opera/IE 8+ */
+}
 .notes_txt {
   width: 100%;
   height: 150px;
@@ -538,6 +515,9 @@ th {
 .fade-in-out.ng-hide {
 	opacity: 0;
 	filter: alpha(opacity = 0);
+}
+.moduleTitle {
+  color: black !important; 
 }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -675,14 +655,17 @@ console.log(startdate.getDisplayValue());
 			resolvedIncidents.problem_cmdb_ci_newVal = grIncident.problem_id.cmdb_ci;
 			resolvedIncidents.problem_cmdb_ci_newVal.displayValue = grIncident.getDisplayValue('problem_id.cmdb_ci');
 			resolvedIncidents.problem_cmdb_ci_newVal.value = grIncident.getDisplayValue('problem_id.cmdb_ci.sys_id');
-			resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');						
+			resolvedIncidents.short_description = grIncident.getDisplayValue('short_description');
+			resolvedIncidents.problem_description = grIncident.getDisplayValue('problem_id.description');
+			resolvedIncidents.problem_short_description = grIncident.getDisplayValue('problem_id.short_description');
 			resolvedIncidents.miType = grIncident.getValue('u_mi_type');																						
 			resolvedIncidents.miType_newVal = grIncident.getValue('u_mi_type');																			
 			resolvedIncidents.problem_id = grIncident.getValue('problem_id');																				
 			resolvedIncidents.prob_root_cause_cat = grIncident.getDisplayValue('problem_id.u_root_cause_category');
 			resolvedIncidents.prob_root_cause_cat_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_category');
 			resolvedIncidents.prob_root_cause_owner = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
-			resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');				
+			resolvedIncidents.prob_root_cause_owner_newVal = grIncident.getDisplayValue('problem_id.u_root_cause_owner');
+			resolvedIncidents.worklogBuddy_problem = $sp.getWidget('ssc-sp-widget-itsm-worklog-buddy', {table: 'problem', sys_id: grIncident.getValue('problem_id'), hide_header: true, hide_buttons: false, hide_toggle: false});
 			data.resolvedIncident.push(resolvedIncidents);	
 		}	else if( (grIncident.state != 6 &&
 								grIncident.state != 7 &&
@@ -696,7 +679,8 @@ console.log(startdate.getDisplayValue());
 			openIncidents.number = grIncident.getDisplayValue('number');																						
 			openIncidents.sys_id = grIncident.getUniqueValue(); /* Sys id related to incident */
 			openIncidents.problem = grIncident.getDisplayValue('problem_id');																				
-			openIncidents.problem_sys_id = grIncident.getValue('problem_id');																				
+			openIncidents.problem_sys_id = grIncident.getValue('problem_id');
+			openIncidents.short_description = grIncident.getDisplayValue('short_description');
 			openIncidents.description = grIncident.getDisplayValue('description');																	
 			openIncidents.miType = grIncident.getValue('u_mi_type');																								
 			openIncidents.miType_newVal = grIncident.getValue('u_mi_type');				
@@ -712,7 +696,7 @@ console.log(startdate.getDisplayValue());
 			data.openIncident.push(openIncidents);
 		}		
 	}
-})();
+}) ();
 ]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
@@ -720,7 +704,7 @@ console.log(startdate.getDisplayValue());
         <sys_created_on>2018-07-18 21:53:41</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acb0a443db1bdf4052fdd7795e961924</sys_id>
-        <sys_mod_count>799</sys_mod_count>
+        <sys_mod_count>814</sys_mod_count>
         <sys_name>SSC Daily Risk Review</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
@@ -728,7 +712,7 @@ console.log(startdate.getDisplayValue());
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_widget_acb0a443db1bdf4052fdd7795e961924</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
-        <sys_updated_on>2018-09-07 00:41:08</sys_updated_on>
+        <sys_updated_on>2018-10-11 21:50:41</sys_updated_on>
         <template><![CDATA[<script>
   // Move this code to client script.
   function CallPrint(strid)
@@ -948,19 +932,19 @@ console.log(startdate.getDisplayValue());
   <div id="displayView" class="panel panel-body"> <!-- Display View - This is the div that is rendered in the browser -->
     <div class="pageHeader text-center">
       <h1>Daily IT Operations Risk Review</h1>
-      <h3 class="displayDate" ng-init="variable_toggle=false" ng-click="variable_toggle = !variable_toggle">
+      <h3 class="displayDate" ng-init="variableDate_toggle=false" ng-click="variableDate_toggle = !variableDate_toggle">
         {{data.reportdDisplay | date:'fullDate'}}
-      <span ng-if="variable_toggle" class="datePicker pull-right">
-        <sp-date-picker
-                        field="selenddate" 
-                        ng-model="c.data.reportDate" 
-                        ng-model-options="{getterSetter: true}" 
-                        sn-disabled="false" 
-                        >
-        </sp-date-picker>
-      </span>
-         </h3>
-    </div>
+        <span ng-if="variableDate_toggle" class="datePicker pull-right">
+          <sp-date-picker
+                          field="c.data.reportDate" 
+                          ng-model="c.data.reportDate" 
+                          ng-model-options="{getterSetter: true}" 
+                          sn-disabled="false" 
+                          >
+          </sp-date-picker>
+        </span>
+      </h3>
+    </div> <!-- Page Header with date picker -->
     <br/>
     <table class="MyTable"> <!-- My Table -->
       <col width="5%"> <col width="5%">  <col width="10%"> <col width="10%"> <col width="60%"> <col width="10%">
@@ -1048,9 +1032,9 @@ console.log(startdate.getDisplayValue());
         </th> 
       </tr> <!-- RMI Section Header -->
       <tr ng-repeat = "resolvedIncidents in data.resolvedIncident | filter: {miType: 'RMI'}:true | orderBy:orderField:orderReverse"> <!-- RMI Section -->
-        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
-        <td ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>        
-        <td ng-if="resolvedIncidents.problem_id == data.currentEditRecord" class = "rmi_td" colspan=2>
+        <td ng-if="resolvedIncidents.sys_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>
+        <td ng-if="resolvedIncidents.sys_id != data.currentEditRecord" class = "rmi_td" style='color:red; font-size: 20px;'>&#10004;</td>        
+        <td ng-if="resolvedIncidents.sys_id == data.currentEditRecord" class = "rmi_td" colspan=2>
           <h6 class="m-n text-muted">
             Configuration Item 
           </h6>
@@ -1061,7 +1045,8 @@ console.log(startdate.getDisplayValue());
                             display-field="'name'" 
                             value-field="'sys_id'" 
                             search-fields="'name'"                            
-                            page-size="100" multiple="false"></sn-record-picker>
+                            page-size="100" multiple="false">
+          </sn-record-picker>
           <h6 class="m-n text-muted">
             Root Cause Owner
           </h6>
@@ -1090,8 +1075,16 @@ console.log(startdate.getDisplayValue());
           </div>
         </td> 
         <td class = "rmi_desc">          
-          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.problem_id">
+          <div ng-if="canEditMeetingNotes() && data.currentEditRecord == resolvedIncidents.sys_id">
             <div class="col-xs-11">
+              ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
+              <h6 class="m-n text-muted">
+                Problem Short Description 
+              </h6>
+              <textarea class="shortDescription" ng-model="resolvedIncidents.problem_short_description"></textarea>
+              <h6 class="m-n text-muted">
+                Problem Executive Summary 
+              </h6>
               <textarea class="notes_txt" ng-model="editor.workingCopy"></textarea>              
             </div>
             <div class="col-xs-1 text-center">
@@ -1106,55 +1099,31 @@ console.log(startdate.getDisplayValue());
               </select>
               <select ng-if="resolvedIncidents.isClosed == true" disabled class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
                 <option selected="selected">{{resolvedIncidents.miType}}</option>
-                <option value="RMI">RMI</option>
-                <option value="QMI" >QMI</option>
-                <option value="PMI">PMI</option>
               </select>
               <div class="saveCol">
                 <input type='button' ng-if="data.toggleEdit == 'ON'" ng-click="updateAll(resolvedIncidents); toggleEdit('OFF')" class="editButton btn btn-default" value="${Save}"/>
               </div>              
             </div>
+            <div id="worklogModule" class="col-xs-12"> <!-- Problem Worklog Module -->          
+          <sp-widget widget="resolvedIncidents.worklogBuddy_problem"></sp-widget>          
+        </div> <!-- Problem Worklog Module -->
           </div>                                 
-          <div ng-if="resolvedIncidents.problem_id != data.currentEditRecord" class="fieldValue timeline-body">
-            <!-- Edit Button 1 -->
-            <button type="button" 
-                    class="editButton btn btn-default pull-left" 
-                    ng-if="data.toggleEdit == 'OFF' && 
-                           data.canUserEdit == true &&
-                           hidemi"
-                    ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
-              <span class="glyphicon glyphicon-edit">
-              </span> 
-            </button> <!-- Edit Button 1 -->
-            <!-- Edit Button 2 -->
+          <div ng-if="resolvedIncidents.sys_id != data.currentEditRecord" class="fieldValue timeline-body">            
+            <!-- Edit Button -->
             <span id='cab_meeting_notes_notification' class="noSelect fade-in-out pull-right" ng-show="showNotification"> ${Saved} </span>
             <button type="button" 
                     class="editButton btn btn-default pull-right" 
                     ng-if="data.toggleEdit == 'OFF' && data.canUserEdit == true"
-                    ng-click="editDescription(resolvedIncidents.problem_id, resolvedIncidents.problem_description); toggleEdit('ON');">
+                    ng-click="editDescription(resolvedIncidents.sys_id, resolvedIncidents.problem_description, 'problem', resolvedIncidents.problem_id); toggleEdit('ON');">
               <span class="glyphicon glyphicon-edit">
               </span> 
-            </button> <!-- Edit Button 2 -->            
+            </button> <!-- Edit Button -->            
             <a ng-href="?id=ssc_sp_problem_executive_summary&sys_id={{::resolvedIncidents.problem_id}}&sysparm_view=&sysparm_view_forced=true" title="{{resolvedIncidents.problem}}" target="_blank">
               ({{resolvedIncidents.number }} / {{resolvedIncidents.problem}})
             </a>
             {{resolvedIncidents.problem_description}}            
           </div>
-        </td>
-        <td ng-hide="!hidemi" class = "rmi_td"> 
-          <select class = "dropdown" ng-model="resolvedIncidents.miType_newVal" field="mi_type_select">
-            <option selected="selected">{{resolvedIncidents.miType}}</option>
-            <option value="RMI">RMI</option>
-            <option value="QMI" >QMI</option>
-            <option value="PMI">PMI</option>
-          </select>
-          <button ng-if="resolvedIncidents.miType_newVal != resolvedIncidents.miType" class="btn" ng-click="saveSelectUpdate(resolvedIncidents.sys_id, resolvedIncidents.miType_newVal, 'u_mi_type', 'incident')"> Save MI Type
-          </button>
-          <button ng-if="resolvedIncidents.prob_root_cause_cat_newVal != resolvedIncidents.prob_root_cause_cat ||
-                         resolvedIncidents.prob_root_cause_owner_newVal != resolvedIncidents.prob_root_cause_owner"
-                  class="btn pull-right" ng-click="saveSelectUpdate(resolvedIncidents.problem_id, resolvedIncidents.prob_root_cause_cat_newVal, 'tagging', 'problem', resolvedIncidents.prob_root_cause_owner_newVal)"> Save Tagging
-          </button>
-        </td>
+        </td>        
       </tr> <!-- RMI Section -->
 
       <!-- Qualified Business Impacting Incidents **************************** -->      
@@ -1395,11 +1364,6 @@ console.log(startdate.getDisplayValue());
   </div> <!-- Display View - This is the div that is rendered in the browser -->
 
   <div class="cardfooter">
-    <!-- 
-<span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidemi"/> Edit Mode</span>
-<span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hiderco"/> Edit RCO</span>
-<span style="float:right; margin: 0 10px 10px 0"><input type="checkbox" ng-model="hidercc"/> Edit RCC</span>
--->
     <input type="button" value="Print Report" onClick="javascript:CallPrint('printView');">
     <input type="button" value="Send Report As Email" onClick="javascript:SendMail('printView');">
     <select class = "custom-select" field="email_select">
