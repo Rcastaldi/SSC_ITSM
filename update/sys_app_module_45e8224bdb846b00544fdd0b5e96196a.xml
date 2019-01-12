@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update sys_domain="global" table="sys_app_module">
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_module">
     <sys_app_module action="INSERT_OR_UPDATE">
         <active>true</active>
         <application display_value="Problem">deed4a24c6112287013cba41a9e205ca</application>
@@ -20,12 +19,9 @@
         <query>/problem/</query>
         <report/>
         <roles>itil</roles>
-        <survey/>
-        <survey_overwrite>true</survey_overwrite>
         <sys_class_name>sys_app_module</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-25 14:38:39</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>45e8224bdb846b00544fdd0b5e96196a</sys_id>
@@ -34,7 +30,6 @@
         <sys_overrides/>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sys_app_module_45e8224bdb846b00544fdd0b5e96196a</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

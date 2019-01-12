@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update>
+<?xml version="1.0" encoding="UTF-8"?><record_update>
     <sys_ui_list parent="" relationship="" sys_domain="global" table="cmn_notif_message" version="2" view="">
         <sys_ui_list action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
@@ -14,7 +13,6 @@
             <sys_class_name>sys_ui_list</sys_class_name>
             <sys_created_by>e448614</sys_created_by>
             <sys_created_on>2018-08-03 02:12:54</sys_created_on>
-            <sys_customer_update>true</sys_customer_update>
             <sys_domain>global</sys_domain>
             <sys_domain_path>/</sys_domain_path>
             <sys_id>c0ebea7fdb2f97c0544fdd0b5e9619e4</sys_id>
@@ -22,12 +20,11 @@
             <sys_name>cmn_notif_message</sys_name>
             <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
             <sys_policy/>
-            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
             <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
             <sys_update_name>sys_ui_list_cmn_notif_message_null</sys_update_name>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-03 02:12:54</sys_updated_on>
-            <sys_user display_value="Ryan Castaldi [SSC]">92678fe5dbf08300047dd7795e961975</sys_user>
+            <sys_user display_value="">92678fe5dbf08300047dd7795e961975</sys_user>
             <view display_value="Default view" name="NULL">Default view</view>
             <view_name/>
         </sys_ui_list>

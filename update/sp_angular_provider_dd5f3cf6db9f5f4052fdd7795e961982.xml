@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_angular_provider">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
     <sp_angular_provider action="INSERT_OR_UPDATE">
         <name>sscRecordPicker</name>
         <script><![CDATA[function($timeout, $http, urlTools, filterExpressionParser, $sanitize, i18n) {
@@ -366,13 +365,11 @@ dependent_value: "",
         <sys_class_name>sp_angular_provider</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-18 05:33:31</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>dd5f3cf6db9f5f4052fdd7795e961982</sys_id>
         <sys_mod_count>65</sys_mod_count>
         <sys_name>sscRecordPicker</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_angular_provider_dd5f3cf6db9f5f4052fdd7795e961982</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

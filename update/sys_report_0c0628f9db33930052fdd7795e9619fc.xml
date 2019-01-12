@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sys_report">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_report">
     <sys_report action="INSERT_OR_UPDATE">
         <additional_groupby>opened_at,escalation,assignment_group,state</additional_groupby>
         <aggregate>COUNT</aggregate>
@@ -72,7 +71,7 @@
         <page_hdrftr display_value="Default">0ecdb03fc3613000cef73b251eba8f5e</page_hdrftr>
         <pivot_expanded>false</pivot_expanded>
         <report_drilldown/>
-        <report_source display_value="PRM_RS - Problem Records Opened by Group IBM-SSM-PROBLEM-MGT (Problem)">c70ba79adbef4b80500189584b96191a</report_source>
+        <report_source display_value="">c70ba79adbef4b80500189584b96191a</report_source>
         <roles/>
         <row>priority</row>
         <sc_groupby_item_id/>
@@ -99,13 +98,11 @@
         <sys_class_name>sys_report</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-08 21:35:51</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>0c0628f9db33930052fdd7795e9619fc</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>Service Portal Report - Problems Created per Month by MI Type</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sys_report_0c0628f9db33930052fdd7795e9619fc</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
@@ -119,7 +116,7 @@
         <type>line_bar</type>
         <upper_limit/>
         <use_color_heatmap>true</use_color_heatmap>
-        <use_color_palette>false</use_color_palette>
+        <use_null_in_trend>false</use_null_in_trend>
         <user>GLOBAL</user>
         <x_axis_display_grid>false</x_axis_display_grid>
         <x_axis_grid_color display_value="LightGrey">65b30308a9fe3dba01ebaa03e87e7cd3</x_axis_grid_color>

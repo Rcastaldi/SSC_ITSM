@@ -1,18 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="m2m_sp_ng_pro_sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
     <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
         <sp_angular_provider display_value="sscEditableField">ac1df097db1b138052fdd7795e961943</sp_angular_provider>
         <sp_widget display_value="SSC Daily Risk Review Version 1">8dcbdfcadb40a300544fdd0b5e961922</sp_widget>
         <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-22 15:44:11</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>41cbdfcadb40a300544fdd0b5e961926</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>sscEditableField.SSC Daily Risk Review Version 1</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>m2m_sp_ng_pro_sp_widget_41cbdfcadb40a300544fdd0b5e961926</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

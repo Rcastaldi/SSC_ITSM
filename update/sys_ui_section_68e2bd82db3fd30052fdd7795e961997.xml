@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update>
+<?xml version="1.0" encoding="UTF-8"?><record_update>
     <sys_ui_section caption="" section_id="68e2bd82db3fd30052fdd7795e961997" sys_domain="global" table="problem_task" version="3" view="service_portal">
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>number</element>
@@ -9,7 +8,7 @@
             <sys_id>c853f906db3fd30052fdd7795e961924</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -23,7 +22,7 @@
             <sys_id>4c53f906db3fd30052fdd7795e961924</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -37,7 +36,7 @@
             <sys_id>cc53f906db3fd30052fdd7795e961924</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -51,7 +50,7 @@
             <sys_id>4053f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -65,7 +64,7 @@
             <sys_id>c053f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -79,7 +78,7 @@
             <sys_id>4453f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -93,7 +92,7 @@
             <sys_id>c453f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -107,7 +106,7 @@
             <sys_id>4853f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -121,7 +120,7 @@
             <sys_id>c853f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -135,7 +134,7 @@
             <sys_id>4c53f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -149,7 +148,7 @@
             <sys_id>cc53f906db3fd30052fdd7795e961925</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -163,7 +162,7 @@
             <sys_id>4053f906db3fd30052fdd7795e961926</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -177,7 +176,7 @@
             <sys_id>c053f906db3fd30052fdd7795e961926</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -191,7 +190,7 @@
             <sys_id>4453f906db3fd30052fdd7795e961926</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
-            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="b9698676db019f00544fdd0b5e9619e8">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
+            <sys_ui_section caption="NULL" display_value="" name="problem_task" sys_domain="global" view="ff73e57a4f212300fe3d4f00a310c722">68e2bd82db3fd30052fdd7795e961997</sys_ui_section>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:52:08</sys_updated_on>
             <sys_user/>
@@ -205,7 +204,6 @@
             <sys_class_name>sys_ui_section</sys_class_name>
             <sys_created_by>e448614</sys_created_by>
             <sys_created_on>2018-08-09 21:50:15</sys_created_on>
-            <sys_customer_update>true</sys_customer_update>
             <sys_domain>global</sys_domain>
             <sys_domain_path>/</sys_domain_path>
             <sys_id>68e2bd82db3fd30052fdd7795e961997</sys_id>
@@ -214,14 +212,13 @@
             <sys_overrides/>
             <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
             <sys_policy/>
-            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
             <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
             <sys_update_name>sys_ui_section_68e2bd82db3fd30052fdd7795e961997</sys_update_name>
             <sys_updated_by>e448614</sys_updated_by>
             <sys_updated_on>2018-08-09 21:50:15</sys_updated_on>
             <sys_user/>
             <title>false</title>
-            <view display_value="Service_portal" name="service_portal">b9698676db019f00544fdd0b5e9619e8</view>
+            <view display_value="Service_portal" name="service_portal">ff73e57a4f212300fe3d4f00a310c722</view>
             <view_name/>
         </sys_ui_section>
     </sys_ui_section>

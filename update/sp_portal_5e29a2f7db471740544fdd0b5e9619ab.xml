@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_portal">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_portal">
     <sp_portal action="INSERT_OR_UPDATE">
         <css_variables>$brand-primary: #2f749a;
 $body-bg: #f0f0f0;
@@ -25,7 +24,7 @@ $text-muted: #727272;
         <default>false</default>
         <homepage display_value="ssc_sp_itsm_home">5f20318cdb535740544fdd0b5e961902</homepage>
         <icon/>
-        <kb_knowledge_base display_value="ServiceNow Training for IT Users">3df3ab98db720704544fdd0b5e9619f7</kb_knowledge_base>
+        <kb_knowledge_base display_value="">3df3ab98db720704544fdd0b5e9619f7</kb_knowledge_base>
         <kb_knowledge_page display_value="kb_view2">26c2e030d7201200a9addd173e24d437</kb_knowledge_page>
         <login_page display_value="landing">36c61807cb31120000f8d856634c9ca9</login_page>
         <logo/>
@@ -40,13 +39,11 @@ $text-muted: #727272;
         <sys_class_name>sp_portal</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:30:24</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>5e29a2f7db471740544fdd0b5e9619ab</sys_id>
         <sys_mod_count>34</sys_mod_count>
         <sys_name>State Street IT Service Management</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_portal_5e29a2f7db471740544fdd0b5e9619ab</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
@@ -61,12 +58,12 @@ $text-muted: #727272;
         <chunk_size_bytes/>
         <compressed>true</compressed>
         <content_type>image/png</content_type>
-        <encryption_context/>
         <file_name>logo</file_name>
         <image_height>24</image_height>
         <image_width>168</image_width>
         <size_bytes>1926</size_bytes>
         <size_compressed>1949</size_compressed>
+        <state/>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:31:31</sys_created_on>
         <sys_id>bd99aaf7db471740544fdd0b5e96192b</sys_id>
@@ -75,7 +72,6 @@ $text-muted: #727272;
         <sys_updated_on>2018-07-09 05:31:31</sys_updated_on>
         <table_name>ZZ_YYsp_portal</table_name>
         <table_sys_id>5e29a2f7db471740544fdd0b5e9619ab</table_sys_id>
-        <u_record>5e29a2f7db471740544fdd0b5e9619ab</u_record>
     </sys_attachment>
     <sys_attachment_doc action="INSERT_OR_UPDATE">
         <data>H4sIAAAAAAAAAA==</data>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_instance">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
     <sp_instance action="INSERT_OR_UPDATE">
         <active>true</active>
         <class_name/>
@@ -16,13 +15,11 @@
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-23 05:02:11</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>aa621e52db04270052fdd7795e9619b4</sys_id>
         <sys_mod_count>2</sys_mod_count>
         <sys_name>Incident Management Team</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_instance_aa621e52db04270052fdd7795e9619b4</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

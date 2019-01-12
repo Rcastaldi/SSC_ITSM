@@ -1,18 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sys_embedded_help_role">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_embedded_help_role">
     <sys_embedded_help_role action="INSERT_OR_UPDATE">
         <order>1000</order>
-        <role display_value="sn_dd_statestreetitservicemanagement_integrations" name="sn_dd_statestreetitservicemanagement_integrations">b5d4d0bedbf8ab4052fdd7795e961902</role>
+        <role display_value="">b5d4d0bedbf8ab4052fdd7795e961902</role>
         <sys_class_name>sys_embedded_help_role</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-09-30 15:57:34</sys_created_on>
-        <sys_customer_update>false</sys_customer_update>
         <sys_id>71d4d0bedbf8ab4052fdd7795e961904</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>b5d4d0bedbf8ab4052fdd7795e961902</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sys_embedded_help_role_71d4d0bedbf8ab4052fdd7795e961904</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_search_source">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_search_source">
     <sp_search_source action="INSERT_OR_UPDATE">
         <advanced_typeahead_config>false</advanced_typeahead_config>
         <condition/>
@@ -41,10 +40,12 @@
 })(query);]]></data_fetch_script>
         <display_fields/>
         <enable_typeahead>true</enable_typeahead>
+        <facet_generation_script/>
         <id>ssc_itsm_kb</id>
         <is_scripted_source>true</is_scripted_source>
         <name>Knowledge Base</name>
         <page/>
+        <pagination_supported>false</pagination_supported>
         <primary_display_field/>
         <roles/>
         <search_page_template><![CDATA[<div>
@@ -60,13 +61,11 @@
         <sys_class_name>sp_search_source</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-09 05:42:36</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>59fbe67bdb471740544fdd0b5e9619ba</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>Knowledge Base</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_search_source_59fbe67bdb471740544fdd0b5e9619ba</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
@@ -74,4 +73,5 @@
         <typeahead_glyph/>
         <typeahead_template/>
     </sp_search_source>
+    <sys_translated_text action="delete_multiple" query="documentkey=59fbe67bdb471740544fdd0b5e9619ba"/>
 </record_update>

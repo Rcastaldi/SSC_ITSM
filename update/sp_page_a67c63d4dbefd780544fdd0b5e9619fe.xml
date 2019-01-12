@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_page">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_page">
     <sp_page action="INSERT_OR_UPDATE">
         <category/>
         <css/>
@@ -13,13 +12,11 @@
         <sys_class_name>sp_page</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-23 09:56:25</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>a67c63d4dbefd780544fdd0b5e9619fe</sys_id>
         <sys_mod_count>2</sys_mod_count>
         <sys_name>ssc_sp_itsm_user_profile</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_page_a67c63d4dbefd780544fdd0b5e9619fe</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

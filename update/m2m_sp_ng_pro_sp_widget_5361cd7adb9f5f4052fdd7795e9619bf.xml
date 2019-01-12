@@ -1,18 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="m2m_sp_ng_pro_sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
     <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
         <sp_angular_provider display_value="sscRecordPicker">dd5f3cf6db9f5f4052fdd7795e961982</sp_angular_provider>
         <sp_widget display_value="SSC Active Filter">b0d23abfdb471740544fdd0b5e96198b</sp_widget>
         <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-07-18 05:38:12</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>5361cd7adb9f5f4052fdd7795e9619bf</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>SscRecordPicker.SSC Active Filter</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>m2m_sp_ng_pro_sp_widget_5361cd7adb9f5f4052fdd7795e9619bf</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>

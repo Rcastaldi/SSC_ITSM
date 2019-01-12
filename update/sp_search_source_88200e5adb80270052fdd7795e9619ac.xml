@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_search_source">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_search_source">
     <sp_search_source action="INSERT_OR_UPDATE">
         <advanced_typeahead_config>false</advanced_typeahead_config>
         <condition table="incident">state=7^EQ<item endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="7"/>
@@ -13,10 +12,12 @@
 })(query);]]></data_fetch_script>
         <display_fields>number,sys_created_on,u_owner_group,state</display_fields>
         <enable_typeahead>false</enable_typeahead>
+        <facet_generation_script/>
         <id>closed_incidents_ss</id>
         <is_scripted_source>false</is_scripted_source>
         <name>Closed Incidents</name>
         <page/>
+        <pagination_supported>false</pagination_supported>
         <primary_display_field>short_description</primary_display_field>
         <roles/>
         <search_page_template><![CDATA[<div>
@@ -32,13 +33,11 @@
         <sys_class_name>sp_search_source</sys_class_name>
         <sys_created_by>e448614</sys_created_by>
         <sys_created_on>2018-08-23 03:47:02</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
         <sys_id>88200e5adb80270052fdd7795e9619ac</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>Closed Incidents</sys_name>
         <sys_package display_value="State Street IT Service Management" source="x_ibmss_ssc_itsm">2a92e67fdb071740544fdd0b5e9619d7</sys_package>
         <sys_policy/>
-        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="State Street IT Service Management">2a92e67fdb071740544fdd0b5e9619d7</sys_scope>
         <sys_update_name>sp_search_source_88200e5adb80270052fdd7795e9619ac</sys_update_name>
         <sys_updated_by>e448614</sys_updated_by>
@@ -46,4 +45,5 @@
         <typeahead_glyph/>
         <typeahead_template/>
     </sp_search_source>
+    <sys_translated_text action="delete_multiple" query="documentkey=88200e5adb80270052fdd7795e9619ac"/>
 </record_update>
